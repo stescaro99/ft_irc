@@ -22,5 +22,7 @@ User::User(std::string name, std::string password) : user_name(name), user_passw
 
 User::~User()
 {
+
+	
 }
 
