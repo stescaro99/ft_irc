@@ -117,6 +117,7 @@ void Server::takeStr(std::string *dest, char *src)
 void Server::AcceptNewClient()
 {
 	std::string name, UsPassword, nick;
+	User *user = new User();
 	struct sockaddr_in	usadd;
 	struct pollfd		NewPoll;
 	socklen_t			len = sizeof(usadd);
@@ -138,9 +139,9 @@ void Server::AcceptNewClient()
 	//	return;
 	//}
 
-	char buff[1000];
-	memset(buff, 0, sizeof(buff));
-	int PTry = 0;
+	//char buff[1000];
+	//memset(buff, 0, sizeof(buff));
+	//int PTry = 0;
 	//while(1)
 	//{
 	//	write(incofd, "Insert password\n", 17);
@@ -160,18 +161,17 @@ void Server::AcceptNewClient()
 	//	}
 	//	break ;
 	//}
-	write(incofd, "select a name\n", 15); 
-	recv(incofd, buff, sizeof(buff) -1, 0);
-	takeStr(&name, buff);
-	write(incofd, "select a nickname\n", 19);
-	recv(incofd, buff, sizeof(buff) - 1, 0);
-	takeStr(&nick, buff);
-				// provare a cancellare terminale
-	User *user = new User(name, nick);
+	//write(incofd, "select a name\n", 15); 
+	//recv(incofd, buff, sizeof(buff) -1, 0);
+	//takeStr(&name, buff);
+	//write(incofd, "select a nickname\n", 19);
+	//recv(incofd, buff, sizeof(buff) - 1, 0);
+	//takeStr(&nick, buff);
+	//			// provare a cancellare terminale
 	user->setFd(incofd);
 	user->setIpAdd(inet_ntoa((usadd.sin_addr)));
-	user->setName(name);
-	user->setNick(nick);
+	//user->setName(name);
+	//user->setNick(nick);
 	
 	if (fcntl(incofd, F_SETFL, O_NONBLOCK) == -1)
 	{
@@ -182,8 +182,8 @@ void Server::AcceptNewClient()
 	users.push_back(user);
 	fds.push_back(NewPoll);
 
-	
-	std::cout  << Green << "client <" << user->getNick() << "> is connect" << Reset << std::endl;
+	write(incofd, "Insert password\n", 17);	
+	std::cout  << Green << "client <" << incofd << "> is connect" << Reset << std::endl;
 
 }
 
@@ -221,10 +221,52 @@ void Server::ReceiveNewData(int fd)
 		ClearUser(fd);
 		close(fd);
 	}
-	else
+	std::string UsPassword, name, nick;
+	static int PTry = 0;
+	switch (i->getState())
 	{
+	case 0:
+		while(1)
+		{
+			//write(i->getFd(), "Insert password\n", 17);
+			takeStr(&UsPassword, buff);
+			if (UsPassword != password)
+			{
+				PTry++;
+				write(i->getFd(), "Incorrect password\n", 20);
+				if (PTry == 3)
+				{
+					write(i->getFd(), "too many tries\n", 15);
+					close(i->getFd());
+					return ;
+				}
+				write(i->getFd(), "Insert password\n", 17);
+				continue ;
+			}
+			else
+			{
+				write(i->getFd(), "select a name\n", 15);
+				i->plusState();
+			}
+			break ;
+		}
+		break;
+	case 1:
+		//write(i->getFd(), "select a name\n", 15); 
+		takeStr(&name, buff);
+		i->setName(name);
+		i->plusState();
+		write(i->getFd(), "select a nickname\n", 19);
+		break;
+	case 2:
+		//write(i->getFd(), "select a nickname\n", 19);
+		takeStr(&nick, buff);
+		i->setNick(nick);
+		i->plusState();
+		break;
+	case 3:
 		buff[bytes] = '\0';
 		std::cout << Yellow << "user <" << i->getNick() << "> data:"  << Reset << buff;
-		//printall(fd, buff, i->getNick());
+		break;
 	}
 }

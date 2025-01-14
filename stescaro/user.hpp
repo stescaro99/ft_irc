@@ -16,10 +16,10 @@ class User
 		std::string						user_nikname;
 		//std::map<std::string, &Channel>	user_channels;
 		std::vector<std::string>		invited_to_join;
-
+		short							state;
 	public:
 		User(std::string name, std::string nick);
-		User(){};
+		User();
 		~User(){};
 
 
@@ -40,6 +40,8 @@ class User
 		//void		ban_user(std::string user, std::string channel);
 		std::string	getname();
 		std::string getNick();
+		short		getState();
+		void		plusState();
 		// admin e non contro admin
 		//void invite_user(std::string user, std::string channel);			// admin e non su un ban
 		//void change_topic(std::string topic, std::string channel);          // admin 

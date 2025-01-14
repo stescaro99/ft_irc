@@ -27,6 +27,20 @@ std::string User::getNick()
 {
 	return(user_nikname);
 }
+User::User()
+{
+	state = 0;
+}
+
+short User::getState()
+{
+	return(state);
+}
+
+void User::plusState()
+{
+	state += 1;
+}
 
 User::User(std::string name, std::string nick): user_name(name), user_nikname(nick)
 {
