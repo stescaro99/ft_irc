@@ -10,6 +10,29 @@ std::string User::getname()
 	return user_name;
 }
 
+void	User::setName(std::string str)
+{
+	this->user_name = str;
+}
+void	User::setNick(std::string str)
+{
+	this->user_nikname = str;
+}
+void	User::setPass(std::string str)
+{
+	this->user_password = str;
+}
+
+std::string User::getNick()
+{
+	return(user_nikname);
+}
+
+User::User(std::string name, std::string nick): user_name(name), user_nikname(nick)
+{
+
+}
+
 //void User::create_channel(std::string channel, std::string password)
 //{
 //	Channel new_channel(channel, this->user_name);

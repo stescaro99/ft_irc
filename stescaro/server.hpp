@@ -11,15 +11,19 @@ class Server
     private:
 		int							socketfd;
 		static bool					Signal;
-        static std::string          password;
+        const std::string          password;
         short				port;
-        std::vector<User>			users;
+        std::vector<User*>			users;
 		std::vector<struct pollfd>	fds;
 		
+		void takeStr(std::string *dest, char *src);
+		User *findUser(int fd);
+		void printall(int Usfd, std::string mess, std::string nick);
         //std::vector<&Channel>       channels;
 
     public:
         Server();
+		Server(std::string password, int port);
         ~Server(){};
 
 		void ServerInit();
