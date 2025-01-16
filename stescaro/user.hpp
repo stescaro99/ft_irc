@@ -17,6 +17,7 @@ class User
 		//std::map<std::string, &Channel>	user_channels;
 		std::vector<std::string>		invited_to_join;
 		short							state;
+		short							PasswordTry;
 	public:
 		User(std::string name, std::string nick);
 		User();
@@ -42,6 +43,8 @@ class User
 		std::string getNick();
 		short		getState();
 		void		plusState();
+		void		passwordPlus();
+		short		getTry();
 		// admin e non contro admin
 		//void invite_user(std::string user, std::string channel);			// admin e non su un ban
 		//void change_topic(std::string topic, std::string channel);          // admin 

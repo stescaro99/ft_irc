@@ -44,9 +44,18 @@ void User::plusState()
 
 User::User(std::string name, std::string nick): user_name(name), user_nikname(nick)
 {
-
+	PasswordTry = 0;
 }
 
+void User::passwordPlus()
+{
+	PasswordTry++;
+}
+
+short User::getTry()
+{
+	return(PasswordTry);
+}
 //void User::create_channel(std::string channel, std::string password)
 //{
 //	Channel new_channel(channel, this->user_name);

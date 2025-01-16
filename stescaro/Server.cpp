@@ -222,44 +222,47 @@ void Server::ReceiveNewData(int fd)
 		close(fd);
 	}
 	std::string UsPassword, name, nick;
-	static int PTry = 0;
+	//static int PTry = 0;
 	switch (i->getState())
 	{
 	case 0:
-		while(1)
-		{
-			//write(i->getFd(), "Insert password\n", 17);
+		//while(1)
+		//{
 			takeStr(&UsPassword, buff);
 			if (UsPassword != password)
 			{
-				PTry++;
+				//PTry++;
+				i->passwordPlus();
+				std::cout << i->getTry() << password << std::endl;
 				write(i->getFd(), "Incorrect password\n", 20);
-				if (PTry == 3)
+				if (i->getTry() == 3)
 				{
 					write(i->getFd(), "too many tries\n", 15);
 					close(i->getFd());
+					//PTry = 0;
+					ClearUser(fd);
 					return ;
 				}
 				write(i->getFd(), "Insert password\n", 17);
-				continue ;
+				break ;
 			}
 			else
 			{
+				//PTry = 0;
+				std::cout << "giusto" << std::endl;
 				write(i->getFd(), "select a name\n", 15);
 				i->plusState();
 			}
-			break ;
-		}
+		//	break ;
+		//}
 		break;
 	case 1:
-		//write(i->getFd(), "select a name\n", 15); 
 		takeStr(&name, buff);
 		i->setName(name);
 		i->plusState();
 		write(i->getFd(), "select a nickname\n", 19);
 		break;
 	case 2:
-		//write(i->getFd(), "select a nickname\n", 19);
 		takeStr(&nick, buff);
 		i->setNick(nick);
 		i->plusState();
