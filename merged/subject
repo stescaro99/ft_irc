@@ -1,0 +1,108 @@
+Sommario:
+Questo progetto riguarda la creazione di un proprio server IRC.
+Utilizzerai un client IRC effettivo per connetterti al tuo server e testarlo.
+Internet è governata da protocolli standard solidi che permettono ai computer connessi di interagire tra loro.
+È sempre utile conoscerli.
+
+Capitolo II - Regole generali
+Il programma non deve mai andare in crash in nessuna circostanza (anche se finisce la memoria) e non deve terminare in modo imprevisto.
+Se ciò accade, il progetto verrà considerato non funzionante e il voto sarà 0.
+Devi consegnare un Makefile che compili i tuoi file sorgente. Non deve rilinkare.
+Il tuo Makefile deve contenere almeno le regole:
+$(NAME), all, clean, fclean e re.
+Compila il tuo codice con c++ e le flag -Wall -Wextra -Werror.
+Il codice deve rispettare lo standard C++ 98. Deve comunque compilare se aggiungi la flag -std=c++98.
+Cerca di sviluppare sempre utilizzando le funzionalità più moderne di C++ (ad esempio, preferisci <cstring> rispetto a <string.h>).
+Sono permesse funzioni C, ma devi preferire le loro versioni in C++ se possibile.
+Le librerie esterne e le librerie Boost sono vietate.
+Capitolo III - Parte obbligatoria
+Nome del programma: ircserv
+File da consegnare: Makefile, *.h, *.hpp, *.cpp, *.tpp, *.ipp, un file di configurazione opzionale
+Makefile: NAME, all, clean, fclean, re
+Argomenti:
+
+port: La porta su cui il server IRC ascolterà le connessioni in ingresso.
+password: La password di connessione. Sarà necessaria per ogni client IRC che cercherà di connettersi al server.
+Funzioni esterne:
+Tutto in C++ 98.
+Le funzioni da utilizzare includono: socket, close, setsockopt, getsockname, getprotobyname, gethostbyname, getaddrinfo, freeaddrinfo, bind, connect, listen, accept, htons, htonl, ntohs, ntohl, inet_addr, inet_ntoa, send, recv, signal, sigaction, lseek, fstat, fcntl, poll (o equivalenti).
+
+Descrizione:
+Un server IRC scritto in C++ 98.
+Non devi sviluppare un client.
+Non devi gestire la comunicazione tra server.
+
+Il tuo eseguibile verrà eseguito come segue:
+
+bash
+Copy code
+./ircserv <porta> <password>
+port: Il numero di porta su cui il server IRC ascolterà per le connessioni IRC in ingresso.
+password: La password di connessione. Sarà necessaria per ogni client IRC che tenterà di connettersi al server.
+Anche se nel soggetto viene menzionato poll() (o equivalente), puoi utilizzare funzioni equivalenti come select(), kqueue() o epoll().
+
+III.1 Requisiti
+Il server deve essere in grado di gestire client multipli contemporaneamente senza mai andare in stallo.
+Il fork è vietato. Tutte le operazioni di I/O devono essere non bloccanti.
+Devi utilizzare un solo poll() (o equivalente) per gestire tutte le operazioni (lettura, scrittura, ma anche ascolto, ecc.).
+Anche se poll() viene menzionato nel progetto, puoi usare funzioni equivalenti come select(), kqueue() o epoll().
+
+Poiché devi usare descrittori di file non bloccanti, è possibile utilizzare le funzioni read/recv o write/send senza il poll().
+Tuttavia, se usi queste funzioni senza il poll() (o equivalente), il voto sarà 0.
+
+Devi scegliere un client di riferimento tra i vari client IRC disponibili.
+Il client di riferimento sarà utilizzato durante il processo di valutazione.
+
+Il client di riferimento deve essere in grado di connettersi al tuo server senza errori.
+
+La comunicazione tra client e server deve avvenire tramite TCP/IP (v4 o v6).
+
+Usando il tuo client di riferimento con il server, deve essere simile all’utilizzo con un server IRC ufficiale.
+Tuttavia, devi implementare solo le seguenti funzionalità:
+
+Devi essere in grado di autenticarti, impostare un nickname, un username, unirti a un canale, inviare e ricevere messaggi privati tramite il client di riferimento.
+Tutti i messaggi inviati da un client a un canale devono essere inoltrati a tutti gli altri client che sono nel canale.
+Devi avere operatori e utenti normali.
+Poi devi implementare i comandi specifici per gli operatori di canale:
+KICK - Eiettare un client dal canale.
+INVITE - Invitare un client a un canale.
+TOPIC - Cambiare o visualizzare il tema del canale.
+MODE - Cambiare la modalità del canale:
+i: Impostare/rimuovere il canale solo su invito.
+t: Impostare/rimuovere le restrizioni del comando TOPIC per gli operatori del canale.
+k: Impostare/rimuovere la chiave del canale (password).
+o: Dare/togliere i privilegi di operatore del canale.
+l: Impostare/rimuovere il limite di utenti del canale.
+Ovviamente, ci si aspetta che il codice sia scritto in modo pulito.
+
+III.2 Solo per MacOS
+Poiché su MacOS write() non è implementato allo stesso modo degli altri sistemi Unix, puoi usare fcntl().
+Devi usare i descrittori di file in modalità non bloccante per ottenere un comportamento simile agli altri sistemi Unix.
+Tuttavia, puoi usare fcntl() solo come segue:
+
+cpp
+Copy code
+fcntl(fd, F_SETFL, O_NONBLOCK);
+Qualsiasi altro flag è vietato.
+
+III.3 Esempio di test
+Verifica ogni possibile errore e problema (ricezione di dati parziali, larghezza di banda bassa, ecc.).
+Per assicurarti che il tuo server elabori correttamente tutto ciò che gli invii, puoi fare questo semplice test usando nc:
+
+bash
+Copy code
+$ nc -C 127.0.0.1 6667
+com^Dman^Dd
+$
+Usa ctrl+D per inviare il comando in più parti: prima com, poi man, infine d\n.
+Per elaborare un comando, devi prima aggregare i pacchetti ricevuti per ricostruirlo.
+
+Capitolo IV - Parte bonus
+Ecco alcune funzionalità aggiuntive che puoi implementare per far sembrare il tuo server IRC ancora più simile a un vero server IRC:
+
+Gestire il trasferimento di file.
+Aggiungere un bot.
+La parte bonus sarà valutata solo se la parte obbligatoria è perfetta.
+Perfetta significa che la parte obbligatoria è stata completata integralmente e funziona senza malfunzionamenti. Se non hai soddisfatto tutti i requisiti obbligatori, la parte bonus non sarà valutata.
+
+
