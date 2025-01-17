@@ -168,12 +168,12 @@ void Server::receive_new_data(int fd)
 		clear_user(fd);
 		close(fd);
 	}
-	std::string UsPassword, name, nick;
+	std::string s;
 	switch (i->get_state())
 	{
 	case 0:
-			take_str(&UsPassword, buff);
-			if (UsPassword != password)
+			take_str(&s, buff);
+			if (s != password)
 			{
 				i->increment_tries();
 				std::cout << i->get_tries() << password << std::endl;
@@ -196,19 +196,25 @@ void Server::receive_new_data(int fd)
 			}
 		break;
 	case 1:
-		take_str(&name, buff);
-		i->set_user_name(name);
+		take_str(&s, buff);
+		if (is_user(s))
+		{
+			write(i->get_user_fd(), "name already taken\nselect a name\n", 34);
+			break;
+		}
+		i->set_user_name(s);
 		i->increment_state();
 		write(i->get_user_fd(), "select a nickname\n", 19);
 		break;
 	case 2:
-		take_str(&nick, buff);
-		i->set_user_nick(nick);
+		take_str(&s, buff);
+		i->set_user_nick(s);
 		i->increment_state();
 		break;
 	case 3:
 		buff[bytes] = '\0';
-		std::cout << Yellow << "user <" << i->get_user_nick() << "> data:"  << Reset << buff;
+		std::cout << Yellow << "[" << i->get_user_nick() << "] "  << Reset << buff;
+		print_all(fd, s, i->get_user_nick());
 		break;
 	}
 }

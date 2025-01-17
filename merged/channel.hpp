@@ -3,6 +3,9 @@
 
 #include "standard_libraries.hpp"
 
+class User;
+class channel;
+
 class Channel
 {
 	private:

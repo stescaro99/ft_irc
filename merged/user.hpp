@@ -3,6 +3,9 @@
 
 # include "standard_libraries.hpp"
 
+class Channel;
+class Server;
+
 class User
 {
 	private:
