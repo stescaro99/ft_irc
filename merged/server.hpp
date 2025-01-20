@@ -45,6 +45,7 @@ class Server
 		//void print_message(int fd, std::string nick, const std::string &message);
 		// void recv_message(const std::string &user);
 		bool is_user(const std::string &user) const;
+		bool is_nick(const std::string &nick) const;
 		bool is_channel(const std::string &channel) const;
 		bool is_command(User *user, std::string const &s) const;
 		

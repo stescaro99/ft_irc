@@ -90,6 +90,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	std::string cmd = s.substr(0, s.find(" "));
 	printf("s.size() = %lu\n", s.size());
 	printf("s = %s\n", s.c_str());
+	std::string channel_name;
 	if (s.find(" ") == std::string::npos)
 	{
 		printf("comando non valido\n");
@@ -100,7 +101,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	printf("tmp.size() = %lu\n", tmp.size());
 	if (cmd == "/join")
 	{
-		std::string channel_name = tmp.substr(0, channel_name.find(" "));
+		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string password = tmp.substr(tmp.find(" ") + 1);
 		Channel *ch = find_channel(channel_name);
 		if (ch)
@@ -112,7 +113,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/leave")
 	{
-		std::string channel_name = tmp;
+		/*std::string*/ channel_name = tmp;
 		Channel *ch = find_channel(channel_name);
 		if (ch)
 			user->leave_channel(channel_name);
@@ -123,7 +124,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/create")
 	{
-		std::string channel_name = tmp.substr(0, channel_name.find(" "));
+		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string password;
 		if (channel_name.find(" ") == std::string::npos)
 		{
@@ -145,7 +146,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/delete")
 	{
-		std::string channel_name = tmp;
+		/*std::string*/ channel_name = tmp;
 
 		if (is_channel(channel_name))
 			user->delete_channel(channel_name);
@@ -156,7 +157,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/kick")
 	{
-		std::string channel_name = tmp.substr(0, channel_name.find(" "));
+		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -168,7 +169,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/ban")
 	{
-		std::string channel_name = tmp.substr(0, channel_name.find(" "));
+		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -180,7 +181,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/invite")
 	{
-		std::string channel_name = tmp.substr(0, channel_name.find(" "));
+		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -192,7 +193,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/topic")
 	{
-		std::string channel_name = tmp.substr(0, channel_name.find(" "));
+		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string topic = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -204,7 +205,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/mode")
 	{
-		std::string channel_name = tmp.substr(0, channel_name.find(" "));
+		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string m = tmp.substr(tmp.find(" ") + 1);
 		if (m.size() != 1)
 		{
@@ -222,7 +223,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/password")
 	{
-		std::string channel_name = tmp.substr(0, channel_name.find(" "));
+		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string password = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -234,7 +235,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/addadmin")
 	{
-		std::string channel_name = tmp.substr(0, channel_name.find(" "));
+		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -246,7 +247,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/unban")
 	{
-		std::string channel_name = tmp.substr(0, channel_name.find(" "));
+		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -258,7 +259,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/leaveadmin")
 	{
-		std::string channel_name = tmp;
+		/*std::string*/ channel_name = tmp;
 
 		if (is_channel(channel_name))
 			user->leave_admin(channel_name);
@@ -269,7 +270,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/acceptinvite")
 	{
-		std::string channel_name = tmp;
+		/*std::string*/ channel_name = tmp;
 
 		if (is_channel(channel_name))
 			user->accept_invite(channel_name);

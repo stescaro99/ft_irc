@@ -181,6 +181,11 @@ void Server::receive_new_data(int fd)
 		break;
 	case 2:
 		take_str(&s, i->get_buff());
+		if (is_nick(s))
+		{
+			write(i->get_user_fd(), "name already taken\nselect a nickname\n", 34);
+			break;
+		}
 		i->set_user_nick(s);
 		i->increment_state();
 		write(i->get_user_fd(), "\033[2J\033[H", 8);
@@ -199,6 +204,16 @@ bool Server::is_user(const std::string &user) const
 	for (std::vector<User*>::const_iterator it = users.begin(); it != users.end(); it++)
 	{
 		if ((*it)->get_user_name() == user)
+			return (true);
+	}
+	return (false);
+}
+
+bool Server::is_nick(const std::string &nick) const
+{
+	for (std::vector<User*>::const_iterator it = users.begin(); it != users.end(); it++)
+	{
+		if ((*it)->get_user_nick() == nick)
 			return (true);
 	}
 	return (false);
