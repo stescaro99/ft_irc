@@ -42,6 +42,8 @@ class Channel
 		size_t get_admins_count() const;
 		char get_mode() const;
 		std::string get_name() const;
+
+		bool is_user_invited(const std::string &user) const;
 };
 
 #endif

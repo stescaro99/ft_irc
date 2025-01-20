@@ -1,4 +1,4 @@
-#include "server.hpp"
+#include "standard_libraries.hpp"
 
 std::string User::get_user_name() const
 {
@@ -48,4 +48,25 @@ short User::get_state() const
 short User::get_tries() const
 {
 	return (pass_tries);
+}
+
+char *User::get_buff()
+{
+	return (buff);
+}
+
+User *Server::find_user(int fd) const
+{
+	for (std::vector<User *>::const_iterator i = users.begin(); i != users.end(); i++)
+		if ((*i)->get_user_fd() == fd)
+			return(*i);
+	return (NULL);
+}
+
+Channel *Server::find_channel(const std::string &channel) const
+{
+	for (std::vector<Channel *>::const_iterator i = channels.begin(); i != channels.end(); i++)
+		if ((*i)->get_name() == channel)
+			return(*i);
+	return (NULL);
 }

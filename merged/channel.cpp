@@ -151,3 +151,13 @@ void Channel::unban_user(const std::string &user)
 		}
 	}
 }
+
+bool Channel::is_user_invited(const std::string &user) const
+{
+	for (std::vector<std::string>::const_iterator it = ch_invited.begin(); it != ch_invited.end(); it++)
+	{
+		if (*it == user)
+			return (true);
+	}
+	return (false);
+}

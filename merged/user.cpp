@@ -157,3 +157,15 @@ void User::leave_admin(const std::string &channel)
 			CH->rem_admin(this->user_name);
 	}
 }
+
+void User::accept_invite(const std::string &channel)
+{
+	if (user_channels.find(channel) != user_channels.end())
+	{
+		if (CH->is_user_invited(this->user_name))
+		{
+			CH->add_user_to_channel(this, "");
+			user_channels.insert(std::pair<std::string, Channel*>(channel, CH));
+		}
+	}
+}

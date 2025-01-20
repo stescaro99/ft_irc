@@ -17,10 +17,10 @@ class User
 		Server							&server;
 		short 							state;
 		short 							pass_tries;
+		char							buff[1024];
 	
 	public:
 		User(Server &server, int fd);
-		User(const std::string &name, const std::string &nickname, Server &server, int fd);
 		~User();
 
 		//void change_color(const std::string &color);    								// cambi il nick aggiungendo il colore iniziale e il reset finale
@@ -50,6 +50,7 @@ class User
 		std::string get_IPadd() const;
 		short get_state() const;
 		short get_tries() const;
+		char *get_buff();
 
 		void set_user_name(const std::string &name);
 		void set_user_nick(const std::string &nick);

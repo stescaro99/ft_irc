@@ -1,6 +1,6 @@
 #include "standard_libraries.hpp"
 
-void Server::clear_user(int fd)
+/* void Server::clear_user(int fd)
 {
 	for (size_t i = 0; i < fds.size(); i++)
 	{
@@ -18,7 +18,7 @@ void Server::clear_user(int fd)
 			break;
 		}
 	}
-}
+} */
 
 bool Server::Signal = false;
 
@@ -81,7 +81,7 @@ void Server::server_init()
 			if (fds[i].revents & POLLIN)
 			{
 				if (fds[i].fd == socket_fd)
-					accept_new_client();
+					add_user();
 				else
 					receive_new_data(fds[i].fd);
 			}
@@ -100,79 +100,52 @@ void Server::take_str(std::string *dest, char *src)
 	std::fill(src, src + strlen(src), '\0');
 }
 
-void Server::accept_new_client()
-{
-	std::string name, UsPassword, nick;
-	struct sockaddr_in	usadd;
-	struct pollfd		new_poll;
-	socklen_t			len = sizeof(usadd);
-	User *user = new User(*this, accept(socket_fd, (sockaddr *)&(usadd), &len));
-
-	int incofd = user->get_user_fd();
-	if (incofd == -1)
-	{
-		std::cout << "accept failed" << std::endl;
-		delete user;
-		return;
-	}
-
-	new_poll.fd = incofd;
-	new_poll.events = POLLIN;
-	new_poll.revents = 0;
-
-	user->set_user_IPadd(inet_ntoa((usadd.sin_addr)));
-	
-	if (fcntl(incofd, F_SETFL, O_NONBLOCK) == -1)
-	{
-		std::cout << "user fcntl failed" << std::endl;
-		return;
-	}
-
-	users.push_back(user);
-	fds.push_back(new_poll);
-
-	write(incofd, "Insert password\n", 17);	
-	std::cout  << Green << "client <" << incofd << "> is connect" << Reset << std::endl;
-}
-
-User *Server::find_user(int fd)
-{
-	for (std::vector<User *>::iterator i = users.begin(); i != users.end(); i++)
-		if ((*i)->get_user_fd() == fd)
-			return(*i);
-	return (NULL);
-}
-
 void Server::print_all(int Usfd,const std::string &mess, const std::string &nick)
 {
+	if (Usfd != fds[0].fd)  // stampa anche sul server: tenere???
+	{
+		write(1, Yellow , 6);
+		write(1, "[", 1);
+		write(1, Reset, 4);
+		write(1, nick.c_str(), nick.length());
+		write(1, Yellow, 6);
+		write(1, "] ", 2);
+		write(1, Reset, 4);
+		write(1, mess.c_str(), mess.length());
+		write(1, "\n", 1);
+	}
 	for (std::vector<User *>::iterator i = users.begin(); i != users.end(); i++)
 	{
 		if ((*i)->get_user_fd() != Usfd)
 		{
+			write((*i)->get_user_fd(), Yellow , 6);
+			write((*i)->get_user_fd(), "[", 1);
+			write((*i)->get_user_fd(), Reset, 4);
 			write((*i)->get_user_fd(), nick.c_str(), nick.length());
+			write((*i)->get_user_fd(), Yellow, 6);
+			write((*i)->get_user_fd(), "] ", 2);
+			write((*i)->get_user_fd(), Reset, 4);
 			write((*i)->get_user_fd(), mess.c_str(), mess.length());
+			write((*i)->get_user_fd(), "\n", 1);
 		}
 	}
 }
 
 void Server::receive_new_data(int fd)
 {
-	char buff[1024];
-	memset(buff, 0, sizeof(buff));
-
-	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1, 0);
 	User *i = find_user(fd);
+	ssize_t bytes = recv(fd, i->get_buff(), sizeof(i->get_buff()) - 1, 0);
 	if (bytes <= 0)
 	{
 		std::cout << Red << "user " << i->get_user_nick() << " disconnected"  << Reset << std::endl;
-		clear_user(fd);
+		rem_user(i->get_user_name());
 		close(fd);
 	}
 	std::string s;
 	switch (i->get_state())
 	{
 	case 0:
-			take_str(&s, buff);
+			take_str(&s, i->get_buff());
 			if (s != password)
 			{
 				i->increment_tries();
@@ -182,7 +155,7 @@ void Server::receive_new_data(int fd)
 				{
 					write(i->get_user_fd(), "too many tries\n", 15);
 					close(i->get_user_fd());
-					clear_user(fd);
+					rem_user(i->get_user_name());
 					return ;
 				}
 				write(i->get_user_fd(), "Insert password\n", 17);
@@ -196,7 +169,7 @@ void Server::receive_new_data(int fd)
 			}
 		break;
 	case 1:
-		take_str(&s, buff);
+		take_str(&s, i->get_buff());
 		if (is_user(s))
 		{
 			write(i->get_user_fd(), "name already taken\nselect a name\n", 34);
@@ -207,14 +180,15 @@ void Server::receive_new_data(int fd)
 		write(i->get_user_fd(), "select a nickname\n", 19);
 		break;
 	case 2:
-		take_str(&s, buff);
+		take_str(&s, i->get_buff());
 		i->set_user_nick(s);
 		i->increment_state();
 		break;
 	case 3:
-		buff[bytes] = '\0';
-		std::cout << Yellow << "[" << i->get_user_nick() << "] "  << Reset << buff;
-		print_all(fd, s, i->get_user_nick());
-		break;
+		take_str(&s, i->get_buff());
+		if (is_command(i, s))
+			do_command(i, s);
+		else
+			print_all(fd, s, i->get_user_nick());
 	}
 }

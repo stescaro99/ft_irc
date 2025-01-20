@@ -18,8 +18,9 @@ class Server
 		std::vector<struct pollfd>	fds;
 
 		void take_str(std::string *dest, char *src);
-		User *find_user(int fd);
 		void print_all(int ufd, const std::string &mess, const std::string &nick);
+		User *find_user(int fd) const;
+		Channel *find_channel(const std::string &channel) const;
 
 	public:
 		//Server(); utile?
@@ -35,7 +36,8 @@ class Server
 
 		static void signal_handler(int signum);
 
-		void add_user(const std::string &user, const std::string &nick, int ufd);
+		void do_command(User *user, std::string const &s);
+		void add_user();
 		void rem_user(const std::string &user);
 		void add_channel(Channel *ch);
 		void rem_channel(const std::string &channel);
@@ -44,6 +46,8 @@ class Server
 		// void recv_message(const std::string &user);
 		bool is_user(const std::string &user) const;
 		bool is_channel(const std::string &channel) const;
+		bool is_command(User *user, std::string const &s) const;
+		
 };
 
 #endif
