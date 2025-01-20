@@ -43,6 +43,7 @@ class User
 		//void u_send_message(const std::string &message);
 		//void u_print_messages();
 		////virtual void u_recv_message(const std::string &user); ???????
+		bool no_new_line();
 
 		std::string get_user_name() const;
 		std::string get_user_nick() const;

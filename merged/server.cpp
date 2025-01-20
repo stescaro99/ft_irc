@@ -85,34 +85,6 @@ void Server::rem_channel(const std::string &channel)
 	}
 }
 
-bool Server::is_user(const std::string &user) const
-{
-	for (std::vector<User*>::const_iterator it = users.begin(); it != users.end(); it++)
-	{
-		if ((*it)->get_user_name() == user)
-			return (true);
-	}
-	return (false);
-}
-
-bool Server::is_channel(const std::string &channel) const
-{
-	for (std::vector<Channel*>::const_iterator it = channels.begin(); it != channels.end(); it++)
-	{
-		if ((*it)->get_name() == channel)
-			return (true);
-	}
-	return (false);
-}
-
-bool Server::is_command(User *user, std::string const &s) const
-{
-	std::string cmd = s.substr(0, s.find(" "));
-	if (cmd == "/join" || cmd == "/leave" || cmd == "/create" || cmd == "/delete" || cmd == "/kick" || cmd == "/ban" || cmd == "/invite" || cmd == "/topic" || cmd == "/mode" || cmd == "/password" || cmd == "/addadmin" || cmd == "/unban" || cmd == "/remmessage" || cmd == "/leaveadmin" || cmd == "/acceptinvite")
-		return (true);
-	return (false);
-}
-
 void Server::do_command(User *user, std::string const &s)
 {
 	std::string cmd = s.substr(0, s.find(" "));

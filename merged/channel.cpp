@@ -93,16 +93,6 @@ void Channel::change_password(const std::string &password)
 	ch_password = password;
 }
 
-bool Channel::is_user_admin(const std::string &user) const
-{
-	for (size_t i = 0; i < ch_admin.size(); i++)
-	{
-		if (ch_admin[i] == user)
-			return (true);
-	}
-	return (false);
-}
-
 void Channel::ban_user(const std::string &user)
 {
 	if (ch_users.find(user) != ch_users.end())
@@ -152,12 +142,3 @@ void Channel::unban_user(const std::string &user)
 	}
 }
 
-bool Channel::is_user_invited(const std::string &user) const
-{
-	for (std::vector<std::string>::const_iterator it = ch_invited.begin(); it != ch_invited.end(); it++)
-	{
-		if (*it == user)
-			return (true);
-	}
-	return (false);
-}

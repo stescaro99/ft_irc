@@ -185,6 +185,8 @@ void Server::receive_new_data(int fd)
 		i->increment_state();
 		break;
 	case 3:
+		if (i->no_new_line())
+			break;
 		take_str(&s, i->get_buff());
 		if (is_command(i, s))
 			do_command(i, s);
