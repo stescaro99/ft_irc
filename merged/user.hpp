@@ -43,7 +43,6 @@ class User
 		//void u_send_message(const std::string &message);
 		//void u_print_messages();
 		////virtual void u_recv_message(const std::string &user); ???????
-		bool no_new_line();
 
 		std::string get_user_name() const;
 		std::string get_user_nick() const;
@@ -59,6 +58,8 @@ class User
 		void set_user_state(short st);
 		void increment_tries();
 		void increment_state();
+
+		void memset_buff();
 };
 
 #endif

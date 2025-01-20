@@ -24,7 +24,6 @@ User::User(Server &server, int fd) : user_name(""), user_nickname(""), user_fd(f
 {
 	if (user_fd == -1)
 		throw(std::runtime_error("failed to create user"));
-	memset(buff, 0, sizeof(buff));
 }
 
 User::~User()

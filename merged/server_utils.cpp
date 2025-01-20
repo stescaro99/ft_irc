@@ -134,7 +134,8 @@ void Server::print_all(int Usfd,const std::string &mess, const std::string &nick
 void Server::receive_new_data(int fd)
 {
 	User *i = find_user(fd);
-	ssize_t bytes = recv(fd, i->get_buff(), sizeof(i->get_buff()) - 1, 0);
+	i->memset_buff();
+	ssize_t bytes = recv(fd, i->get_buff(), 1024, 0);
 	if (bytes <= 0)
 	{
 		std::cout << Red << "user " << i->get_user_nick() << " disconnected"  << Reset << std::endl;
@@ -163,7 +164,6 @@ void Server::receive_new_data(int fd)
 			}
 			else
 			{
-				std::cout << "giusto" << std::endl;
 				write(i->get_user_fd(), "select a name\n", 15);
 				i->increment_state();
 			}
@@ -183,14 +183,41 @@ void Server::receive_new_data(int fd)
 		take_str(&s, i->get_buff());
 		i->set_user_nick(s);
 		i->increment_state();
+		write(i->get_user_fd(), "\033[2J\033[H", 8);
 		break;
 	case 3:
-		if (i->no_new_line())
-			break;
 		take_str(&s, i->get_buff());
 		if (is_command(i, s))
 			do_command(i, s);
 		else
 			print_all(fd, s, i->get_user_nick());
 	}
+}
+
+bool Server::is_user(const std::string &user) const
+{
+	for (std::vector<User*>::const_iterator it = users.begin(); it != users.end(); it++)
+	{
+		if ((*it)->get_user_name() == user)
+			return (true);
+	}
+	return (false);
+}
+
+bool Server::is_channel(const std::string &channel) const
+{
+	for (std::vector<Channel*>::const_iterator it = channels.begin(); it != channels.end(); it++)
+	{
+		if ((*it)->get_name() == channel)
+			return (true);
+	}
+	return (false);
+}
+
+bool Server::is_command(User *user, std::string const &s) const
+{
+	std::string cmd = s.substr(0, s.find(" "));
+	if (cmd == "/join" || cmd == "/leave" || cmd == "/create" || cmd == "/delete" || cmd == "/kick" || cmd == "/ban" || cmd == "/invite" || cmd == "/topic" || cmd == "/mode" || cmd == "/password" || cmd == "/addadmin" || cmd == "/unban" || cmd == "/remmessage" || cmd == "/leaveadmin" || cmd == "/acceptinvite")
+		return (true);
+	return (false);
 }

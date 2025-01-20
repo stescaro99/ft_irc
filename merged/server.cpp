@@ -85,15 +85,23 @@ void Server::rem_channel(const std::string &channel)
 	}
 }
 
-void Server::do_command(User *user, std::string const &s)
+void Server::do_command(User *user, std::string const &s) // da rivedere
 {
 	std::string cmd = s.substr(0, s.find(" "));
-	printf("cmd: %s\n", cmd.c_str());
+	printf("s.size() = %lu\n", s.size());
+	printf("s = %s\n", s.c_str());
+	if (s.find(" ") == std::string::npos)
+	{
+		printf("comando non valido\n");
+		//errore comando non valido
+		return ;
+	}
 	std::string tmp = s.substr(s.find(" ") + 1);
+	printf("tmp.size() = %lu\n", tmp.size());
 	if (cmd == "/join")
 	{
 		std::string channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string password = tmp.substr(channel_name.size() + 1);
+		std::string password = tmp.substr(tmp.find(" ") + 1);
 		Channel *ch = find_channel(channel_name);
 		if (ch)
 			user->join_channel(ch, password);
@@ -116,7 +124,13 @@ void Server::do_command(User *user, std::string const &s)
 	else if (cmd == "/create")
 	{
 		std::string channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string password = tmp.substr(channel_name.size() + 1);
+		std::string password;
+		if (channel_name.find(" ") == std::string::npos)
+		{
+			password = "";
+		}
+		else
+			password = tmp.substr(channel_name.find(" ") + 1);
 
 		if (is_channel(channel_name))
 		{
@@ -124,6 +138,10 @@ void Server::do_command(User *user, std::string const &s)
 		}
 		else
 			user->create_channel(channel_name, password);
+		for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); it++)
+		{
+			std::cout << (*it)->get_name() << std::endl;
+		}
 	}
 	else if (cmd == "/delete")
 	{
@@ -139,7 +157,7 @@ void Server::do_command(User *user, std::string const &s)
 	else if (cmd == "/kick")
 	{
 		std::string channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string user_name = tmp.substr(channel_name.size() + 1);
+		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
 			user->kick_user(user_name, channel_name);
@@ -151,7 +169,7 @@ void Server::do_command(User *user, std::string const &s)
 	else if (cmd == "/ban")
 	{
 		std::string channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string user_name = tmp.substr(channel_name.size() + 1);
+		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
 			user->ban_user(user_name, channel_name);
@@ -163,7 +181,7 @@ void Server::do_command(User *user, std::string const &s)
 	else if (cmd == "/invite")
 	{
 		std::string channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string user_name = tmp.substr(channel_name.size() + 1);
+		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
 			user->invite_user(user_name, channel_name);
@@ -175,7 +193,7 @@ void Server::do_command(User *user, std::string const &s)
 	else if (cmd == "/topic")
 	{
 		std::string channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string topic = tmp.substr(channel_name.size() + 1);
+		std::string topic = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
 			user->change_topic(topic, channel_name);
@@ -187,7 +205,7 @@ void Server::do_command(User *user, std::string const &s)
 	else if (cmd == "/mode")
 	{
 		std::string channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string m = tmp.substr(channel_name.size() + 1);
+		std::string m = tmp.substr(tmp.find(" ") + 1);
 		if (m.size() != 1)
 		{
 			//errore comando non valido
@@ -205,7 +223,7 @@ void Server::do_command(User *user, std::string const &s)
 	else if (cmd == "/password")
 	{
 		std::string channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string password = tmp.substr(channel_name.size() + 1);
+		std::string password = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
 			user->change_password(password, channel_name);
@@ -217,7 +235,7 @@ void Server::do_command(User *user, std::string const &s)
 	else if (cmd == "/addadmin")
 	{
 		std::string channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string user_name = tmp.substr(channel_name.size() + 1);
+		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
 			user->add_admin(user_name, channel_name);
@@ -229,7 +247,7 @@ void Server::do_command(User *user, std::string const &s)
 	else if (cmd == "/unban")
 	{
 		std::string channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string user_name = tmp.substr(channel_name.size() + 1);
+		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
 			user->unban_user(user_name, channel_name);
