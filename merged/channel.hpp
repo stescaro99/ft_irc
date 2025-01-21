@@ -32,7 +32,6 @@ class Channel
 		void change_topic(const std::string &topic);					
 		void change_mode(char mode);							
 		void change_password(const std::string &password);				
-		bool is_user_admin(const std::string &user) const;
 		void ban_user(const std::string &user);
 		void invite_user(const std::string &user);									
 		void unban_user(const std::string &user);
@@ -43,7 +42,9 @@ class Channel
 		char get_mode() const;
 		std::string get_name() const;
 
+		bool is_user_admin(const std::string &user) const;
 		bool is_user_invited(const std::string &user) const;
+		bool is_user_inside(const std::string &user) const;
 };
 
 #endif

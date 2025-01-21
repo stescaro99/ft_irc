@@ -48,6 +48,7 @@ class Server
 		bool is_nick(const std::string &nick) const;
 		bool is_channel(const std::string &channel) const;
 		bool is_command(User *user, std::string const &s) const;
+		std::string convert_to_username(std::string const &nick) const;
 		
 };
 

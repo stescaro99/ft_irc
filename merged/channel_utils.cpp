@@ -19,3 +19,13 @@ bool Channel::is_user_admin(const std::string &user) const
 	}
 	return (false);
 }
+
+bool Channel::is_user_inside(const std::string &user) const
+{
+	for (std::map<std::string, User*>::const_iterator it = ch_users.begin(); it != ch_users.end(); it++)
+	{
+		if (it->first == user)
+			return (true);
+	}
+	return (false);
+}

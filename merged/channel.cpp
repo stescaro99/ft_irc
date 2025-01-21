@@ -33,7 +33,7 @@ void Channel::rem_user_from_channel(const std::string &user, bool is_kick)
 			ch_users.erase(user);
 		}
 	}
-	if (ch_admin.size() == 1 && ch_admin[0] == user)
+	if (is_user_admin(user))
 		rem_admin(user);
 	if (ch_users.find(user) != ch_users.end())
 		ch_users.erase(user);
@@ -54,9 +54,7 @@ void Channel::rem_admin(const std::string &user)
 		return ;
 	if (is_user_admin(user))
 	{
-		if (ch_admin.size() == 1 && (*(ch_users[0])).get_user_name() != user)
-			add_admin((*(ch_users[0])).get_user_name());
-		else if (ch_admin.size() == 1)
+		if (ch_admin.size() == 1)
 		{
 			for (std::map<std::string, User*>::iterator it = ch_users.begin(); it != ch_users.end(); it++)
 			{

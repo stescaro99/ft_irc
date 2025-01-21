@@ -18,6 +18,7 @@ class User
 		short 							state;
 		short 							pass_tries;
 		char							buff[1024];
+		//std::vector<std::string>		history;
 	
 	public:
 		User(Server &server, int fd);

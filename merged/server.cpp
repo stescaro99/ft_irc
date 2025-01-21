@@ -2,7 +2,6 @@
 
 void Server::add_user()
 {
-	std::string name, UsPassword, nick;
 	struct sockaddr_in	usadd;
 	struct pollfd		new_poll;
 	socklen_t			len = sizeof(usadd);
@@ -88,34 +87,35 @@ void Server::rem_channel(const std::string &channel)
 void Server::do_command(User *user, std::string const &s) // da rivedere
 {
 	std::string cmd = s.substr(0, s.find(" "));
-	printf("s.size() = %lu\n", s.size());
-	printf("s = %s\n", s.c_str());
 	std::string channel_name;
+
 	if (s.find(" ") == std::string::npos)
 	{
 		printf("comando non valido\n");
-		//errore comando non valido
 		return ;
 	}
 	std::string tmp = s.substr(s.find(" ") + 1);
-	printf("tmp.size() = %lu\n", tmp.size());
 	if (cmd == "/join")
 	{
-		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string password = tmp.substr(tmp.find(" ") + 1);
-		Channel *ch = find_channel(channel_name);
-		if (ch)
-			user->join_channel(ch, password);
+		channel_name = tmp.substr(0, channel_name.find(" "));
+		std::string password;
+		if (channel_name.find(" ") == std::string::npos || channel_name.find(" ") + 1 == std::string::npos)
+			password = "";
+		else
+			password = tmp.substr(tmp.find(" ") + 1);
+		
+		if (is_channel(channel_name))
+			user->join_channel(find_channel(channel_name), password);
 		else
 		{
-			//errore canale non esistente
+			user->create_channel(channel_name, password);
 		}
 	}
 	else if (cmd == "/leave")
 	{
-		/*std::string*/ channel_name = tmp;
-		Channel *ch = find_channel(channel_name);
-		if (ch)
+		channel_name = tmp;
+
+		if (is_channel(channel_name))
 			user->leave_channel(channel_name);
 		else
 		{
@@ -124,29 +124,24 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/create")
 	{
-		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
+		channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string password;
-		if (channel_name.find(" ") == std::string::npos)
-		{
+		if (channel_name.find(" ") == std::string::npos || channel_name.find(" ") + 1 == std::string::npos)
 			password = "";
-		}
 		else
 			password = tmp.substr(channel_name.find(" ") + 1);
 
 		if (is_channel(channel_name))
 		{
 			//errore canale gia' esistente
+			return ;
 		}
 		else
 			user->create_channel(channel_name, password);
-		for (std::vector<Channel*>::iterator it = channels.begin(); it != channels.end(); it++)
-		{
-			std::cout << (*it)->get_name() << std::endl;
-		}
 	}
 	else if (cmd == "/delete")
 	{
-		/*std::string*/ channel_name = tmp;
+		channel_name = tmp;
 
 		if (is_channel(channel_name))
 			user->delete_channel(channel_name);
@@ -157,7 +152,12 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/kick")
 	{
-		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
+		channel_name = tmp.substr(0, channel_name.find(" "));
+		if (channel_name.find(" ") == std::string::npos || channel_name.find(" ") + 1 == std::string::npos)
+		{
+			//errore comando non valido
+			return ;
+		}
 		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -169,7 +169,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/ban")
 	{
-		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
+		channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -181,7 +181,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/invite")
 	{
-		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
+		channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -193,7 +193,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/topic")
 	{
-		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
+		channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string topic = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -205,7 +205,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/mode")
 	{
-		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
+		channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string m = tmp.substr(tmp.find(" ") + 1);
 		if (m.size() != 1)
 		{
@@ -223,7 +223,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/password")
 	{
-		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
+		channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string password = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -235,7 +235,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/addadmin")
 	{
-		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
+		channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -247,7 +247,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/unban")
 	{
-		/*std::string*/ channel_name = tmp.substr(0, channel_name.find(" "));
+		channel_name = tmp.substr(0, channel_name.find(" "));
 		std::string user_name = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
@@ -259,7 +259,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/leaveadmin")
 	{
-		/*std::string*/ channel_name = tmp;
+		channel_name = tmp;
 
 		if (is_channel(channel_name))
 			user->leave_admin(channel_name);
@@ -270,7 +270,7 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	}
 	else if (cmd == "/acceptinvite")
 	{
-		/*std::string*/ channel_name = tmp;
+		channel_name = tmp;
 
 		if (is_channel(channel_name))
 			user->accept_invite(channel_name);

@@ -150,7 +150,6 @@ void Server::receive_new_data(int fd)
 			if (s != password)
 			{
 				i->increment_tries();
-				std::cout << i->get_tries() << password << std::endl;
 				write(i->get_user_fd(), "Incorrect password\n", 20);
 				if (i->get_tries() == 3)
 				{
@@ -235,4 +234,14 @@ bool Server::is_command(User *user, std::string const &s) const
 	if (cmd == "/join" || cmd == "/leave" || cmd == "/create" || cmd == "/delete" || cmd == "/kick" || cmd == "/ban" || cmd == "/invite" || cmd == "/topic" || cmd == "/mode" || cmd == "/password" || cmd == "/addadmin" || cmd == "/unban" || cmd == "/remmessage" || cmd == "/leaveadmin" || cmd == "/acceptinvite")
 		return (true);
 	return (false);
+}
+
+std::string Server::convert_to_username(std::string const &nick) const
+{
+	for (std::vector<User*>::const_iterator it = users.begin(); it != users.end(); it++)
+	{
+		if ((*it)->get_user_nick() == nick)
+			return ((*it)->get_user_name());
+	}
+	return ("");
 }
