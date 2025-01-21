@@ -292,12 +292,14 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 
 void Server::do_command(User *user, std::string const &s)
 {
-	std::string tmp = s.substr(0, s.find("#") + 1);
+	std::string tmp = s.substr(0, s.find("#"));
 	std::string channel_name = tmp.substr(0, tmp.find(" "));
-	std::string password = tmp.substr(tmp.find(" ") + 1);
+	std::string password = "";
 
 	if (is_channel(channel_name))
 		user->join_channel(find_channel(channel_name), password);
 	else
+	{
 		user->create_channel(channel_name, password);
+	}
 }

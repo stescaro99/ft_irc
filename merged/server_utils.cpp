@@ -255,10 +255,11 @@ bool Server::is_channel(const std::string &channel) const
 
 bool Server::is_command(User *user, std::string const &s) const
 {
-	/* std::string cmd = s.substr(0, s.find(" "));
+	std::string cmd = s.substr(0, s.find(" "));
 	if (cmd == "/join" || cmd == "/leave" || cmd == "/create" || cmd == "/delete" || cmd == "/kick" || cmd == "/ban" || cmd == "/invite" || cmd == "/topic" || cmd == "/mode" || cmd == "/password" || cmd == "/addadmin" || cmd == "/unban" || cmd == "/remmessage" || cmd == "/leaveadmin" || cmd == "/acceptinvite")
 		return (true);
-	if (s.substr(0, s.find("#") + 1) == "JOIN #")*/
+	if (s.substr(0, s.find("#") + 1) == "JOIN #")
+		return (true);
 	return (false);
 }
 
