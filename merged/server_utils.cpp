@@ -243,5 +243,7 @@ std::string Server::convert_to_username(std::string const &nick) const
 		if ((*it)->get_user_nick() == nick)
 			return ((*it)->get_user_name());
 	}
+	if (is_user(nick))
+		return (nick);
 	return ("");
 }

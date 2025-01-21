@@ -158,10 +158,10 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 			//errore comando non valido
 			return ;
 		}
-		std::string user_name = tmp.substr(tmp.find(" ") + 1);
+		std::string nick = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
-			user->kick_user(user_name, channel_name);
+			user->kick_user(convert_to_username(nick), channel_name);
 		else
 		{
 			//errore canale non esistente
@@ -170,10 +170,10 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	else if (cmd == "/ban")
 	{
 		channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string user_name = tmp.substr(tmp.find(" ") + 1);
+		std::string nick = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
-			user->ban_user(user_name, channel_name);
+			user->ban_user(convert_to_username(nick), channel_name);
 		else
 		{
 			//errore canale non esistente
@@ -182,10 +182,10 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	else if (cmd == "/invite")
 	{
 		channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string user_name = tmp.substr(tmp.find(" ") + 1);
+		std::string nick = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
-			user->invite_user(user_name, channel_name);
+			user->invite_user(convert_to_username(nick), channel_name);
 		else
 		{
 			//errore canale non esistente
@@ -236,10 +236,10 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	else if (cmd == "/addadmin")
 	{
 		channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string user_name = tmp.substr(tmp.find(" ") + 1);
+		std::string nick = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
-			user->add_admin(user_name, channel_name);
+			user->add_admin(convert_to_username(nick), channel_name);
 		else
 		{
 			//errore canale non esistente
@@ -248,10 +248,15 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	else if (cmd == "/unban")
 	{
 		channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string user_name = tmp.substr(tmp.find(" ") + 1);
+		if (channel_name.find(" ") == std::string::npos || channel_name.find(" ") + 1 == std::string::npos)
+		{
+			//errore comando non valido
+			return ;
+		}
+		std::string nick = tmp.substr(tmp.find(" ") + 1);
 
 		if (is_channel(channel_name))
-			user->unban_user(user_name, channel_name);
+			user->unban_user(convert_to_username(nick), channel_name);
 		else
 		{
 			//errore canale non esistente
@@ -284,18 +289,3 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 		//rem_message(); ?????
 	} */
 }
-/* void Server::print_message(int fd, std::string nick, const std::string &message)
-{
-	for (std::vector<User*>::iterator it = users.begin(); it != users.end(); it++)
-	{
-		if ((*it)->get_user_fd() != fd)
-		{
-			//write((*it)->get_user_fd(), "\033[2K", 4); ??? guardare se si riesce a salvare la parte iniziale della riga
-			write((*it)->get_user_fd(), "\033[1m", 5);
-			write((*it)->get_user_fd(), nick.c_str(), nick.size());
-			write((*it)->get_user_fd(), ": ", 2);
-			write((*it)->get_user_fd(), "\033[0m", 5);
-			write((*it)->get_user_fd(), message.c_str(), message.size());
-		}
-	}
-} */
