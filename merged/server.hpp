@@ -21,6 +21,7 @@ class Server
 		void print_all(int ufd, const std::string &mess, const std::string &nick);
 		User *find_user(int fd) const;
 		Channel *find_channel(const std::string &channel) const;
+		void konversations(short i, std::string &s);
 
 	public:
 		//Server(); utile?

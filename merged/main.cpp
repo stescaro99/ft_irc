@@ -7,14 +7,14 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	std::stringstream ss;
-	ss << argv[2];
+	ss << argv[1];
 	short port;
 	ss >> port;
 	if (ss.fail())
 	{
 		return 1;
 	}
-	Server server(argv[1], port);
+	Server server(argv[2], port);
 	std::cout <<"----SERVER----" << port <<std::endl;
 
 	try

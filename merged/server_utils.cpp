@@ -131,6 +131,35 @@ void Server::print_all(int Usfd,const std::string &mess, const std::string &nick
 	}
 }
 
+void Server::konversations(short i, std::string &s)
+{
+	std::string tmp;
+	switch (i)
+	{
+		case 0:
+		{
+			tmp = s.substr(0, 6);
+			if (tmp == "PASS :")
+				s = s.substr(6);
+			break ;
+		}
+		case 1:
+		{
+			tmp = s.substr(0, 5);
+			if (tmp == "NICK ")
+				s = s.substr(5);
+			break ;
+		}
+		case 2:
+		{
+			tmp = s.substr(0, 5);
+			if (tmp == "USER " && s.find(":") != std::string::npos)
+				s = s.substr(s.find(":") + 1);
+			break ;
+		}
+	}
+}
+
 void Server::receive_new_data(int fd)
 {
 	User *i = find_user(fd);
@@ -147,6 +176,7 @@ void Server::receive_new_data(int fd)
 	{
 	case 0:
 			take_str(&s, i->get_buff());
+			konversations(i->get_state(), s);
 			if (s != password)
 			{
 				i->increment_tries();
@@ -163,29 +193,30 @@ void Server::receive_new_data(int fd)
 			}
 			else
 			{
-				write(i->get_user_fd(), "select a name\n", 15);
+				write(i->get_user_fd(), "select a nickname\n", 15);
 				i->increment_state();
 			}
 		break;
 	case 1:
 		take_str(&s, i->get_buff());
-		if (is_user(s))
-		{
-			write(i->get_user_fd(), "name already taken\nselect a name\n", 34);
-			break;
-		}
-		i->set_user_name(s);
-		i->increment_state();
-		write(i->get_user_fd(), "select a nickname\n", 19);
-		break;
-	case 2:
-		take_str(&s, i->get_buff());
+		konversations(i->get_state(), s);
 		if (is_nick(s))
 		{
 			write(i->get_user_fd(), "name already taken\nselect a nickname\n", 34);
 			break;
 		}
 		i->set_user_nick(s);
+		i->increment_state();
+		write(i->get_user_fd(), "select a name\n", 15);
+	case 2:
+		take_str(&s, i->get_buff());
+		konversations(i->get_state(), s);
+		if (is_user(s))
+		{
+			write(i->get_user_fd(), "name already taken\nselect a name\n", 34);
+			break;
+		}
+		i->set_user_name(s);
 		i->increment_state();
 		write(i->get_user_fd(), "\033[2J\033[H", 8);
 		break;
@@ -230,9 +261,10 @@ bool Server::is_channel(const std::string &channel) const
 
 bool Server::is_command(User *user, std::string const &s) const
 {
-	std::string cmd = s.substr(0, s.find(" "));
+	/* std::string cmd = s.substr(0, s.find(" "));
 	if (cmd == "/join" || cmd == "/leave" || cmd == "/create" || cmd == "/delete" || cmd == "/kick" || cmd == "/ban" || cmd == "/invite" || cmd == "/topic" || cmd == "/mode" || cmd == "/password" || cmd == "/addadmin" || cmd == "/unban" || cmd == "/remmessage" || cmd == "/leaveadmin" || cmd == "/acceptinvite")
 		return (true);
+	if (s.substr(0, s.find("#") + 1) == "JOIN #")*/
 	return (false);
 }
 

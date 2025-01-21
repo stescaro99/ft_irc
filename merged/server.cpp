@@ -83,7 +83,7 @@ void Server::rem_channel(const std::string &channel)
 		}
 	}
 }
-
+/* 
 void Server::do_command(User *user, std::string const &s) // da rivedere
 {
 	std::string cmd = s.substr(0, s.find(" "));
@@ -284,8 +284,20 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 			//errore canale non esistente
 		}
 	}
-	/* else if (s == "/remmessage")
-	{
-		//rem_message(); ?????
-	} */
+	//  else if (s == "/remmessage")
+	// {
+	// 	//rem_message(); ?????
+	// } 
+} */
+
+void Server::do_command(User *user, std::string const &s)
+{
+	std::string tmp = s.substr(0, s.find("#") + 1);
+	std::string channel_name = tmp.substr(0, tmp.find(" "));
+	std::string password = tmp.substr(tmp.find(" ") + 1);
+
+	if (is_channel(channel_name))
+		user->join_channel(find_channel(channel_name), password);
+	else
+		user->create_channel(channel_name, password);
 }
