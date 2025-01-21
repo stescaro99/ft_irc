@@ -104,29 +104,23 @@ void Server::print_all(int Usfd,const std::string &mess, const std::string &nick
 {
 	if (Usfd != fds[0].fd)  // stampa anche sul server: tenere???
 	{
-		write(1, Yellow , 6);
-		write(1, "[", 1);
-		write(1, Reset, 4);
-		write(1, nick.c_str(), nick.length());
-		write(1, Yellow, 6);
-		write(1, "] ", 2);
-		write(1, Reset, 4);
-		write(1, mess.c_str(), mess.length());
-		write(1, "\n", 1);
+		std::cout << Yellow << "[" << Reset << nick;
+		std::cout << Yellow << "] " << Reset << mess << std::endl;
 	}
 	for (std::vector<User *>::iterator i = users.begin(); i != users.end(); i++)
 	{
 		if ((*i)->get_user_fd() != Usfd)
 		{
-			write((*i)->get_user_fd(), Yellow , 6);
-			write((*i)->get_user_fd(), "[", 1);
-			write((*i)->get_user_fd(), Reset, 4);
-			write((*i)->get_user_fd(), nick.c_str(), nick.length());
-			write((*i)->get_user_fd(), Yellow, 6);
-			write((*i)->get_user_fd(), "] ", 2);
-			write((*i)->get_user_fd(), Reset, 4);
-			write((*i)->get_user_fd(), mess.c_str(), mess.length());
-			write((*i)->get_user_fd(), "\n", 1);
+			// send((*i)->get_user_fd(), Yellow , 6, MSG_DONTWAIT);
+			// send((*i)->get_user_fd(), "[", 1, MSG_DONTWAIT);
+			// send((*i)->get_user_fd(), Reset, 4, MSG_DONTWAIT);
+			send((*i)->get_user_fd(), nick.c_str(), nick.length(), MSG_DONTWAIT);
+			// send((*i)->get_user_fd(), Yellow, 6, MSG_DONTWAIT);
+			// send((*i)->get_user_fd(), "] ", 2, MSG_DONTWAIT);
+			send((*i)->get_user_fd(), " ", 1, MSG_DONTWAIT);  //tmp
+			// send((*i)->get_user_fd(), Reset, 4, MSG_DONTWAIT);
+			send((*i)->get_user_fd(), mess.c_str(), mess.length(), MSG_DONTWAIT);
+			// send((*i)->get_user_fd(), "\n", 1, MSG_DONTWAIT);
 		}
 	}
 }
@@ -180,20 +174,20 @@ void Server::receive_new_data(int fd)
 			if (s != password)
 			{
 				i->increment_tries();
-				write(i->get_user_fd(), "Incorrect password\n", 20);
+				send(i->get_user_fd(), "Incorrect password\n", 20, MSG_DONTWAIT);
 				if (i->get_tries() == 3)
 				{
-					write(i->get_user_fd(), "too many tries\n", 15);
+					send(i->get_user_fd(), "too many tries\n", 15, MSG_DONTWAIT);
 					close(i->get_user_fd());
 					rem_user(i->get_user_name());
 					return ;
 				}
-				write(i->get_user_fd(), "Insert password\n", 17);
+				send(i->get_user_fd(), "Insert password\n", 17, MSG_DONTWAIT);
 				break ;
 			}
 			else
 			{
-				write(i->get_user_fd(), "select a nickname\n", 15);
+				send(i->get_user_fd(), "select a nickname\n", 19, MSG_DONTWAIT);
 				i->increment_state();
 			}
 		break;
@@ -202,23 +196,23 @@ void Server::receive_new_data(int fd)
 		konversations(i->get_state(), s);
 		if (is_nick(s))
 		{
-			write(i->get_user_fd(), "name already taken\nselect a nickname\n", 34);
+			send(i->get_user_fd(), "name already taken\nselect a nickname\n", 34, MSG_DONTWAIT);
 			break;
 		}
 		i->set_user_nick(s);
 		i->increment_state();
-		write(i->get_user_fd(), "select a name\n", 15);
+		send(i->get_user_fd(), "select a name\n", 15, MSG_DONTWAIT);
 	case 2:
 		take_str(&s, i->get_buff());
 		konversations(i->get_state(), s);
 		if (is_user(s))
 		{
-			write(i->get_user_fd(), "name already taken\nselect a name\n", 34);
+			send(i->get_user_fd(), "name already taken\nselect a name\n", 34, MSG_DONTWAIT);
 			break;
 		}
 		i->set_user_name(s);
 		i->increment_state();
-		write(i->get_user_fd(), "\033[2J\033[H", 8);
+		send(i->get_user_fd(), "\033[2J\033[H", 8, MSG_DONTWAIT);
 		break;
 	case 3:
 		take_str(&s, i->get_buff());

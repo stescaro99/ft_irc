@@ -30,7 +30,7 @@ void Server::add_user()
 	users.push_back(user);
 	fds.push_back(new_poll);
 
-	write(incofd, "Insert password\n", 17);	
+	send(incofd, "Insert password\n", 17, MSG_DONTWAIT);	
 	std::cout  << Green << "client <" << incofd << "> is connect" << Reset << std::endl;
 }
 
