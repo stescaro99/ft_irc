@@ -40,11 +40,6 @@ int User::get_user_fd() const
 	return (user_fd);
 }
 
-std::string User::get_IPadd() const
-{
-	return (IPadd);
-}
-
 short User::get_state() const
 {
 	return (state);

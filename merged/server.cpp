@@ -14,13 +14,13 @@ void Server::add_user()
 		delete user;
 		return;
 	}
-
+	std::string welcome = server_name + " INFO :Hello, welcome to the server\r\n";
+	if (send(incofd, welcome.c_str(), welcome.length(), 0) != 47)
+			throw(std::runtime_error("failed to send welcome message"));
 	new_poll.fd = incofd;
 	new_poll.events = POLLIN;
 	new_poll.revents = 0;
 
-	user->set_user_IPadd(inet_ntoa((usadd.sin_addr)));
-	
 	if (fcntl(incofd, F_SETFL, O_NONBLOCK) == -1)
 	{
 		std::cout << "user fcntl failed" << std::endl;

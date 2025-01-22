@@ -10,11 +10,6 @@ void User::set_user_nick(const std::string &nick)
 	user_nickname = nick;
 }
 
-void User::set_user_IPadd(const std::string &ipadd)
-{
-	IPadd = ipadd;
-}
-
 void User::set_user_state(short st)
 {
 	state = st;

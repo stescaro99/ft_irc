@@ -1,25 +1,5 @@
 #include "standard_libraries.hpp"
 
-/* void Server::clear_user(int fd)
-{
-	for (size_t i = 0; i < fds.size(); i++)
-	{
-		if (fds[i].fd == fd)
-		{
-			fds.erase(fds.begin() + i);
-			break;
-		}
-	}
-	for (size_t i = 0; i < users.size(); i++)
-	{
-		if (users[i]->get_user_fd() == fd)
-		{
-			users.erase(users.begin() + i);
-			break;
-		}
-	}
-} */
-
 bool Server::Signal = false;
 
 void Server::signal_handler(int signum)
@@ -166,6 +146,7 @@ void Server::receive_new_data(int fd)
 		close(fd);
 	}
 	std::string s;
+
 	switch (i->get_state())
 	{
 	case 0:
@@ -212,7 +193,7 @@ void Server::receive_new_data(int fd)
 		}
 		i->set_user_name(s);
 		i->increment_state();
-		send(i->get_user_fd(), "\033[2J\033[H", 8, MSG_DONTWAIT);
+		//send(i->get_user_fd(), "\033[2J\033[H", 8, MSG_DONTWAIT);
 		break;
 	case 3:
 		take_str(&s, i->get_buff());
