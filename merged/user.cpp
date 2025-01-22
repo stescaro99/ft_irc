@@ -151,6 +151,8 @@ void User::unban_user(const std::string &user, const std::string &channel)
 void User::rem_message(const std::string &channel, const std::string &message)
 {
 	// non so se si puo' fare
+	(void)channel;
+	(void)message;
 }
 
 void User::leave_admin(const std::string &channel)
