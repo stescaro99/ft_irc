@@ -25,7 +25,7 @@ class Channel
 
 		void add_user_to_channel(User *user, const std::string &password);
 		void rem_user_from_channel(const std::string &user, bool is_kick);
-		void c_send_message(const std::string &user, const std::string &message);
+		void c_send_message(const std::string &user, const std::string &message, bool only_usr);
 		void c_print_messages();
 		void add_admin(const std::string &user);						
 		void rem_admin(const std::string &user);						
@@ -41,10 +41,12 @@ class Channel
 		size_t get_admins_count() const;
 		char get_mode() const;
 		std::string get_name() const;
+		std::string get_topic() const;
 
 		bool is_user_admin(const std::string &user) const;
 		bool is_user_invited(const std::string &user) const;
 		bool is_user_inside(const std::string &user) const;
+		std::string get_users_list() const;
 };
 
 #endif

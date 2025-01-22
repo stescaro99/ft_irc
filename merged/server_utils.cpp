@@ -216,10 +216,15 @@ void Server::receive_new_data(int fd)
 		break;
 	case 3:
 		take_str(&s, i->get_buff());
-		if (is_command(i, s))
-			do_command(i, s);
-		else
-			print_all(fd, s, i->get_user_nick());
+		std::vector<std::string> v;
+		split(s, " ", v);
+		short cmd = is_command(v[0]);
+		if (cmd)
+		{
+			do_command(cmd, i, v);
+			break;
+		}
+		print_all(fd, s, i->get_user_nick()); //add channel?
 	}
 }
 
@@ -253,16 +258,6 @@ bool Server::is_channel(const std::string &channel) const
 	return (false);
 }
 
-bool Server::is_command(User *user, std::string const &s) const
-{
-	std::string cmd = s.substr(0, s.find(" "));
-	if (cmd == "/join" || cmd == "/leave" || cmd == "/create" || cmd == "/delete" || cmd == "/kick" || cmd == "/ban" || cmd == "/invite" || cmd == "/topic" || cmd == "/mode" || cmd == "/password" || cmd == "/addadmin" || cmd == "/unban" || cmd == "/remmessage" || cmd == "/leaveadmin" || cmd == "/acceptinvite")
-		return (true);
-	if (s.substr(0, s.find("#") + 1) == "JOIN #")
-		return (true);
-	return (false);
-}
-
 std::string Server::convert_to_username(std::string const &nick) const
 {
 	for (std::vector<User*>::const_iterator it = users.begin(); it != users.end(); it++)
@@ -273,4 +268,29 @@ std::string Server::convert_to_username(std::string const &nick) const
 	if (is_user(nick))
 		return (nick);
 	return ("");
+}
+
+void Server::split(std::string s, const std::string &delim, std::vector<std::string> &v)
+{
+	size_t start = 0;
+	std::string tmp;
+
+	while ((start = s.find(delim)) != std::string::npos)
+	{
+		if(s.find(":") == 0)
+			break ;
+		tmp = s.substr(0, start);
+		if (tmp.size() > 0)
+			v.push_back(tmp);
+		s.erase(0, start + delim.length());
+	}
+	if (!s.empty())
+		v.push_back(s);
+}
+
+short Server::is_command(const std::string &s) const
+{
+	if (s == "JOIN")
+		return (1);
+	return (0);
 }

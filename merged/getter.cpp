@@ -25,6 +25,11 @@ std::string Channel::get_name() const
 	return (ch_name);
 }
 
+std::string Channel::get_topic() const
+{
+	return (ch_topic);
+}
+
 std::string User::get_user_nick() const
 {
 	return (user_nickname);
@@ -53,6 +58,11 @@ short User::get_tries() const
 char *User::get_buff()
 {
 	return (buff);
+}
+
+std::string User::get_user_host() const
+{
+	return (user_host);
 }
 
 User *Server::find_user(int fd) const

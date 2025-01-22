@@ -10,11 +10,6 @@ void User::change_my_nickname(const std::string &nickname)
 void User::create_channel(const std::string &channel, const std::string &password)
 {
 	printf("%screate channel%s\n", Blue, Reset);
-	if (server.is_channel(channel))
-	{
-		printf("%schannel already exists%s\n", Red, Reset);
-		return ;
-	}
 	Channel *nc = new Channel(channel, this);
 
 	if (password != "")
@@ -22,8 +17,8 @@ void User::create_channel(const std::string &channel, const std::string &passwor
 		nc->change_password(password);
 		nc->change_mode('p');
 	}
-	user_channels.insert(std::pair<std::string, Channel*>(channel, nc));
 	server.add_channel(nc);
+	user_channels[channel] = nc;
 	printf("%schannel created%s\n", Green, Reset);
 }
 
@@ -44,7 +39,6 @@ void User::join_channel(Channel *channel, const std::string &password)
 	if (!channel || channel->is_user_inside(this->user_name))
 	{
 		std::cout << Red << "User already in channel" << Reset << std::endl;
-		return ;
 	}
 	std::cout << Blue << get_user_nick() << " has join in channel : " << channel->get_name() << Reset <<std::endl;
 	channel->add_user_to_channel(this, password);

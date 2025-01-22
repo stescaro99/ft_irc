@@ -9,7 +9,7 @@ class Server;
 class User
 {
 	private:
-		int								user_fd;
+		const int						user_fd;
 		std::string		 				user_name;
 		std::string		 				user_nickname;
 		std::string						IPadd;
@@ -18,6 +18,7 @@ class User
 		short 							state;
 		short 							pass_tries;
 		char							buff[1024];
+		const std::string				user_host;
 		//std::vector<std::string>		history;
 	
 	public:
@@ -52,7 +53,9 @@ class User
 		short get_state() const;
 		short get_tries() const;
 		char *get_buff();
+		std::string get_user_host() const;
 
+		std::string set_user_host(int fd) const;
 		void set_user_name(const std::string &name);
 		void set_user_nick(const std::string &nick);
 		void set_user_IPadd(const std::string &ipadd);

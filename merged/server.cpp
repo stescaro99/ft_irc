@@ -290,16 +290,37 @@ void Server::do_command(User *user, std::string const &s) // da rivedere
 	// } 
 } */
 
-void Server::do_command(User *user, std::string const &s)
+void Server::do_command(short cmd, User *user, std::vector<std::string> const &v)
 {
-	std::string tmp = s.substr(0, s.find("#"));
-	std::string channel_name = tmp.substr(0, tmp.find(" "));
-	std::string password = "";
-
-	if (is_channel(channel_name))
-		user->join_channel(find_channel(channel_name), password);
-	else
+	switch (cmd)
 	{
-		user->create_channel(channel_name, password);
+		case 1:
+		{
+			if (v.size() < 2 || v.size() > 3)
+			{
+				// errore comando non valido
+				return;
+			}
+			std::vector<std::string> channels;
+			split(v[1], ",", channels);
+			std::vector<std::string> passwords;
+			if (v.size() > 2)
+				split(v[2], ",", passwords);
+			while (channels.size() != passwords.size())
+				passwords.push_back("");
+			for (size_t i = 0; i < channels.size(); i++)
+			{
+				if (is_channel(channels[i]))
+					user->join_channel(find_channel(channels[i]), passwords[i]);
+				else
+					user->create_channel(channels[i], passwords[i]);
+				Channel *ch = find_channel(channels[i]);
+				if (ch && ch->is_user_inside(user->get_user_name()))
+					send_join_message(ch, user);
+			}
+			break;
+		}
 	}
 }
+
+

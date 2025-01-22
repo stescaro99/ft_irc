@@ -29,3 +29,19 @@ bool Channel::is_user_inside(const std::string &user) const
 	}
 	return (false);
 }
+
+std::string Channel::get_users_list() const
+{
+	std::string ret="";
+	for (std::map<std::string, User*>::const_iterator it = ch_users.begin(); it != ch_users.end(); it++)
+	{
+		std::string user_name = it->first;
+		std::string user_nick = it->second->get_user_nick();
+		if (is_user_admin(user_name))
+			ret += "@" + user_nick + " ";
+		else
+			ret += user_nick + " ";
+	}
+	ret = ret.substr(0, ret.size() - 1);
+	return (ret);
+}

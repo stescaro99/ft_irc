@@ -139,4 +139,3 @@ void Channel::unban_user(const std::string &user)
 		}
 	}
 }
-
