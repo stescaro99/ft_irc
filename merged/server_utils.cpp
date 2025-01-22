@@ -183,6 +183,7 @@ void Server::receive_new_data(int fd)
 		i->set_user_nick(s);
 		i->increment_state();
 		send(i->get_user_fd(), "select a name\n", 15, MSG_DONTWAIT);
+		break;
 	case 2:
 		take_str(&s, i->get_buff());
 		konversations(i->get_state(), s);

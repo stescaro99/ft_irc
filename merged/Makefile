@@ -1,6 +1,6 @@
 
 file = channel_utils.cpp channel.cpp const_and_destr.cpp getter.cpp main.cpp messages.cpp server_utils.cpp server.cpp setter.cpp user_utils.cpp user.cpp
-NAME =  irc
+NAME =  ircserv
 
 cc = c++
 flag = -Wall -Wextra -Werror -std=c++98 -g
@@ -17,5 +17,8 @@ clean:
 fclean: clean
 			rm -f $(NAME)
 re: fclean all
+
+fast: re
+	rm -f $(fileobj)
 
 .PHONY: all clean fclean re

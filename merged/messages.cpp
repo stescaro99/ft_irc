@@ -2,18 +2,25 @@
 
 void Server::send_join_message(Channel *ch, User *user)
 {
-	std::string r1 = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " JOIN :" + ch->get_name() + "\r\n";
-	ch->c_send_message(user->get_user_name(), r1, true);
-	std::string r2 = ":IRCSERV 353 " + user->get_user_nick() + " = " + ch->get_name() + " :" + ch->get_users_list() + "\r\n";
-	send(user->get_user_fd(), r2.c_str(), r2.size(), 0);
-	std::string r3 = ":IRCSERV 366 " + user->get_user_nick() + " " + ch->get_name() + " :End of NAMES list\r\n";
-	send(user->get_user_fd(), r3.c_str(), r3.size(), 0);
-	std::string r4;
-	if (ch->get_topic() == "")
-		r4 = ":IRCSERV 332 " + user->get_user_nick() + " " + ch->get_name() + " :No topic is set\r\n";
+	// JOIN MESSAGE
+	std::string join_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " JOIN :" + ch->get_name() + "\r\n";
+	ch->c_send_message(user->get_user_name(), join_msg, true);
+
+	// NAMES MESSAGE
+	std::string names_msg = ":IRCSERV 353 " + user->get_user_nick() + " = " + ch->get_name() + " :" + ch->get_users_list() + "\r\n";
+	send(user->get_user_fd(), names_msg.c_str(), names_msg.size(), 0);
+
+	// END OF NAMES MESSAGE
+	std::string eon_msg = ":IRCSERV 366 " + user->get_user_nick() + " " + ch->get_name() + " :End of NAMES list\r\n";
+	send(user->get_user_fd(), eon_msg.c_str(), eon_msg.size(), 0);
+
+	// TOPIC MESSAGE
+	std::string topic_msg;
+	if (ch->get_topic().empty())
+		topic_msg = ":IRCSERV 332 " + user->get_user_nick() + " " + ch->get_name() + " :No topic is set\r\n";
 	else
-		r4 = ":IRCSERV 332 " + user->get_user_nick() + " " + ch->get_name() + " :" + ch->get_topic() + "\r\n";
-	send(user->get_user_fd(), r4.c_str(), r4.size(), 0);
+		topic_msg = ":IRCSERV 332 " + user->get_user_nick() + " " + ch->get_name() + " :" + ch->get_topic() + "\r\n";
+	send(user->get_user_fd(), topic_msg.c_str(), topic_msg.size(), 0);
 }
 
 void Channel::c_send_message(const std::string &user, const std::string &message, bool only_usr)
