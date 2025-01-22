@@ -310,6 +310,12 @@ void Server::do_command(short cmd, User *user, std::vector<std::string> const &v
 				passwords.push_back("");
 			for (size_t i = 0; i < channels.size(); i++)
 			{
+				std::cout << "channel: " << channels[i] << std::endl;
+				if (channels[i][0] != '#' && channels[i][0] != '&')
+				{
+					// errore canale non valido
+					continue;
+				}
 				if (is_channel(channels[i]))
 					user->join_channel(find_channel(channels[i]), passwords[i]);
 				else
