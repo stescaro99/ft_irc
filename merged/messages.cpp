@@ -37,18 +37,19 @@ void Channel::c_send_message(const std::string &user, const std::string &message
 
 void Server::send_join_message(Channel *ch, User *user)
 {
+	// JOIN MESSAGE
+	std::string join_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " JOIN :" + ch->get_name() + "\r\n";
+	send(user->get_user_fd(), join_msg.c_str(), join_msg.size(), 0);
+	ch->c_send_message(user->get_user_name(), join_msg, true);
+
 	// NAMES MESSAGE
 	std::string names_msg = ":IRCSERV 353 " + user->get_user_nick() + " = " + ch->get_name() + " :" + ch->get_users_list() + "\r\n";
 	send(user->get_user_fd(), names_msg.c_str(), names_msg.size(), 0);
 
-	// JOIN MESSAGE
-	std::string join_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " JOIN :" + ch->get_name() + "\r\n";
-	ch->c_send_message(user->get_user_name(), join_msg, true);
-
 	// END OF NAMES MESSAGE
 	std::string eon_msg = ":IRCSERV 366 " + user->get_user_nick() + " " + ch->get_name() + " :End of NAMES list\r\n";
 	send(user->get_user_fd(), eon_msg.c_str(), eon_msg.size(), 0);
-
+	
 	// TOPIC MESSAGE
 	std::string topic_msg;
 	if (ch->get_topic().empty())
