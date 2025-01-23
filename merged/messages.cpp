@@ -1,5 +1,40 @@
 #include "standard_libraries.hpp"
 
+void Server::print_all(int Usfd,const std::string &mess, const std::string &nick)
+{
+	if (Usfd != fds[0].fd)  // stampa anche sul server: tenere???
+	{
+		std::cout << Yellow << "[" << Reset << nick;
+		std::cout << Yellow << "] " << Reset << mess << std::endl;
+	}
+	for (std::vector<User *>::iterator i = users.begin(); i != users.end(); i++)
+	{
+		if ((*i)->get_user_fd() != Usfd)
+		{
+			// send((*i)->get_user_fd(), Yellow , 6, MSG_DONTWAIT);
+			// send((*i)->get_user_fd(), "[", 1, MSG_DONTWAIT);
+			// send((*i)->get_user_fd(), Reset, 4, MSG_DONTWAIT);
+			send((*i)->get_user_fd(), nick.c_str(), nick.length(), MSG_DONTWAIT);
+			// send((*i)->get_user_fd(), Yellow, 6, MSG_DONTWAIT);
+			// send((*i)->get_user_fd(), "] ", 2, MSG_DONTWAIT);
+			send((*i)->get_user_fd(), " ", 1, MSG_DONTWAIT);  //tmp
+			// send((*i)->get_user_fd(), Reset, 4, MSG_DONTWAIT);
+			send((*i)->get_user_fd(), mess.c_str(), mess.length(), MSG_DONTWAIT);
+			// send((*i)->get_user_fd(), "\n", 1, MSG_DONTWAIT);
+		}
+	}
+}
+
+void Channel::c_send_message(const std::string &user, const std::string &message, bool only_usr)
+{
+	for (std::map<std::string, User*>::iterator it = ch_users.begin(); it != ch_users.end(); it++)
+	{
+		if (only_usr && it->first != user)
+			continue;
+		send(it->second->get_user_fd(), message.c_str(), message.size(), 0);
+	}
+}
+
 void Server::send_join_message(Channel *ch, User *user)
 {
 	// NAMES MESSAGE
@@ -23,12 +58,10 @@ void Server::send_join_message(Channel *ch, User *user)
 	send(user->get_user_fd(), topic_msg.c_str(), topic_msg.size(), 0);
 }
 
-void Channel::c_send_message(const std::string &user, const std::string &message, bool only_usr)
+void Server::send_part_message(Channel *ch, User *user)
 {
-	for (std::map<std::string, User*>::iterator it = ch_users.begin(); it != ch_users.end(); it++)
-	{
-		if (only_usr && it->first != user)
-			continue;
-		send(it->second->get_user_fd(), message.c_str(), message.size(), 0);
-	}
+	std::string part_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PART :" + ch->get_name() + "\r\n";
+	ch->c_send_message(user->get_user_name(), part_msg, true);
+
+	send(user->get_user_fd(), part_msg.c_str(), part_msg.size(), 0);
 }

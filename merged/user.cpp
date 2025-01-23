@@ -9,7 +9,7 @@ void User::change_my_nickname(const std::string &nickname)
 
 void User::create_channel(const std::string &channel, const std::string &password)
 {
-	printf("%screate channel%s\n", Blue, Reset);
+	std::cout << Blue << get_user_name() << " create channel: " << channel << Reset << std::endl;
 	Channel *nc = new Channel(channel, this);
 
 	if (password != "")
@@ -19,7 +19,7 @@ void User::create_channel(const std::string &channel, const std::string &passwor
 	}
 	server.add_channel(nc);
 	user_channels[channel] = nc;
-	printf("%schannel created%s\n", Green, Reset);
+	std::cout << Green << "Channel " << channel << " was create" << Reset << std::endl;
 }
 
 void User::delete_channel(const std::string &channel)
@@ -76,18 +76,6 @@ void User::kick_user(const std::string &user, const std::string &channel)
 	std::cout << Yellow << get_user_name() << Magenta << " kick " << user << Reset << std::endl;
 }
 
-void User::ban_user(const std::string &user, const std::string &channel)
-{
-	if (user_channels.find(channel) != user_channels.end())
-	{
-		if (CH->is_user_admin(user))
-			return ;
-		else if (CH->is_user_admin(this->user_name))
-			CH->ban_user(user);
-	}
-	std::cout << Yellow << get_user_name() << Magenta << " ban " << user << Reset << std::endl;
-}
-
 void User::invite_user(const std::string &user, const std::string &channel)
 {
 	if (user_channels.find(channel) != user_channels.end())
@@ -136,23 +124,6 @@ void User::add_admin(const std::string &user, const std::string &channel)
 			CH->add_admin(user);
 	}
 	std::cout << Yellow << get_user_name() << Green << " ad " << user << " to admin club!" << Reset << std::endl;
-}
-
-void User::unban_user(const std::string &user, const std::string &channel)
-{
-	if (user_channels.find(channel) != user_channels.end())
-	{
-		if (CH->is_user_admin(this->user_name))
-			CH->unban_user(user);
-	}
-	std::cout << Yellow << get_user_name() << Green << " unban " << user << Reset << std::endl;
-}
-
-void User::rem_message(const std::string &channel, const std::string &message)
-{
-	// non so se si puo' fare
-	(void)channel;
-	(void)message;
 }
 
 void User::leave_admin(const std::string &channel)

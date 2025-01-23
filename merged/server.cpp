@@ -83,215 +83,13 @@ void Server::rem_channel(const std::string &channel)
 		}
 	}
 }
-/* 
-void Server::do_command(User *user, std::string const &s) // da rivedere
-{
-	std::string cmd = s.substr(0, s.find(" "));
-	std::string channel_name;
-
-	if (s.find(" ") == std::string::npos)
-	{
-		printf("comando non valido\n");
-		return ;
-	}
-	std::string tmp = s.substr(s.find(" ") + 1);
-	if (cmd == "/join")
-	{
-		channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string password;
-		if (channel_name.find(" ") == std::string::npos || channel_name.find(" ") + 1 == std::string::npos)
-			password = "";
-		else
-			password = tmp.substr(tmp.find(" ") + 1);
-		
-		if (is_channel(channel_name))
-			user->join_channel(find_channel(channel_name), password);
-		else
-		{
-			user->create_channel(channel_name, password);
-		}
-	}
-	else if (cmd == "/leave")
-	{
-		channel_name = tmp;
-
-		if (is_channel(channel_name))
-			user->leave_channel(channel_name);
-		else
-		{
-			//errore canale non esistente
-		}
-	}
-	else if (cmd == "/create")
-	{
-		channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string password;
-		if (channel_name.find(" ") == std::string::npos || channel_name.find(" ") + 1 == std::string::npos)
-			password = "";
-		else
-			password = tmp.substr(channel_name.find(" ") + 1);
-
-		if (is_channel(channel_name))
-		{
-			//errore canale gia' esistente
-			return ;
-		}
-		else
-			user->create_channel(channel_name, password);
-	}
-	else if (cmd == "/delete")
-	{
-		channel_name = tmp;
-
-		if (is_channel(channel_name))
-			user->delete_channel(channel_name);
-		else
-		{
-			//errore canale non esistente
-		}
-	}
-	else if (cmd == "/kick")
-	{
-		channel_name = tmp.substr(0, channel_name.find(" "));
-		if (channel_name.find(" ") == std::string::npos || channel_name.find(" ") + 1 == std::string::npos)
-		{
-			//errore comando non valido
-			return ;
-		}
-		std::string nick = tmp.substr(tmp.find(" ") + 1);
-
-		if (is_channel(channel_name))
-			user->kick_user(convert_to_username(nick), channel_name);
-		else
-		{
-			//errore canale non esistente
-		}
-	}
-	else if (cmd == "/ban")
-	{
-		channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string nick = tmp.substr(tmp.find(" ") + 1);
-
-		if (is_channel(channel_name))
-			user->ban_user(convert_to_username(nick), channel_name);
-		else
-		{
-			//errore canale non esistente
-		}
-	}
-	else if (cmd == "/invite")
-	{
-		channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string nick = tmp.substr(tmp.find(" ") + 1);
-
-		if (is_channel(channel_name))
-			user->invite_user(convert_to_username(nick), channel_name);
-		else
-		{
-			//errore canale non esistente
-		}
-	}
-	else if (cmd == "/topic")
-	{
-		channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string topic = tmp.substr(tmp.find(" ") + 1);
-
-		if (is_channel(channel_name))
-			user->change_topic(topic, channel_name);
-		else
-		{
-			//errore canale non esistente
-		}
-	}
-	else if (cmd == "/mode")
-	{
-		channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string m = tmp.substr(tmp.find(" ") + 1);
-		if (m.size() != 1)
-		{
-			//errore comando non valido
-		}
-		else
-		{
-			if (is_channel(channel_name))
-				user->change_mode(m[0], channel_name);
-			else
-			{
-				//errore canale non esistente
-			}
-		}
-	}
-	else if (cmd == "/password")
-	{
-		channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string password = tmp.substr(tmp.find(" ") + 1);
-
-		if (is_channel(channel_name))
-			user->change_password(password, channel_name);
-		else
-		{
-			//errore canale non esistente
-		}
-	}
-	else if (cmd == "/addadmin")
-	{
-		channel_name = tmp.substr(0, channel_name.find(" "));
-		std::string nick = tmp.substr(tmp.find(" ") + 1);
-
-		if (is_channel(channel_name))
-			user->add_admin(convert_to_username(nick), channel_name);
-		else
-		{
-			//errore canale non esistente
-		}
-	}
-	else if (cmd == "/unban")
-	{
-		channel_name = tmp.substr(0, channel_name.find(" "));
-		if (channel_name.find(" ") == std::string::npos || channel_name.find(" ") + 1 == std::string::npos)
-		{
-			//errore comando non valido
-			return ;
-		}
-		std::string nick = tmp.substr(tmp.find(" ") + 1);
-
-		if (is_channel(channel_name))
-			user->unban_user(convert_to_username(nick), channel_name);
-		else
-		{
-			//errore canale non esistente
-		}
-	}
-	else if (cmd == "/leaveadmin")
-	{
-		channel_name = tmp;
-
-		if (is_channel(channel_name))
-			user->leave_admin(channel_name);
-		else
-		{
-			//errore canale non esistente
-		}
-	}
-	else if (cmd == "/acceptinvite")
-	{
-		channel_name = tmp;
-
-		if (is_channel(channel_name))
-			user->accept_invite(channel_name);
-		else
-		{
-			//errore canale non esistente
-		}
-	}
-	//  else if (s == "/remmessage")
-	// {
-	// 	//rem_message(); ?????
-	// } 
-} */
 
 void Server::do_command(short cmd, User *user, std::vector<std::string> const &v)
 {
+	std::vector<std::string> channels;
+	std::vector<std::string> passwords;
+	Channel *ch;
+
 	switch (cmd)
 	{
 		case 1:
@@ -301,28 +99,51 @@ void Server::do_command(short cmd, User *user, std::vector<std::string> const &v
 				// errore comando non valido
 				return;
 			}
-			std::vector<std::string> channels;
 			split(v[1], ",", channels);
-			std::vector<std::string> passwords;
 			if (v.size() > 2)
 				split(v[2], ",", passwords);
 			while (channels.size() != passwords.size())
 				passwords.push_back("");
 			for (size_t i = 0; i < channels.size(); i++)
 			{
-				std::cout << "channel: " << channels[i] << std::endl;
 				if (channels[i][0] != '#' && channels[i][0] != '&')
 				{
 					// errore canale non valido
 					continue;
 				}
+				if (is_channel(channels[i]) && find_channel(channels[i])->is_user_inside(user->get_user_name()))
+					continue;
 				if (is_channel(channels[i]))
 					user->join_channel(find_channel(channels[i]), passwords[i]);
 				else
 					user->create_channel(channels[i], passwords[i]);
-				Channel *ch = find_channel(channels[i]);
+				ch = find_channel(channels[i]);
 				if (ch && ch->is_user_inside(user->get_user_name()))
 					send_join_message(ch, user);
+			}
+			break;
+		}
+		case 2:
+		{
+			if (v.size() < 2)
+			{
+				// errore comando non valido
+				return;
+			}
+			split(v[1], ",", channels);
+			for (size_t i = 0; i < channels.size(); i++)
+			{
+				if (channels[i][0] != '#' && channels[i][0] != '&')
+				{
+					// errore canale non valido
+					continue;
+				}
+				ch = find_channel(channels[i]);
+				if (ch && ch->is_user_inside(user->get_user_name()))
+				{
+					send_part_message(ch, user);
+					user->leave_channel(channels[i]);
+				}
 			}
 			break;
 		}

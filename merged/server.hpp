@@ -28,6 +28,7 @@ class Server
 		void do_command(short cmd, User *user, std::vector<std::string> const &v);
 
 		void send_join_message(Channel *ch, User *user);
+		void send_part_message(Channel *ch, User *user);
 
 	public:
 		//Server(); utile?
@@ -48,8 +49,6 @@ class Server
 		void add_channel(Channel *ch);
 		void rem_channel(const std::string &channel);
 		void send_message(const std::string &user, const std::string &message);
-		//void print_message(int fd, std::string nick, const std::string &message);
-		// void recv_message(const std::string &user);
 		bool is_user(const std::string &user) const;
 		bool is_nick(const std::string &nick) const;
 		bool is_channel(const std::string &channel) const;

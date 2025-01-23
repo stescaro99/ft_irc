@@ -16,7 +16,6 @@ class Channel
 		std::string				 		ch_topic;
 		char				 			ch_mode;							// i = invite only, p = password protected, o = open 
 		std::string						ch_password;
-		std::vector<std::string>		ch_banned;
 		std::vector<std::string>		ch_invited;
 
 	public:
@@ -27,16 +26,13 @@ class Channel
 		void rem_user_from_channel(const std::string &user, bool is_kick);
 		void c_send_message(const std::string &user, const std::string &message, bool only_usr);
 		void c_print_messages();
-		void add_admin(const std::string &user);						
-		void rem_admin(const std::string &user);						
-		void change_topic(const std::string &topic);					
-		void change_mode(char mode);							
-		void change_password(const std::string &password);				
-		void ban_user(const std::string &user);
-		void invite_user(const std::string &user);									
-		void unban_user(const std::string &user);
+		void add_admin(const std::string &user);
+		void rem_admin(const std::string &user);
+		void change_topic(const std::string &topic);
+		void change_mode(char mode);
+		void change_password(const std::string &password);
+		void invite_user(const std::string &user);
 
-		//virtual void recv_message(const std::string &user);
 		size_t get_users_count() const;
 		size_t get_admins_count() const;
 		char get_mode() const;

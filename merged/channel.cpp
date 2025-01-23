@@ -91,23 +91,6 @@ void Channel::change_password(const std::string &password)
 	ch_password = password;
 }
 
-void Channel::ban_user(const std::string &user)
-{
-	if (ch_users.find(user) != ch_users.end())
-	{
-		ch_banned.push_back(user);
-		for (std::map<std::string, User*>::iterator it = ch_users.begin(); it != ch_users.end(); it++)
-		{
-			if (it->first == user)
-			{
-				User *u = it->second;
-				(*u).leave_channel(ch_name);
-			}
-		}
-		ch_users.erase(user);
-	}
-}
-
 void Channel::invite_user(const std::string &user)
 {
 	if (ch_users.find(user) == ch_users.end())
@@ -115,27 +98,8 @@ void Channel::invite_user(const std::string &user)
 		for (std::vector<std::string>::iterator it = ch_invited.begin(); it != ch_invited.end(); it++)
 		{
 			if (*it == user)
-			{
-				for (std::vector<std::string>::iterator it = ch_banned.begin(); it != ch_banned.end(); it++)
-				{
-					if (*it == user)
-						return ;
-				}
 				break ;
-			}
 		}
 		ch_invited.push_back(user);
-	}
-}
-
-void Channel::unban_user(const std::string &user)
-{
-	for (std::vector<std::string>::iterator it = ch_banned.begin(); it != ch_banned.end(); it++)
-	{
-		if (*it == user)
-		{
-			ch_banned.erase(it);
-			break ;
-		}
 	}
 }

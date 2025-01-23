@@ -80,31 +80,6 @@ void Server::take_str(std::string *dest, char *src)
 	std::fill(src, src + strlen(src), '\0');
 }
 
-void Server::print_all(int Usfd,const std::string &mess, const std::string &nick)
-{
-	if (Usfd != fds[0].fd)  // stampa anche sul server: tenere???
-	{
-		std::cout << Yellow << "[" << Reset << nick;
-		std::cout << Yellow << "] " << Reset << mess << std::endl;
-	}
-	for (std::vector<User *>::iterator i = users.begin(); i != users.end(); i++)
-	{
-		if ((*i)->get_user_fd() != Usfd)
-		{
-			// send((*i)->get_user_fd(), Yellow , 6, MSG_DONTWAIT);
-			// send((*i)->get_user_fd(), "[", 1, MSG_DONTWAIT);
-			// send((*i)->get_user_fd(), Reset, 4, MSG_DONTWAIT);
-			send((*i)->get_user_fd(), nick.c_str(), nick.length(), MSG_DONTWAIT);
-			// send((*i)->get_user_fd(), Yellow, 6, MSG_DONTWAIT);
-			// send((*i)->get_user_fd(), "] ", 2, MSG_DONTWAIT);
-			send((*i)->get_user_fd(), " ", 1, MSG_DONTWAIT);  //tmp
-			// send((*i)->get_user_fd(), Reset, 4, MSG_DONTWAIT);
-			send((*i)->get_user_fd(), mess.c_str(), mess.length(), MSG_DONTWAIT);
-			// send((*i)->get_user_fd(), "\n", 1, MSG_DONTWAIT);
-		}
-	}
-}
-
 void Server::konversations(short i, std::string &s)
 {
 	std::string tmp;
@@ -274,5 +249,7 @@ short Server::is_command(const std::string &s) const
 {
 	if (s == "JOIN")
 		return (1);
+	if (s == "PART")
+		return (2);
 	return (0);
 }
