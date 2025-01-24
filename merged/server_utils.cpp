@@ -121,6 +121,7 @@ void Server::receive_new_data(int fd)
 		close(fd);
 	}
 	std::string s;
+	int len;
 
 	switch (i->get_state())
 	{
@@ -130,46 +131,46 @@ void Server::receive_new_data(int fd)
 				if (s != password)
 				{
 					i->increment_tries();
-					send(i->get_user_fd(), "Incorrect password\n", 20, MSG_DONTWAIT);
+					len = send(i->get_user_fd(), "Incorrect password\r\n", 21, 0);
 					if (i->get_tries() == 3)
 					{
-						send(i->get_user_fd(), "too many tries\n", 15, MSG_DONTWAIT);
+						len = send(i->get_user_fd(), "too many tries\r\n", 16, 0);
 						close(i->get_user_fd());
 						rem_user(i->get_user_name());
 						return ;
 					}
-					send(i->get_user_fd(), "Insert password\n", 17, MSG_DONTWAIT);
+					len = send(i->get_user_fd(), "Insert password\r\n", 18, 0);
 					break ;
 				}
 				else
 				{
-					send(i->get_user_fd(), "select a nickname\n", 19, MSG_DONTWAIT);
+					len = send(i->get_user_fd(), "select a nickname\r\n", 20, 0);
 					i->increment_state();
 				}
 			break;
 		case 1:
 			take_str(&s, i->get_buff());
 			konversations(i->get_state(), s);
-			if (is_nick(s))
+			if (is_nick(s) || s.find(" ") != std::string::npos)
 			{
-				send(i->get_user_fd(), "name already taken\nselect a nickname\n", 34, MSG_DONTWAIT);
+				len = send(i->get_user_fd(), "name already taken\nselect a nickname\r\n", 35, 0);
 				break;
 			}
 			i->set_user_nick(s);
 			i->increment_state();
-			send(i->get_user_fd(), "select a name\n", 15, MSG_DONTWAIT);
+			len = send(i->get_user_fd(), "select a name\r\n", 16, 0);
 			break;
 		case 2:
 			take_str(&s, i->get_buff());
 			konversations(i->get_state(), s);
-			if (is_user(s))
+			if (is_user(s) || s.find(" ") != std::string::npos)
 			{
-				send(i->get_user_fd(), "name already taken\nselect a name\n", 34, MSG_DONTWAIT);
+				send(i->get_user_fd(), "name already taken\nselect a name\r\n", 35, 0);
 				break;
 			}
 			i->set_user_name(s);
 			i->increment_state();
-			//send(i->get_user_fd(), "\033[2J\033[H", 8, MSG_DONTWAIT);
+			//send(i->get_user_fd(), "\033[2J\033[H", 8, 0);
 			break;
 		case 3:
 			take_str(&s, i->get_buff());

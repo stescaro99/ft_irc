@@ -126,6 +126,7 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 			short limit = 0;
 			std::string password;
 			std::vector<std::string> users;
+			std::string				 mess = ":" + server_name;
 			bool plus = (flags[i][0] == '+');
 			set_mode_utility(v, users, limit, password, n, flags[i]);
 			for (size_t j = 1; j < flags[i].size(); j++)
@@ -134,30 +135,44 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 				if (m == 'i' && plus)
 				{
 					ch->change_mode('i');
+					mess = mess + " MODE " + ch->get_name() + " now is invite only";
+					ch->c_send_message("", mess, false);
 				}
 				else if (m == 'i')
 				{
 					ch->change_mode('o');
+					mess = mess + " MODE "+ ch->get_name() + " now is open";
+					ch->c_send_message("", mess, false);
 				}
 				else if (m == 't')
 				{
 					ch->set_topic_admin(plus);
+					mess = mess + " MODE "+ ch->get_name() + " now is " + ;
+					ch->c_send_message("", mess, false);
 				}
 				else if (m == 'k' && plus)
 				{
 					ch->change_password(password);
+					mess = mess + " MODE "+ ch->get_name() + " now is " + ;
+					ch->c_send_message("", mess, false);
 				}
 				else if (m == 'k')
 				{
 					ch->change_password("");
+					mess = mess + " MODE "+ ch->get_name() + " now is " + ;
+					ch->c_send_message("", mess, false);
 				}
 				else if (m == 'l' && plus)
 				{
 					ch->change_limit(limit);
+					mess = mess + " MODE "+ ch->get_name() + " now is " + ;
+					ch->c_send_message("", mess, false);
 				}
 				else if (m == 'l')
 				{
 					ch->change_limit(SHRT_MAX);
+					mess = mess + " MODE "+ ch->get_name() + " now is " + ;
+					ch->c_send_message("", mess, false);
 				}
 				else if (m == 'o' && plus)
 				{
@@ -166,6 +181,8 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 						if (ch->is_user_inside(users[k]))
 						{
 							ch->add_admin(users[k]);
+							mess = mess + " MODE "+ ch->get_name() + " now is " + ;
+							ch->c_send_message("", mess, false);
 						}
 					}
 				}
@@ -176,6 +193,8 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 						if (is_user(users[k]))
 						{
 							ch->rem_admin(users[k]);
+							mess = mess + " MODE "+ ch->get_name() + " now is " + ;
+							ch->c_send_message("", mess, false);
 						}
 					}
 				}

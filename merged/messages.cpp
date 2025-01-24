@@ -11,16 +11,16 @@ void Server::print_all(int Usfd,const std::string &mess, const std::string &nick
 	{
 		if ((*i)->get_user_fd() != Usfd)
 		{
-			// send((*i)->get_user_fd(), Yellow , 6, MSG_DONTWAIT);
-			// send((*i)->get_user_fd(), "[", 1, MSG_DONTWAIT);
-			// send((*i)->get_user_fd(), Reset, 4, MSG_DONTWAIT);
-			send((*i)->get_user_fd(), nick.c_str(), nick.length(), MSG_DONTWAIT);
-			// send((*i)->get_user_fd(), Yellow, 6, MSG_DONTWAIT);
-			// send((*i)->get_user_fd(), "] ", 2, MSG_DONTWAIT);
-			send((*i)->get_user_fd(), " ", 1, MSG_DONTWAIT);  //tmp
-			// send((*i)->get_user_fd(), Reset, 4, MSG_DONTWAIT);
-			send((*i)->get_user_fd(), mess.c_str(), mess.length(), MSG_DONTWAIT);
-			// send((*i)->get_user_fd(), "\n", 1, MSG_DONTWAIT);
+			// send((*i)->get_user_fd(), Yellow , 6, 0);
+			// send((*i)->get_user_fd(), "[", 1, 0);
+			// send((*i)->get_user_fd(), Reset, 4, 0);
+			send((*i)->get_user_fd(), nick.c_str(), nick.length(), 0);
+			// send((*i)->get_user_fd(), Yellow, 6, 0);
+			// send((*i)->get_user_fd(), "] ", 2, 0);
+			send((*i)->get_user_fd(), " ", 1, 0);  //tmp
+			// send((*i)->get_user_fd(), Reset, 4, 0);
+			send((*i)->get_user_fd(), mess.c_str(), mess.length(), 0);
+			// send((*i)->get_user_fd(), "\n", 1, 0);
 		}
 	}
 }
@@ -37,11 +37,12 @@ void Channel::c_send_message(const std::string &user, const std::string &message
 
 void Server::send_join_message(Channel *ch, User *user)
 {
+	//std::cout << "nick = " << user->get_user_nick() << " name = " << user->get_user_name() << "host = " << user->get_user_host() << std::endl << std::endl; 
 	// JOIN MESSAGE
 	std::string join_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " JOIN :" + ch->get_name() + "\r\n";
 	send(user->get_user_fd(), join_msg.c_str(), join_msg.size(), 0);
-	ch->c_send_message(user->get_user_name(), join_msg, true);
-
+	ch->c_send_message(user->get_user_name(), join_msg, false);
+	
 	// NAMES MESSAGE
 	std::string names_msg = ":IRCSERV 353 " + user->get_user_nick() + " = " + ch->get_name() + " :" + ch->get_users_list() + "\r\n";
 	send(user->get_user_fd(), names_msg.c_str(), names_msg.size(), 0);
