@@ -36,11 +36,26 @@ void User::delete_channel(const std::string &channel)
 
 void User::join_channel(Channel *channel, const std::string &password)
 {
-	if (!channel || channel->is_user_inside(this->user_name))
+	if (channel->is_user_inside(this->user_name))
+		return ;
+	if (channel->get_mode() && !channel->is_user_invited(this->user_name))
 	{
-		std::cout << Red << "User already in channel" << Reset << std::endl;
+		std::string error_msg = ":IRCSERV 473 " + user_nickname + " " + channel->get_name() + " :Cannot join channel (+i)\r\n";
+		send(this->user_fd, error_msg.c_str(), error_msg.size(), 0);
+		return ;
 	}
-	std::cout << Blue << get_user_nick() << " has join in channel : " << channel->get_name() << Reset <<std::endl;
+	if (password != channel->get_password())
+	{
+		std::string error_msg = ":IRCSERV 475 " + user_nickname + " " + channel->get_name() + " :Cannot join channel (+k)\r\n";
+		send(this->user_fd, error_msg.c_str(), error_msg.size(), 0);
+		return ;
+	}
+	if (channel->get_users_count() == (size_t)channel->get_limit())
+	{
+		std::string error_msg = ":IRCSERV 471 " + user_nickname + " " + channel->get_name() + " :Cannot join channel (+l)\r\n";
+		send(this->user_fd, error_msg.c_str(), error_msg.size(), 0);
+		return ;
+	}
 	channel->add_user_to_channel(this, password);
 	user_channels.insert(std::pair<std::string, Channel*>(channel->get_name(), channel));
 }
@@ -80,50 +95,11 @@ void User::invite_user(const std::string &user, const std::string &channel)
 {
 	if (user_channels.find(channel) != user_channels.end())
 	{
-		if (CH->get_mode() != 'i')
+		if (!CH->get_mode())
 			return ;
 		if (CH->is_user_admin(this->user_name))
 			CH->invite_user(user);
 	}
-}
-
-void User::change_topic(const std::string &topic, const std::string &channel)
-{
-	if (user_channels.find(channel) != user_channels.end())
-	{
-		if (CH->is_user_admin(this->user_name))
-			CH->change_topic(topic);
-	}
-}
-
-void User::change_mode(char mode, const std::string &channel)
-{
-	if (mode != 'i' && mode != 'p' && mode != 'o')  // altre?
-		return ;
-	if (user_channels.find(channel) != user_channels.end())
-	{
-		if (CH->is_user_admin(this->user_name))
-			CH->change_mode(mode);
-	}
-}
-
-void User::change_password(const std::string &password, const std::string &channel)
-{
-	if (user_channels.find(channel) != user_channels.end())
-	{
-		if (CH->is_user_admin(this->user_name))
-			CH->change_password(password);
-	}
-}
-
-void User::add_admin(const std::string &user, const std::string &channel)
-{
-	if (user_channels.find(channel) != user_channels.end())
-	{
-		if (CH->is_user_admin(this->user_name) && !CH->is_user_admin(user))
-			CH->add_admin(user);
-	}
-	std::cout << Yellow << get_user_name() << Green << " ad " << user << " to admin club!" << Reset << std::endl;
 }
 
 void User::leave_admin(const std::string &channel)

@@ -12,6 +12,7 @@
 #include <fstream>
 #include <cstdio>
 #include <sstream>
+#include <climits>
 
 #include <poll.h>
 #include <sys/socket.h>

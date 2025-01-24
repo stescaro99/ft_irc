@@ -41,3 +41,54 @@ std::string User::set_user_host(int fd) const
 	}
 	return ("unknown");
 }
+
+void Server::set_mode_utility(std::vector<std::string> const &v, std::vector<std::string> &users, short &limit, std::string &password, size_t &n, const std::string &flags)
+{
+	bool plus = (v[2][0] == '+');
+
+	n++;
+	for (size_t i = 1; i < flags.length(); i++)
+	{
+		if (flags[i] == 'l' && plus)
+		{
+			if (n >= v.size())
+			{
+				// errore numero argomenti
+				return;
+			}
+			std::stringstream ss(v[n]);
+			ss >> limit;
+			if (ss.fail())
+			{
+				// errore limite non valido
+				return ;
+			}
+			n++;
+		}
+		else if (flags[i] == 'k' && plus)
+		{
+			if (n >= v.size())
+			{
+				// errore numero argomenti
+				return ;
+			}
+			password = v[n];
+			n++;
+		}
+		else if (flags[i] == 'o')
+		{
+			if (n >= v.size())
+			{
+				// errore numero argomenti
+				return ;
+			}
+			split(v[n], ",", users);
+			n++;
+		}
+	}
+}
+
+void Channel::set_topic_admin(bool only_admin)
+{
+	topic_only_admin = only_admin;
+}

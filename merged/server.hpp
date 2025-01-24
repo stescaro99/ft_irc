@@ -25,8 +25,19 @@ class Server
 		void konversations(short i, std::string &s);
 		void split(std::string s, const std::string &delim, std::vector<std::string> &v);
 		short is_command(const std::string &s) const;
-		void do_command(short cmd, User *user, std::vector<std::string> const &v);
+		void set_mode_utility(std::vector<std::string> const &v, std::vector<std::string> &users, short &limit, std::string &password, size_t &n, const std::string &flags);
+		std::vector<std::string> split_mode(const std::string &s);
 
+		// commands
+		void do_command(short cmd, User *user, std::vector<std::string> const &v);
+		void join(User *user, std::vector<std::string> const &v);
+		void part(User *user, std::vector<std::string> const &v);
+		void mode(User *user, std::vector<std::string> const &v);
+		void topic(User *user, std::vector<std::string> const &v);
+		void kick(User *user, std::vector<std::string> const &v);
+		void invite(User *user, std::vector<std::string> const &v);
+
+		// messages
 		void send_join_message(Channel *ch, User *user);
 		void send_part_message(Channel *ch, User *user);
 

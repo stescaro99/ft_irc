@@ -11,12 +11,13 @@ class Channel
 	private:
 		const std::string				ch_name;
 		std::map<std::string, User*>	ch_users;
-		int								ch_fd;								//poi lo castiamo a const
 		std::vector<std::string>		ch_admin;
 		std::string				 		ch_topic;
-		char				 			ch_mode;							// i = invite only, p = password protected, o = open 
+		bool				 			ch_invite;
 		std::string						ch_password;
 		std::vector<std::string>		ch_invited;
+		short							ch_limit;
+		bool							topic_only_admin;
 
 	public:
 		Channel(const std::string &name, User *creator);
@@ -31,18 +32,24 @@ class Channel
 		void change_topic(const std::string &topic);
 		void change_mode(char mode);
 		void change_password(const std::string &password);
+		void change_limit(short limit);
 		void invite_user(const std::string &user);
 
 		size_t get_users_count() const;
 		size_t get_admins_count() const;
-		char get_mode() const;
+		bool get_mode() const;
 		std::string get_name() const;
 		std::string get_topic() const;
+		bool get_topic_only_admin() const;
+		std::string get_password() const;
+		short get_limit() const;
 
 		bool is_user_admin(const std::string &user) const;
 		bool is_user_invited(const std::string &user) const;
 		bool is_user_inside(const std::string &user) const;
 		std::string get_users_list() const;
+
+		void set_topic_admin(bool only_admin);
 };
 
 #endif

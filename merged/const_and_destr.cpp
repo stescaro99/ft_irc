@@ -10,10 +10,13 @@ Server::~Server()
 {
 }
 
-Channel::Channel(const std::string &name, User *creator) : ch_name(name), ch_fd(55)	// cambiare con funzione adatta
+Channel::Channel(const std::string &name, User *creator) : ch_name(name)
 {
 	ch_users.insert(std::pair<std::string, User *>(creator->get_user_name(), creator));
 	ch_admin.push_back(creator->get_user_name());
+	ch_invite = false;
+	ch_limit = SHRT_MAX;
+	topic_only_admin = false;
 }
 
 Channel::~Channel()

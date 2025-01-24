@@ -4,9 +4,9 @@ void Channel::add_user_to_channel(User *user, const std::string &password)
 {
 	if (ch_users.find((*user).get_user_name()) == ch_users.end())
 	{
-		if (ch_mode == 'p' && ch_password != password)
+		if (ch_password != password)
 			return ;
-		else if (ch_mode == 'i')
+		else if (ch_invite)
 		{
 			for (size_t i = 0; i < ch_invited.size(); i++)
 			{
@@ -83,7 +83,10 @@ void Channel::change_topic(const std::string &topic)
 
 void Channel::change_mode(char mode)
 {
-	ch_mode = mode;
+	if (mode == 'i')
+		ch_invite = true;
+	else
+		ch_invite = false;
 }
 
 void Channel::change_password(const std::string &password)
@@ -102,4 +105,9 @@ void Channel::invite_user(const std::string &user)
 		}
 		ch_invited.push_back(user);
 	}
+}
+
+void Channel::change_limit(short limit)
+{
+	ch_limit = limit;
 }

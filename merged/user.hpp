@@ -14,7 +14,7 @@ class User
 		std::string		 				user_nickname;
 		std::map<std::string, Channel*>	user_channels;
 		Server							&server;
-		short 							state;
+		short 							state;			// 0 = passw, 1 = nick, 2 = user, 3 = scrittura
 		short 							pass_tries;
 		char							buff[1024];
 		const std::string				user_host;
@@ -32,10 +32,6 @@ class User
 		void leave_channel(const std::string &channel);									// se e' l'unico admin, il potere passa al primo entrato
 		void kick_user(const std::string &user, const std::string &channel);			// admin e non contro admin
 		void invite_user(const std::string &user, const std::string &channel);			// admin e non su un 
-		void change_topic(const std::string &topic, const std::string &channel);		// admin 
-		void change_mode(char mode, const std::string &channel);						// admin
-		void change_password(const std::string &password, const std::string &channel);	// admin
-		void add_admin(const std::string &user, const std::string &channel);			// admin, diventano pari
 		void leave_admin(const std::string &channel);									// admin che perde i propri poteri, se e' l'unico admin non puo' farlo
 		void accept_invite(const std::string &channel);									// se e' stato invitato
 

@@ -124,64 +124,64 @@ void Server::receive_new_data(int fd)
 
 	switch (i->get_state())
 	{
-	case 0:
+		case 0:
+				take_str(&s, i->get_buff());
+				konversations(i->get_state(), s);
+				if (s != password)
+				{
+					i->increment_tries();
+					send(i->get_user_fd(), "Incorrect password\n", 20, MSG_DONTWAIT);
+					if (i->get_tries() == 3)
+					{
+						send(i->get_user_fd(), "too many tries\n", 15, MSG_DONTWAIT);
+						close(i->get_user_fd());
+						rem_user(i->get_user_name());
+						return ;
+					}
+					send(i->get_user_fd(), "Insert password\n", 17, MSG_DONTWAIT);
+					break ;
+				}
+				else
+				{
+					send(i->get_user_fd(), "select a nickname\n", 19, MSG_DONTWAIT);
+					i->increment_state();
+				}
+			break;
+		case 1:
 			take_str(&s, i->get_buff());
 			konversations(i->get_state(), s);
-			if (s != password)
+			if (is_nick(s))
 			{
-				i->increment_tries();
-				send(i->get_user_fd(), "Incorrect password\n", 20, MSG_DONTWAIT);
-				if (i->get_tries() == 3)
-				{
-					send(i->get_user_fd(), "too many tries\n", 15, MSG_DONTWAIT);
-					close(i->get_user_fd());
-					rem_user(i->get_user_name());
-					return ;
-				}
-				send(i->get_user_fd(), "Insert password\n", 17, MSG_DONTWAIT);
-				break ;
+				send(i->get_user_fd(), "name already taken\nselect a nickname\n", 34, MSG_DONTWAIT);
+				break;
 			}
-			else
+			i->set_user_nick(s);
+			i->increment_state();
+			send(i->get_user_fd(), "select a name\n", 15, MSG_DONTWAIT);
+			break;
+		case 2:
+			take_str(&s, i->get_buff());
+			konversations(i->get_state(), s);
+			if (is_user(s))
 			{
-				send(i->get_user_fd(), "select a nickname\n", 19, MSG_DONTWAIT);
-				i->increment_state();
+				send(i->get_user_fd(), "name already taken\nselect a name\n", 34, MSG_DONTWAIT);
+				break;
 			}
-		break;
-	case 1:
-		take_str(&s, i->get_buff());
-		konversations(i->get_state(), s);
-		if (is_nick(s))
-		{
-			send(i->get_user_fd(), "name already taken\nselect a nickname\n", 34, MSG_DONTWAIT);
+			i->set_user_name(s);
+			i->increment_state();
+			//send(i->get_user_fd(), "\033[2J\033[H", 8, MSG_DONTWAIT);
 			break;
-		}
-		i->set_user_nick(s);
-		i->increment_state();
-		send(i->get_user_fd(), "select a name\n", 15, MSG_DONTWAIT);
-		break;
-	case 2:
-		take_str(&s, i->get_buff());
-		konversations(i->get_state(), s);
-		if (is_user(s))
-		{
-			send(i->get_user_fd(), "name already taken\nselect a name\n", 34, MSG_DONTWAIT);
-			break;
-		}
-		i->set_user_name(s);
-		i->increment_state();
-		//send(i->get_user_fd(), "\033[2J\033[H", 8, MSG_DONTWAIT);
-		break;
-	case 3:
-		take_str(&s, i->get_buff());
-		std::vector<std::string> v;
-		split(s, " ", v);
-		short cmd = is_command(v[0]);
-		if (cmd)
-		{
-			do_command(cmd, i, v);
-			break;
-		}
-		print_all(fd, s, i->get_user_nick()); //add channel?
+		case 3:
+			take_str(&s, i->get_buff());
+			std::vector<std::string> v;
+			split(s, " ", v);
+			short cmd = is_command(v[0]);
+			if (cmd)
+			{
+				do_command(cmd, i, v);
+				break;
+			}
+			print_all(fd, s, i->get_user_nick()); //add channel?
 	}
 }
 
@@ -245,11 +245,44 @@ void Server::split(std::string s, const std::string &delim, std::vector<std::str
 		v.push_back(s);
 }
 
+std::vector<std::string> Server::split_mode(const std::string &s)
+{
+	std::vector<std::string> v;
+	size_t start = 0;
+	std::string tmp;
+
+	if (s[0] != '+' && s[0] != '-')
+	{
+		// error no + or -
+		return (v);
+	}
+	while (start < s.size())
+	{
+		size_t end = start + 1;
+		while (end < s.size() && s[end] != '+' && s[end] != '-')
+			end++;
+		if (end - start < 2)
+		{
+			// error no flag
+			v.clear();
+			return (v);
+		}
+		tmp = s.substr(start, end - start);
+		start = end;
+		v.push_back(tmp);
+	}
+	return (v);
+}
+
 short Server::is_command(const std::string &s) const
 {
 	if (s == "JOIN")
 		return (1);
 	if (s == "PART")
 		return (2);
+	if (s == "MODE")
+		return (3);
+	if (s == "TOPIC")
+		return (4);
 	return (0);
 }

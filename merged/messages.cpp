@@ -53,7 +53,7 @@ void Server::send_join_message(Channel *ch, User *user)
 	// TOPIC MESSAGE
 	std::string topic_msg;
 	if (ch->get_topic().empty())
-		topic_msg = ":IRCSERV 331 " + user->get_user_nick() + " " + ch->get_name() + " :No topic is set\r\n";
+		topic_msg = ":IRCSERV 332 " + user->get_user_nick() + " " + ch->get_name() + " :No topic is set\r\n";
 	else
 		topic_msg = ":IRCSERV 332 " + user->get_user_nick() + " " + ch->get_name() + " :" + ch->get_topic() + "\r\n";
 	send(user->get_user_fd(), topic_msg.c_str(), topic_msg.size(), 0);
@@ -62,7 +62,7 @@ void Server::send_join_message(Channel *ch, User *user)
 void Server::send_part_message(Channel *ch, User *user)
 {
 	std::string part_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PART :" + ch->get_name() + "\r\n";
-	ch->c_send_message(user->get_user_name(), part_msg, true);
-
+	
 	send(user->get_user_fd(), part_msg.c_str(), part_msg.size(), 0);
+	ch->c_send_message(user->get_user_name(), part_msg, true);
 }

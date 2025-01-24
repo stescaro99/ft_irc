@@ -1,5 +1,5 @@
 
-file = channel_utils.cpp channel.cpp const_and_destr.cpp getter.cpp main.cpp messages.cpp server_utils.cpp server.cpp setter.cpp user_utils.cpp user.cpp
+file = channel_utils.cpp channel.cpp const_and_destr.cpp getter.cpp main.cpp messages.cpp server_utils.cpp server.cpp setter.cpp user_utils.cpp user.cpp do_command.cpp
 NAME =  ircserv
 
 cc = c++

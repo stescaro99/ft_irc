@@ -15,9 +15,9 @@ size_t Channel::get_admins_count() const
 	return (ch_admin.size());
 }
 
-char Channel::get_mode() const
+bool Channel::get_mode() const
 {
-	return (ch_mode);
+	return (ch_invite);
 }
 
 std::string Channel::get_name() const
@@ -74,4 +74,19 @@ Channel *Server::find_channel(const std::string &channel) const
 		if ((*i)->get_name() == channel)
 			return(*i);
 	return (NULL);
+}
+
+bool Channel::get_topic_only_admin() const
+{
+	return (topic_only_admin);
+}
+
+std::string Channel::get_password() const
+{
+	return (ch_password);
+}
+
+short Channel::get_limit() const
+{
+	return (ch_limit);
 }
