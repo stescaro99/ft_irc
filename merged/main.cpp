@@ -25,7 +25,6 @@ int main(int argc, char **argv)
 	}
 	catch(const std::exception& e)
 	{
-		server.close_fds();
 		std::cerr << e.what() << '\n';
 	}
 	return 0;

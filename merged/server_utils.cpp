@@ -11,15 +11,9 @@ void Server::signal_handler(int signum)
 void Server::close_fds()
 {
 	for (size_t i = 0; i < users.size(); i++)
-	{
-		std::cout << Red << "User <" << users[i]->get_user_name() << "> disconnected" << Reset << std::endl;
 		close(users[i]->get_user_fd());
-	}
 	if (socket_fd != 1)
-	{
-		std::cout << Magenta << "close server" << Reset << std::endl;
 		close(socket_fd);
-	}
 }
 
 void Server::ser_socket()

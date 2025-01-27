@@ -410,10 +410,6 @@ void Server::quit(User *user)
 		else
 			rem_user((*it)->get_user_name());
 	}
-	// if (users.empty())
-	// {
-	// 	close_fds();
-	// }
 }
 
 void Server::nick(User *user, std::vector<std::string> const &v)
