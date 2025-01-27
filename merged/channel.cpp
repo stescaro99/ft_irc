@@ -61,6 +61,8 @@ void Channel::rem_admin(const std::string &user)
 				if (it->first != user)
 				{
 					add_admin(it->first);
+					std::string admin_msg = ":IRCSERV MODE " + ch_name + " +o " + (it->second)->get_user_nick() + "\r\n";
+					c_send_message(it->first, admin_msg, false);
 					break ;
 				}
 			}

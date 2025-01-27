@@ -44,7 +44,7 @@ std::string User::set_user_host(int fd) const
 
 void Server::set_mode_utility(std::vector<std::string> const &v, std::vector<std::string> &users, short &limit, std::string &password, size_t &n, const std::string &flags)
 {
-	bool plus = (v[2][0] == '+');
+	bool plus = (flags[0] == '+');
 
 	n++;
 	for (size_t i = 1; i < flags.length(); i++)
@@ -53,14 +53,14 @@ void Server::set_mode_utility(std::vector<std::string> const &v, std::vector<std
 		{
 			if (n >= v.size())
 			{
-				// errore numero argomenti
-				return;
+				limit = 0;
+				return ;
 			}
 			std::stringstream ss(v[n]);
 			ss >> limit;
 			if (ss.fail())
 			{
-				// errore limite non valido
+				limit = 0;
 				return ;
 			}
 			n++;
@@ -69,7 +69,7 @@ void Server::set_mode_utility(std::vector<std::string> const &v, std::vector<std
 		{
 			if (n >= v.size())
 			{
-				// errore numero argomenti
+				password = "";
 				return ;
 			}
 			password = v[n];
@@ -79,7 +79,7 @@ void Server::set_mode_utility(std::vector<std::string> const &v, std::vector<std
 		{
 			if (n >= v.size())
 			{
-				// errore numero argomenti
+				users.clear();
 				return ;
 			}
 			split(v[n], ",", users);

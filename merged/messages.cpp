@@ -37,7 +37,6 @@ void Channel::c_send_message(const std::string &user, const std::string &message
 
 void Server::send_join_message(Channel *ch, User *user)
 {
-	//std::cout << "nick = " << user->get_user_nick() << " name = " << user->get_user_name() << "host = " << user->get_user_host() << std::endl << std::endl; 
 	// JOIN MESSAGE
 	std::string join_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " JOIN :" + ch->get_name() + "\r\n";
 	send(user->get_user_fd(), join_msg.c_str(), join_msg.size(), 0);

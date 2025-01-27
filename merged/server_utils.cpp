@@ -151,9 +151,14 @@ void Server::receive_new_data(int fd)
 		case 1:
 			take_str(&s, i->get_buff());
 			konversations(i->get_state(), s);
-			if (is_nick(s) || s.find(" ") != std::string::npos)
+			if (is_nick(s))
 			{
 				len = send(i->get_user_fd(), "name already taken\nselect a nickname\r\n", 35, 0);
+				break;
+			}
+			if (s[0] == '#' || s[0] == '&' || s.find(" ") != std::string::npos)
+			{
+				len = send(i->get_user_fd(), "invalid nickname\nselect a nickname\r\n", 35, 0);
 				break;
 			}
 			i->set_user_nick(s);
@@ -182,7 +187,7 @@ void Server::receive_new_data(int fd)
 				do_command(cmd, i, v);
 				break;
 			}
-			print_all(fd, s, i->get_user_nick()); //add channel?
+			print_all(fd, s, i->get_user_nick());
 	}
 }
 
@@ -254,7 +259,7 @@ std::vector<std::string> Server::split_mode(const std::string &s)
 
 	if (s[0] != '+' && s[0] != '-')
 	{
-		// error no + or -
+		v.clear();
 		return (v);
 	}
 	while (start < s.size())
@@ -264,7 +269,6 @@ std::vector<std::string> Server::split_mode(const std::string &s)
 			end++;
 		if (end - start < 2)
 		{
-			// error no flag
 			v.clear();
 			return (v);
 		}
@@ -279,11 +283,69 @@ short Server::is_command(const std::string &s) const
 {
 	if (s == "JOIN")
 		return (1);
-	if (s == "PART")
+	else if (s == "PART")
 		return (2);
-	if (s == "MODE")
+	else if (s == "MODE")
 		return (3);
-	if (s == "TOPIC")
+	else if (s == "TOPIC")
 		return (4);
+	else if (s == "KICK")
+		return (5);
+	else if (s == "INVITE")
+		return (6);
+	else if (s == "PRIVMSG")
+		return (7);
+	else if (s == "QUIT")
+		return (8);
 	return (0);
+}
+
+bool Server::parameters_check(std::vector<std::string> const &flags, std::vector<std::string> const &admin, short limit, std::string password, Channel *ch, User *user)
+{
+	if (flags.size() == 0)
+		return (false);
+	short operator_flag = 0;
+	short password_flag = 0;
+	short limit_flag = 0;
+
+	for (size_t i = 0; i < flags.size(); i++)
+	{
+		bool plus = (flags[i][0] == '+');
+		for (size_t j = 1; j < flags[i].size(); j++)
+		{
+			char m = flags[i][j];
+			if (m == 'o')
+				operator_flag++;
+			else if (m == 'k' && plus)
+				password_flag = 1;
+			else if (m == 'l' && plus)
+				limit_flag = 1;
+		}
+	}
+	bool exit = false;
+	if ((limit != 0) + (password != "") + admin.size() != operator_flag + password_flag + limit_flag)
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " MODE :Not enough parameters\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		exit = true;
+	}
+	if (limit_flag && limit < users.size())
+	{
+		std::string error_msg = ":IRCSERV 472 " + user->get_user_nick() + " MODE :Channel limit exceeded\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		exit = true;
+	}
+	if (password_flag && password == "")
+	{
+		std::string error_msg = ":IRCSERV 472 " + user->get_user_nick() + " MODE :Password required\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		exit = true;
+	}
+	if (operator_flag && admin.size() == 0)
+	{
+		std::string error_msg = ":IRCSERV 502 " + user->get_user_nick() + " MODE :Missing new operator name\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		exit = true;
+	}
+	return (exit);
 }

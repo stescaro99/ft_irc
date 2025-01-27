@@ -18,22 +18,15 @@ class User
 		short 							pass_tries;
 		char							buff[1024];
 		const std::string				user_host;
-		//std::vector<std::string>		history;
 	
 	public:
 		User(Server &server, int fd);
 		~User();
 
-		//void change_color(const std::string &color);    								// cambi il nick aggiungendo il colore iniziale e il reset finale
 		void change_my_nickname(const std::string &nickname);
-		void create_channel(const std::string &channel, const std::string &password);	// diventi admin
-		void delete_channel(const std::string &channel);								// admin solo se e' l'unico admin
-		void join_channel(Channel *channel, const std::string &password);				// invito o password se necessario
-		void leave_channel(const std::string &channel);									// se e' l'unico admin, il potere passa al primo entrato
-		void kick_user(const std::string &user, const std::string &channel);			// admin e non contro admin
-		void invite_user(const std::string &user, const std::string &channel);			// admin e non su un 
-		void leave_admin(const std::string &channel);									// admin che perde i propri poteri, se e' l'unico admin non puo' farlo
-		void accept_invite(const std::string &channel);									// se e' stato invitato
+		void create_channel(const std::string &channel, const std::string &password);
+		void join_channel(Channel *channel, const std::string &password);
+		void leave_channel(const std::string &channel);
 
 		std::string get_user_name() const;
 		std::string get_user_nick() const;

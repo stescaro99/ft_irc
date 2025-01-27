@@ -21,12 +21,14 @@ class Server
 		void take_str(std::string *dest, char *src);
 		void print_all(int ufd, const std::string &mess, const std::string &nick);
 		User *find_user(int fd) const;
+		User *find_user(const std::string &user) const;
 		Channel *find_channel(const std::string &channel) const;
 		void konversations(short i, std::string &s);
 		void split(std::string s, const std::string &delim, std::vector<std::string> &v);
 		short is_command(const std::string &s) const;
 		void set_mode_utility(std::vector<std::string> const &v, std::vector<std::string> &users, short &limit, std::string &password, size_t &n, const std::string &flags);
 		std::vector<std::string> split_mode(const std::string &s);
+		bool parameters_check(std::vector<std::string> const &flags, std::vector<std::string> const &admin, short limit, std::string password, Channel *ch, User *user);
 
 		// commands
 		void do_command(short cmd, User *user, std::vector<std::string> const &v);
@@ -36,6 +38,9 @@ class Server
 		void topic(User *user, std::vector<std::string> const &v);
 		void kick(User *user, std::vector<std::string> const &v);
 		void invite(User *user, std::vector<std::string> const &v);
+		void privmsg(User *user, std::vector<std::string> const &v);
+		void quit(User *user);
+		void nick(User *user, std::vector<std::string> const &v);
 
 		// messages
 		void send_join_message(Channel *ch, User *user);
@@ -51,7 +56,6 @@ class Server
 		void accept_new_client();
 		void receive_new_data(int fd);
 		void close_fds();
-		void clear_user(int fd);
 
 		static void signal_handler(int signum);
 

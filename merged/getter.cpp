@@ -68,6 +68,14 @@ User *Server::find_user(int fd) const
 	return (NULL);
 }
 
+User *Server::find_user(const std::string &user) const
+{
+	for (std::vector<User *>::const_iterator i = users.begin(); i != users.end(); i++)
+		if ((*i)->get_user_name() == user)
+			return(*i);
+	return (NULL);
+}
+
 Channel *Server::find_channel(const std::string &channel) const
 {
 	for (std::vector<Channel *>::const_iterator i = channels.begin(); i != channels.end(); i++)
@@ -89,4 +97,19 @@ std::string Channel::get_password() const
 short Channel::get_limit() const
 {
 	return (ch_limit);
+}
+
+void Channel::get_modes(User *user) const
+{
+	std::string modes = ":IRCSERVER 324 " + user->get_user_nick() + " " + ch_name + " +";
+	if (ch_invite)
+		modes += "i";
+	if (topic_only_admin)
+		modes += "t";
+	if (ch_password != "")
+		modes += "k";
+	if (ch_limit != 0)
+		modes += "l";
+	modes += "\r\n";
+	send(user->get_user_fd(), modes.c_str(), modes.size(), 0);
 }
