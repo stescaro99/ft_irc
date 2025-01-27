@@ -408,12 +408,7 @@ void Server::quit(User *user)
 		if ((*it)->get_user_fd() != user->get_user_fd())
 			send((*it)->get_user_fd(), quit_msg.c_str(), quit_msg.size(), 0);
 		else
-		{
-			close((*it)->get_user_fd());
-			(*it)->leave_channel("");
-			delete *it;
-			users.erase(it);
-		}
+			rem_user((*it)->get_user_name());
 	}
 	// if (users.empty())
 	// {

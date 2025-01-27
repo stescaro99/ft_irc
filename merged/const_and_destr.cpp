@@ -8,6 +8,15 @@ Server::Server(std::string const &password, int port) : server_name(":IRCSERVER"
 
 Server::~Server()
 {
+	close_fds();
+	for (size_t i = 0; i < channels.size(); i++)
+		delete channels[i];
+	channels.clear();
+	for (size_t i = 0; i < users.size(); i++)
+		delete users[i];
+	users.clear();
+	if (socket_fd != 1)
+		close(socket_fd);
 }
 
 Channel::Channel(const std::string &name, User *creator) : ch_name(name)

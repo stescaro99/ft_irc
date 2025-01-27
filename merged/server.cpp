@@ -43,6 +43,7 @@ void Server::rem_user(const std::string &user)
 			if ((*it)->get_user_name() == user)
 			{
 				int fd = (*it)->get_user_fd();
+				(*it)->leave_channel("");
 				for (std::vector<struct pollfd>::iterator i = fds.begin(); i != fds.end(); i++)
 				{
 					if (i->fd == fd)
