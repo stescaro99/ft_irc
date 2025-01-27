@@ -115,8 +115,6 @@ void Server::receive_new_data(int fd)
 		close(fd);
 	}
 	std::string s;
-	int len;
-
 	switch (i->get_state())
 	{
 		case 0:
@@ -125,20 +123,20 @@ void Server::receive_new_data(int fd)
 				if (s != password)
 				{
 					i->increment_tries();
-					len = send(i->get_user_fd(), "Incorrect password\r\n", 21, 0);
+					send(i->get_user_fd(), "Incorrect password\r\n", 21, 0);
 					if (i->get_tries() == 3)
 					{
-						len = send(i->get_user_fd(), "too many tries\r\n", 16, 0);
+						send(i->get_user_fd(), "too many tries\r\n", 16, 0);
 						close(i->get_user_fd());
 						rem_user(i->get_user_name());
 						return ;
 					}
-					len = send(i->get_user_fd(), "Insert password\r\n", 18, 0);
+					send(i->get_user_fd(), "Insert password\r\n", 18, 0);
 					break ;
 				}
 				else
 				{
-					len = send(i->get_user_fd(), "select a nickname\r\n", 20, 0);
+					send(i->get_user_fd(), "select a nickname\r\n", 20, 0);
 					i->increment_state();
 				}
 			break;
@@ -147,17 +145,17 @@ void Server::receive_new_data(int fd)
 			konversations(i->get_state(), s);
 			if (is_nick(s))
 			{
-				len = send(i->get_user_fd(), "name already taken\nselect a nickname\r\n", 35, 0);
+				send(i->get_user_fd(), "name already taken\nselect a nickname\r\n", 35, 0);
 				break;
 			}
 			if (s[0] == '#' || s[0] == '&' || s.find(" ") != std::string::npos)
 			{
-				len = send(i->get_user_fd(), "invalid nickname\nselect a nickname\r\n", 35, 0);
+				send(i->get_user_fd(), "invalid nickname\nselect a nickname\r\n", 35, 0);
 				break;
 			}
 			i->set_user_nick(s);
 			i->increment_state();
-			len = send(i->get_user_fd(), "select a name\r\n", 16, 0);
+			send(i->get_user_fd(), "select a name\r\n", 16, 0);
 			break;
 		case 2:
 			take_str(&s, i->get_buff());
@@ -294,7 +292,7 @@ short Server::is_command(const std::string &s) const
 	return (0);
 }
 
-bool Server::parameters_check(std::vector<std::string> const &flags, std::vector<std::string> const &admin, short limit, std::string password, Channel *ch, User *user)
+bool Server::parameters_check(std::vector<std::string> const &flags, std::vector<std::string> const &admin, short limit, std::string password, User *user)
 {
 	if (flags.size() == 0)
 		return (false);
@@ -317,13 +315,13 @@ bool Server::parameters_check(std::vector<std::string> const &flags, std::vector
 		}
 	}
 	bool exit = false;
-	if ((limit != 0) + (password != "") + admin.size() != operator_flag + password_flag + limit_flag)
+	if ((limit != 0) + (password != "") + admin.size() != (size_t)(operator_flag + password_flag + limit_flag))
 	{
 		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " MODE :Not enough parameters\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		exit = true;
 	}
-	if (limit_flag && limit < users.size())
+	if (limit_flag && (size_t)limit < users.size())
 	{
 		std::string error_msg = ":IRCSERV 472 " + user->get_user_nick() + " MODE :Channel limit exceeded\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);

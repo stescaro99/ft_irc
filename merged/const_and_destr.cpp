@@ -32,6 +32,8 @@ Channel::Channel(const std::string &name, User *creator) : ch_name(name)
 
 Channel::~Channel()
 {
+	ch_users.clear();
+	ch_admin.clear();
 }
 
 User::User(Server &server, int fd) : user_fd(fd), user_name(""), user_nickname(""), server(server), state(0), pass_tries(0), user_host(set_user_host(fd))
@@ -42,4 +44,6 @@ User::User(Server &server, int fd) : user_fd(fd), user_name(""), user_nickname("
 
 User::~User()
 {
+	close(user_fd);
+	user_channels.clear();
 }

@@ -160,7 +160,7 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 			std::string password;
 			std::vector<std::string> users;
 			set_mode_utility(v, users, limit, password, n, flags[i]);
-			if (parameters_check(flags, users, limit, password, ch, user))
+			if (parameters_check(flags, users, limit, password, user))
 				return;
 			for (size_t j = 1; j < flags[i].size(); j++)
 			{
