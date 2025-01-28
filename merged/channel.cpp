@@ -86,6 +86,8 @@ void Channel::change_topic(const std::string &topic)
 void Channel::change_mode(bool mode)
 {
 	ch_invite = mode;
+	if (mode == false)
+		ch_invited.clear();
 }
 
 void Channel::change_password(const std::string &password)

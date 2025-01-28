@@ -77,7 +77,11 @@ void Server::join(User *user, std::vector<std::string> const &v)
 			continue;
 		}
 		if (is_channel(channels[i]) && find_channel(channels[i])->is_user_inside(user->get_user_name()))
+		{
+			std::string error_msg = ":IRCSERV 443 " + user->get_user_nick() + " " + channels[i] + " :is already on channel\r\n";
+			send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 			continue;
+		}
 		if (is_channel(channels[i]))
 			user->join_channel(find_channel(channels[i]), passwords[i]);
 		else

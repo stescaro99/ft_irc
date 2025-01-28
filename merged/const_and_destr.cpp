@@ -23,7 +23,7 @@ Server::~Server()
 
 Channel::Channel(const std::string &name, User *creator) : ch_name(name)
 {
-	ch_users.insert(std::pair<std::string, User *>(creator->get_user_name(), creator));
+	ch_users[creator->get_user_name()] = creator;
 	ch_admin.push_back(creator->get_user_name());
 	ch_invite = false;
 	ch_limit = SHRT_MAX;

@@ -32,7 +32,7 @@ class Server
 
 		// commands
 		void do_command(short cmd, User *user, std::vector<std::string> const &v);
-		void join(User *user, std::vector<std::string> const &v);
+		void join(User *user, std::vector<std::string> const &v); //mess password sbagliata,
 		void part(User *user, std::vector<std::string> const &v);
 		void mode(User *user, std::vector<std::string> const &v);
 		void topic(User *user, std::vector<std::string> const &v);

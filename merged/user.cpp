@@ -33,18 +33,18 @@ void User::create_channel(const std::string &channel, const std::string &passwor
 
 void User::join_channel(Channel *channel, const std::string &password)
 {
-	if (channel->is_user_inside(user_name))
-		return ;
 	if (channel->get_mode() && !channel->is_user_invited(user_name))
 	{
 		std::string error_msg = ":IRCSERV 473 " + user_nickname + " " + channel->get_name() + " :Cannot join channel (+i)\r\n";
 		send(user_fd, error_msg.c_str(), error_msg.size(), 0);
 		return ;
 	}
-	if (password != channel->get_password())
+	else if (password != channel->get_password())
 	{
 		std::string error_msg = ":IRCSERV 475 " + user_nickname + " " + channel->get_name() + " :Cannot join channel (+k)\r\n";
 		send(user_fd, error_msg.c_str(), error_msg.size(), 0);
+		std::string wrong_pass = ":IRCSERV 464 " + user_nickname + " " + channel->get_name() + " :Wrong password (+k)\r\n";
+		send(user_fd, wrong_pass.c_str(), wrong_pass.size(), 0);
 		return ;
 	}
 	if (channel->get_users_count() == (size_t)channel->get_limit())
