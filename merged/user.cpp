@@ -54,7 +54,7 @@ void User::join_channel(Channel *channel, const std::string &password)
 		return ;
 	}
 	channel->add_user_to_channel(this, password);
-	user_channels.insert(std::pair<std::string, Channel*>(channel->get_name(), channel));
+	user_channels[channel->get_name()] = channel;
 }
 
 void User::leave_channel(const std::string &channel)
