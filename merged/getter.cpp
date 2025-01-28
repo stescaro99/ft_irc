@@ -98,18 +98,3 @@ short Channel::get_limit() const
 {
 	return (ch_limit);
 }
-
-void Channel::get_modes(User *user) const
-{
-	std::string modes = ":IRCSERVER 324 " + user->get_user_nick() + " " + ch_name + " +";
-	if (ch_invite)
-		modes += "i";
-	if (topic_only_admin)
-		modes += "t";
-	if (ch_password != "")
-		modes += "k";
-	if (ch_limit != 0)
-		modes += "l";
-	modes += "\r\n";
-	send(user->get_user_fd(), modes.c_str(), modes.size(), 0);
-}

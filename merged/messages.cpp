@@ -2,34 +2,21 @@
 
 void Server::print_all(int Usfd,const std::string &mess, const std::string &nick)
 {
-	if (Usfd != fds[0].fd)  // stampa anche sul server: tenere???
-	{
-		std::cout << Yellow << "[" << Reset << nick;
-		std::cout << Yellow << "] " << Reset << mess << std::endl;
-	}
 	for (std::vector<User *>::iterator i = users.begin(); i != users.end(); i++)
 	{
 		if ((*i)->get_user_fd() != Usfd)
 		{
-			// send((*i)->get_user_fd(), Yellow , 6, 0);
-			// send((*i)->get_user_fd(), "[", 1, 0);
-			// send((*i)->get_user_fd(), Reset, 4, 0);
-			send((*i)->get_user_fd(), nick.c_str(), nick.length(), 0);
-			// send((*i)->get_user_fd(), Yellow, 6, 0);
-			// send((*i)->get_user_fd(), "] ", 2, 0);
-			send((*i)->get_user_fd(), " ", 1, 0);  //tmp
-			// send((*i)->get_user_fd(), Reset, 4, 0);
-			send((*i)->get_user_fd(), mess.c_str(), mess.length(), 0);
-			// send((*i)->get_user_fd(), "\n", 1, 0);
+			std::string new_mess = nick + " " + mess;
+			send((*i)->get_user_fd(), new_mess.c_str(), new_mess.size(), 0);
 		}
 	}
 }
 
-void Channel::c_send_message(const std::string &user, const std::string &message, bool only_usr)
+void Channel::c_send_message(const std::string &user, const std::string &message, bool not_usr) const
 {
-	for (std::map<std::string, User*>::iterator it = ch_users.begin(); it != ch_users.end(); it++)
+	for (std::map<std::string, User*>::const_iterator it = ch_users.begin(); it != ch_users.end(); it++)
 	{
-		if (only_usr && it->first != user)
+		if (not_usr && it->first == user)
 			continue;
 		send(it->second->get_user_fd(), message.c_str(), message.size(), 0);
 	}
@@ -65,4 +52,57 @@ void Server::send_part_message(Channel *ch, User *user)
 	
 	send(user->get_user_fd(), part_msg.c_str(), part_msg.size(), 0);
 	ch->c_send_message(user->get_user_name(), part_msg, true);
+}
+
+void Channel::channel_info(User *user) const
+{
+	std::string mode_msg = ":IRCSERV 324 " + user->get_user_nick() + " " + ch_name + " +";
+
+    if (ch_invite)
+        mode_msg += "i";
+    if (topic_only_admin)
+        mode_msg += "t";
+    if (!ch_password.empty())
+        mode_msg += "k";
+    if (ch_limit != SHRT_MAX)
+        mode_msg += "l";
+    mode_msg += "\r\n";
+	send(user->get_user_fd(), mode_msg.c_str(), mode_msg.size(), 0);
+
+	std::string msg;
+	if (ch_limit != SHRT_MAX)
+	{
+		std::string limit;
+		std::stringstream ss;
+		ss << ch_limit;
+		ss >> limit;
+		msg = ":IRCSERV +l limit is set to:" + limit + "\r\n";
+	}
+	else
+		msg = ":IRCSERV -l no limit set\r\n";
+	send(user->get_user_fd(), msg.c_str(), msg.size(), 0);
+	msg.clear();
+	if (ch_password != "")
+		msg = ":IRCSERV +k protected by password: " + ch_password + "\r\n";
+	else
+		msg = ":IRCSERV -k no password set\r\n";
+	send(user->get_user_fd(), msg.c_str(), msg.size(), 0);
+	msg.clear();
+	if (ch_invite)
+		msg = ":IRCSERV +i invite only\r\n";
+	else
+		msg = ":IRCSERV -i no invite only set\r\n";
+	send(user->get_user_fd(), msg.c_str(), msg.size(), 0);
+	msg.clear();
+	if (topic_only_admin)
+		msg = ":IRCSERV +t only channel operators can change topic\r\n";
+	else
+		msg = ":IRCSERV -t every user inside the channel can change the topic\r\n";
+	send(user->get_user_fd(), msg.c_str(), msg.size(), 0);
+	msg.clear();
+	if (is_user_admin(user->get_user_name()))
+		msg = ":IRCSERV +o You are channel operator\r\n";
+	else
+		msg = ":IRCSERV -o You are not channel operator\r\n";
+	send(user->get_user_fd(), msg.c_str(), msg.size(), 0);	
 }

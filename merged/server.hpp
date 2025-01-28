@@ -40,7 +40,7 @@ class Server
 		void invite(User *user, std::vector<std::string> const &v);
 		void privmsg(User *user, std::vector<std::string> const &v);
 		void quit(User *user);
-		void nick(User *user, std::vector<std::string> const &v);
+		//void nick(User *user, std::vector<std::string> const &v);
 
 		// messages
 		void send_join_message(Channel *ch, User *user);

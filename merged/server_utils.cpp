@@ -176,6 +176,7 @@ void Server::receive_new_data(int fd)
 			short cmd = is_command(v[0]);
 			if (cmd)
 			{
+				std::cout << Yellow << "<" << i->get_user_nick() << "> " << Reset << s << std::endl;
 				do_command(cmd, i, v);
 				break;
 			}
@@ -273,22 +274,32 @@ std::vector<std::string> Server::split_mode(const std::string &s)
 
 short Server::is_command(const std::string &s) const
 {
-	if (s == "JOIN")
+	std::string cmd = "";
+	for (size_t i = 0; i < s.size(); i++)
+	{
+		if (s[i] >= 'a' && s[i] <= 'z')
+			cmd += (s[i] - 32);
+		else
+			cmd += s[i];
+	}
+	if (cmd == "JOIN")
 		return (1);
-	else if (s == "PART")
+	else if (cmd == "PART")
 		return (2);
-	else if (s == "MODE")
+	else if (cmd == "MODE")
 		return (3);
-	else if (s == "TOPIC")
+	else if (cmd == "TOPIC")
 		return (4);
-	else if (s == "KICK")
+	else if (cmd == "KICK")
 		return (5);
-	else if (s == "INVITE")
+	else if (cmd == "INVITE")
 		return (6);
-	else if (s == "PRIVMSG")
+	else if (cmd == "PRIVMSG")
 		return (7);
-	else if (s == "QUIT")
+	else if (cmd == "QUIT")
 		return (8);
+	// else if (cmd == "NICK")
+	// 	return (9);
 	return (0);
 }
 

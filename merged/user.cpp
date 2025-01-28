@@ -15,11 +15,20 @@ void User::create_channel(const std::string &channel, const std::string &passwor
 	if (password != "")
 	{
 		nc->change_password(password);
-		nc->change_mode('p');
+		// /MODE +k password
+		std::string pass_msg = ":IRCSERV MODE " + channel + " +k " + password + "\r\n";
+		nc->c_send_message(user_name, pass_msg, false);
 	}
 	server.add_channel(nc);
 	user_channels[channel] = nc;
 	std::cout << Green << "Channel " << channel << " was create" << Reset << std::endl;
+	//set modes
+	std::string limit_msg = ":IRCSERV MODE " + channel + " -l\r\n";
+	nc->c_send_message(user_name, limit_msg, false);
+	std::string invite_msg = ":IRCSERV MODE " + channel + " -i\r\n";
+	nc->c_send_message(user_name, invite_msg, false);
+	std::string topic_msg = ":IRCSERV MODE " + channel + " -t\r\n";
+	nc->c_send_message(user_name, topic_msg, false);
 }
 
 void User::join_channel(Channel *channel, const std::string &password)

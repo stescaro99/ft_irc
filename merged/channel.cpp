@@ -51,7 +51,7 @@ void Channel::add_admin(const std::string &user)
 void Channel::rem_admin(const std::string &user)
 {
 	if (ch_users.size() == 1)
-		return ;
+		ch_admin.clear();
 	if (is_user_admin(user))
 	{
 		if (ch_admin.size() == 1)
@@ -83,12 +83,9 @@ void Channel::change_topic(const std::string &topic)
 	ch_topic = topic;
 }
 
-void Channel::change_mode(char mode)
+void Channel::change_mode(bool mode)
 {
-	if (mode == 'i')
-		ch_invite = true;
-	else
-		ch_invite = false;
+	ch_invite = mode;
 }
 
 void Channel::change_password(const std::string &password)

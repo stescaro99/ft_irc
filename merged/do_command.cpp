@@ -45,11 +45,11 @@ void Server::do_command(short cmd, User *user, std::vector<std::string> const &v
 			quit(user);
 			break;
 		}
-		case 9: //NICK
-		{
-			nick(user, v);
-			break;
-		}
+		// case 9: //NICK
+		// {
+		// 	nick(user, v);
+		// 	break;
+		// }
 	}
 }
 
@@ -140,7 +140,7 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 	}
 	else if (v.size() == 2)
 	{
-		ch->get_modes(user);
+		ch->channel_info(user);
 		return ;
 	}
 	else if (!ch->is_user_admin(user->get_user_name()))
@@ -166,25 +166,59 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 			{
 				char m = flags[i][j];
 				if (m == 'i' && plus)
-					ch->change_mode('i');
+				{
+					ch->change_mode(true);
+					std::string mode_msg = ":IRCSERV MODE " + ch->get_name() + " +i\r\n";
+					ch->c_send_message(user->get_user_name(), mode_msg, false);
+				}
 				else if (m == 'i')
-					ch->change_mode('o');
+				{
+					ch->change_mode(false);
+					std::string mode_msg = ":IRCSERV MODE " + ch->get_name() + " -i\r\n";
+					ch->c_send_message(user->get_user_name(), mode_msg, false);
+				}
 				else if (m == 't')
+				{
 					ch->set_topic_admin(plus);
+					std::string mode_msg = ":IRCSERV MODE " + ch->get_name() + " " + (plus ? "+" : "-") + "t\r\n";
+				}
 				else if (m == 'k' && plus)
+				{
 					ch->change_password(password);
+					std::string mode_msg = ":IRCSERV MODE " + ch->get_name() + " +k " + password + "\r\n";
+					ch->c_send_message(user->get_user_name(), mode_msg, false);
+				}
 				else if (m == 'k')
+				{
 					ch->change_password("");
+					std::string mode_msg = ":IRCSERV MODE " + ch->get_name() + " -k\r\n";
+					ch->c_send_message(user->get_user_name(), mode_msg, false);
+				}
 				else if (m == 'l' && plus)
+				{
 					ch->change_limit(limit);
+					std::string l;
+					std::stringstream ss;
+					ss << limit;
+					ss >> l;
+					std::string mode_msg = ":IRCSERV MODE " + ch->get_name() + " +l " + l + "\r\n";
+					ch->c_send_message(user->get_user_name(), mode_msg, false);
+				}
 				else if (m == 'l')
+				{
 					ch->change_limit(SHRT_MAX);
+					std::string mode_msg = ":IRCSERV MODE " + ch->get_name() + " -l\r\n";
+				}
 				else if (m == 'o' && plus)
 				{
 					for (size_t k = 0; k < users.size(); k++)
 					{
 						if (ch->is_user_inside(users[k]))
+						{
 							ch->add_admin(users[k]);
+							std::string mode_msg = ":IRCSERV MODE " + ch->get_name() + " +o " + users[k] + "\r\n";
+							ch->c_send_message(user->get_user_name(), mode_msg, false);
+						}
 					}
 				}
 				else if (m == 'o')
@@ -192,17 +226,21 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 					for (size_t k = 0; k < users.size(); k++)
 					{
 						if (ch->is_user_inside(users[k]))
+						{
 							ch->rem_admin(users[k]);
+							std::string mode_msg = ":IRCSERV MODE " + ch->get_name() + " -o " + users[k] + "\r\n";
+							ch->c_send_message(user->get_user_name(), mode_msg, false);
+						}
 					}
 				}
-				else
+				else if (m != 'b')
 				{
 					std::string error_msg = ":IRCSERV 472 " + user->get_user_nick() + " " + ch->get_name() + " :Unknown MODE flag\r\n";
 					send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 				}
 			}
-			std::string mode_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " MODE " + ch->get_name() + " " + flags[i] + "\r\n";
-			ch->c_send_message(user->get_user_name(), mode_msg, false);
+			//std::string mode_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " MODE " + ch->get_name() + " " + flags[i] + "\r\n";
+			//ch->c_send_message(user->get_user_name(), mode_msg, false);
 		}
 	}
 }
@@ -407,31 +445,32 @@ void Server::quit(User *user)
 	{
 		if ((*it)->get_user_fd() != user->get_user_fd())
 			send((*it)->get_user_fd(), quit_msg.c_str(), quit_msg.size(), 0);
-		else
-			rem_user((*it)->get_user_name());
 	}
+	rem_user(user->get_user_name());
+	if (users.size() == 0)
+		throw std::runtime_error("No users left, server closed");
 }
 
-void Server::nick(User *user, std::vector<std::string> const &v)
-{
-	if (v.size() < 2)
-	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " NICK :Not enough parameters\r\n";
-		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-		return;
-	}
-	if (is_nick(v[1]))
-	{
-		std::string error_msg = ":IRCSERV 433 " + user->get_user_nick() + " " + v[1] + " :Nickname is already in use\r\n";
-		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-		return;
-	}
-	std::string old_nick = user->get_user_nick();
-	user->change_my_nickname(v[1]);
-	std::string nick_msg = ":" + old_nick + "!" + user->get_user_name() + "@" + user->get_user_host() + " NICK " + user->get_user_nick() + "\r\n";
-	for (std::vector<User*>::iterator it = users.begin(); it != users.end(); it++)
-	{
-		if ((*it)->get_user_fd() != user->get_user_fd())
-			send((*it)->get_user_fd(), nick_msg.c_str(), nick_msg.size(), 0);
-	}
-}
+// void Server::nick(User *user, std::vector<std::string> const &v)
+// {
+// 	if (v.size() < 2)
+// 	{
+// 		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " NICK :Not enough parameters\r\n";
+// 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+// 		return;
+// 	}
+// 	if (is_nick(v[1]))
+// 	{
+// 		std::string error_msg = ":IRCSERV 433 " + user->get_user_nick() + " " + v[1] + " :Nickname is already in use\r\n";
+// 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+// 		return;
+// 	}
+// 	std::string old_nick = user->get_user_nick();
+// 	user->change_my_nickname(v[1]);
+// 	std::string nick_msg = ":" + old_nick + "!" + user->get_user_name() + "@" + user->get_user_host() + " NICK " + user->get_user_nick() + "\r\n";
+// 	for (std::vector<User*>::iterator it = users.begin(); it != users.end(); it++)
+// 	{
+// 		if ((*it)->get_user_fd() != user->get_user_fd())
+// 			send((*it)->get_user_fd(), nick_msg.c_str(), nick_msg.size(), 0);
+// 	}
+// }
