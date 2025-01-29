@@ -33,7 +33,7 @@ void Channel::rem_user_from_channel(const std::string &user, bool is_kick)
 		{	
 			User *u = ch_users[user];
 			u->leave_channel(ch_name);
-			ch_users.erase(user);
+			return ;
 		}
 	}
 	if (is_user_admin(user))
