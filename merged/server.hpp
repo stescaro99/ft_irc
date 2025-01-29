@@ -39,6 +39,7 @@ class Server
 		void kick(User *user, std::vector<std::string> const &v);
 		void invite(User *user, std::vector<std::string> const &v);
 		void privmsg(User *user, std::vector<std::string> const &v);
+		void dcc(User *user, std::vector<std::string> const &v);
 		void quit(User *user);
 
 		// messages

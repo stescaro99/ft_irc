@@ -398,6 +398,11 @@ void Server::privmsg(User *user, std::vector<std::string> const &v)
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
+	if (v[2].substr(0, 10) == ":DCC SEND ")
+	{
+		dcc(user, v);
+		return ;
+	}
 	std::vector<std::string> us_or_ch;
 	split(v[1], ",", us_or_ch);
 	std::string message = v[2].substr(1);
@@ -429,6 +434,71 @@ void Server::privmsg(User *user, std::vector<std::string> const &v)
 			{
 				std::string privmsg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + u->get_user_nick() + " :" + message + "\r\n";
 				send(u->get_user_fd(), privmsg.c_str(), privmsg.size(), 0);
+			}
+			else
+			{
+				std::string error_msg = ":IRCSERV 401 " + user->get_user_nick() + " " + us_or_ch[i] + " :No such nickname\r\n";
+				send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+			}
+		}
+	}
+}
+
+void Server::dcc(User *user, std::vector<std::string> const &v)
+{
+	std::string tmp = v[2].substr(10);
+	std::vector<std::string> us_or_ch;
+	split(v[1], ",", us_or_ch);
+	std::vector<std::string> dcc_info;
+	split(tmp, " ", dcc_info);
+	if (dcc_info.size() != 4)
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " PRIVMSG :Not enough parameters\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		return;
+	}
+	unsigned short m_port;
+	std::stringstream ss;
+	ss << dcc_info[2];
+	ss >> m_port;
+	ss.clear();
+	size_t size;
+	ss << dcc_info[3];
+	ss >> size;
+	if (dcc_info[0] == "" || dcc_info[1] != user->get_user_host() || m_port != port || size < 1)
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " PRIVMSG :Wrong parameters\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		return;
+	}
+	for (size_t i = 0; i < us_or_ch.size(); i++)
+	{
+		if (is_channel(us_or_ch[i]))
+		{
+			Channel *ch = find_channel(us_or_ch[i]);
+			if (ch && ch->is_user_inside(user->get_user_name()))
+			{
+				std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + ch->get_name() + " :" + v[2] + "\r\n";
+				ch->c_send_message(user->get_user_name(), dcc_msg, true);
+			}
+			else if (!ch)
+			{
+				std::string error_msg = ":IRCSERV 403 " + user->get_user_nick() + " " + us_or_ch[i] + " :No such channel\r\n";
+				send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+			}
+			else
+			{
+				std::string error_msg = ":IRCSERV 442 " + user->get_user_nick() + " " + ch->get_name() + " :You're not on that channel\r\n";
+				send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+			}
+		}
+		else
+		{
+			User *u = find_user(convert_to_username(us_or_ch[i]));
+			if (u)
+			{
+				std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + u->get_user_nick() + " :" + v[2] + "\r\n";
+				send(u->get_user_fd(), dcc_msg.c_str(), dcc_msg.size(), 0);
 			}
 			else
 			{
