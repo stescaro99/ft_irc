@@ -403,7 +403,7 @@ void Server::privmsg(User *user, std::vector<std::string> const &v)
 		dcc(user, v);
 		return ;
 	}
-	if (v[2].substr(0, 13) == ":DCC ACCEPT ")
+	if (v[2].substr(0, 12) == ":DCC ACCEPT ")
 	{
 		dcc_accept(user, v);
 		return ;
