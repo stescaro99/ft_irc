@@ -11,7 +11,7 @@ class Server
 	private:
 		const std::string			server_name;
 		const std::string			password;
-		const short					port;
+		const unsigned short		port;
 		const int					socket_fd;
 		std::vector<User*>	  		users;
 		std::vector<Channel*>		channels;
@@ -40,14 +40,13 @@ class Server
 		void invite(User *user, std::vector<std::string> const &v);
 		void privmsg(User *user, std::vector<std::string> const &v);
 		void quit(User *user);
-		//void nick(User *user, std::vector<std::string> const &v);
 
 		// messages
 		void send_join_message(Channel *ch, User *user);
 		void send_part_message(Channel *ch, User *user);
 
 	public:
-		Server(std::string const &password, int port);
+		Server(std::string const &password, unsigned short port);
 		~Server();
 
 		void server_init();

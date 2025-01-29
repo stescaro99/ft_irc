@@ -84,6 +84,8 @@ void Server::konversations(short i, std::string &s)
 			tmp = s.substr(0, 6);
 			if (tmp == "PASS :")
 				s = s.substr(6);
+			else if (tmp == "CAP LS" && password.substr(0, 6) != "CAP LS")
+				s = "\127";
 			break ;
 		}
 		case 1:
@@ -106,13 +108,15 @@ void Server::konversations(short i, std::string &s)
 void Server::receive_new_data(int fd)
 {
 	User *i = find_user(fd);
+	if (!i)
+		return ;
 	i->memset_buff();
 	ssize_t bytes = recv(fd, i->get_buff(), 1024, 0);
 	if (bytes <= 0)
 	{
 		std::cout << Red << "user " << i->get_user_nick() << " disconnected"  << Reset << std::endl;
-		rem_user(i->get_user_name());
-		close(fd);
+		quit(i);
+		return ;
 	}
 	std::string s;
 	switch (i->get_state())
@@ -120,7 +124,7 @@ void Server::receive_new_data(int fd)
 		case 0:
 				take_str(&s, i->get_buff());
 				konversations(i->get_state(), s);
-				if (s != password)
+				if (s != password && s != "\127")
 				{
 					i->increment_tries();
 					send(i->get_user_fd(), "Incorrect password\r\n", 21, 0);
@@ -134,6 +138,8 @@ void Server::receive_new_data(int fd)
 					send(i->get_user_fd(), "Insert password\r\n", 18, 0);
 					break ;
 				}
+				else if (s == "\127")
+					break ;
 				else
 				{
 					send(i->get_user_fd(), "select a nickname\r\n", 20, 0);
@@ -167,7 +173,10 @@ void Server::receive_new_data(int fd)
 			}
 			i->set_user_name(s);
 			i->increment_state();
-			//send(i->get_user_fd(), "\033[2J\033[H", 8, 0);
+			s.clear();
+			s = "INFO: " + i->get_user_nick() + "!" + i->get_user_name() + "@" + i->set_user_host(i->get_user_fd()) + " Welcome in the server\r\n";
+			std::cout << Green << "user " << i->get_user_nick() << " connected" << Reset << std::endl;
+			send(i->get_user_fd(), s.c_str(), s.size(), 0);
 			break;
 		case 3:
 			take_str(&s, i->get_buff());
@@ -298,8 +307,6 @@ short Server::is_command(const std::string &s) const
 		return (7);
 	else if (cmd == "QUIT")
 		return (8);
-	// else if (cmd == "NICK")
-	// 	return (9);
 	return (0);
 }
 

@@ -79,8 +79,11 @@ User *Server::find_user(const std::string &user) const
 Channel *Server::find_channel(const std::string &channel) const
 {
 	for (std::vector<Channel *>::const_iterator i = channels.begin(); i != channels.end(); i++)
+	{
 		if ((*i)->get_name() == channel)
 			return(*i);
+	}
+	std::cout << "Channel not found" << std::endl;
 	return (NULL);
 }
 

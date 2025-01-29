@@ -15,7 +15,7 @@ void Server::add_user()
 		return;
 	}
 	std::string welcome = server_name + " INFO :Hello, welcome to the server\r\n";
-	if (send(incofd, welcome.c_str(), welcome.length(), 0) != 47)
+	if (send(incofd, welcome.c_str(), welcome.length(), 0) != 45)
 			throw(std::runtime_error("failed to send welcome message"));
 	new_poll.fd = incofd;
 	new_poll.events = POLLIN;
@@ -29,9 +29,7 @@ void Server::add_user()
 
 	users.push_back(user);
 	fds.push_back(new_poll);
-
-	//int len = send(incofd, "Insert password\r\n", 18, 0);
-	std::cout  << Green << "client <" << incofd << "> is connect" << Reset << std::endl;
+	std::cout  << Cyan << "client <" << incofd << "> is connect" << Reset << std::endl;
 }
 
 void Server::rem_user(const std::string &user)

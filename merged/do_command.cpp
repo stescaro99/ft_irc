@@ -45,11 +45,6 @@ void Server::do_command(short cmd, User *user, std::vector<std::string> const &v
 			quit(user);
 			break;
 		}
-		// case 9: //NICK
-		// {
-		// 	nick(user, v);
-		// 	break;
-		// }
 	}
 }
 
@@ -115,11 +110,13 @@ void Server::part(User *user, std::vector<std::string> const &v)
 		{
 			std::string error_msg = ":IRCSERV 403 " + user->get_user_nick() + " " + channels[i] + " :No such channel\r\n";
 			send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+			continue;
 		}
-		else
+		else if (!ch->is_user_inside(user->get_user_name()))
 		{
 			std::string error_msg = ":IRCSERV 442 " + user->get_user_nick() + " " + channels[i] + " :You're not on that channel\r\n";
 			send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+			continue;
 		}
 		send_part_message(ch, user);
 		user->leave_channel(channels[i]);
@@ -451,30 +448,7 @@ void Server::quit(User *user)
 			send((*it)->get_user_fd(), quit_msg.c_str(), quit_msg.size(), 0);
 	}
 	rem_user(user->get_user_name());
+	//std::cout << users.size() << std::endl;
 	if (users.size() == 0)
 		throw std::runtime_error("No users left, server closed");
 }
-
-// void Server::nick(User *user, std::vector<std::string> const &v)
-// {
-// 	if (v.size() < 2)
-// 	{
-// 		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " NICK :Not enough parameters\r\n";
-// 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-// 		return;
-// 	}
-// 	if (is_nick(v[1]))
-// 	{
-// 		std::string error_msg = ":IRCSERV 433 " + user->get_user_nick() + " " + v[1] + " :Nickname is already in use\r\n";
-// 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-// 		return;
-// 	}
-// 	std::string old_nick = user->get_user_nick();
-// 	user->change_my_nickname(v[1]);
-// 	std::string nick_msg = ":" + old_nick + "!" + user->get_user_name() + "@" + user->get_user_host() + " NICK " + user->get_user_nick() + "\r\n";
-// 	for (std::vector<User*>::iterator it = users.begin(); it != users.end(); it++)
-// 	{
-// 		if ((*it)->get_user_fd() != user->get_user_fd())
-// 			send((*it)->get_user_fd(), nick_msg.c_str(), nick_msg.size(), 0);
-// 	}
-// }
