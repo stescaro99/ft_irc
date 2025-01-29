@@ -465,48 +465,26 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 	size_t size;
 	ss << dcc_info[3];
 	ss >> size;
-	if (dcc_info[0] == "" || dcc_info[1] != user->get_user_host() || m_port != port || size < 1)
-	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " PRIVMSG :Wrong parameters\r\n";
-		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-		return;
-	}
-	for (size_t i = 0; i < us_or_ch.size(); i++)
-	{
-		if (is_channel(us_or_ch[i]))
-		{
-			Channel *ch = find_channel(us_or_ch[i]);
-			if (ch && ch->is_user_inside(user->get_user_name()))
-			{
-				std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + ch->get_name() + " :" + v[2] + "\r\n";
-				ch->c_send_message(user->get_user_name(), dcc_msg, true);
-			}
-			else if (!ch)
-			{
-				std::string error_msg = ":IRCSERV 403 " + user->get_user_nick() + " " + us_or_ch[i] + " :No such channel\r\n";
-				send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-			}
-			else
-			{
-				std::string error_msg = ":IRCSERV 442 " + user->get_user_nick() + " " + ch->get_name() + " :You're not on that channel\r\n";
-				send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-			}
-		}
-		else
-		{
-			User *u = find_user(convert_to_username(us_or_ch[i]));
-			if (u)
-			{
-				std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + u->get_user_nick() + " :" + v[2] + "\r\n";
-				send(u->get_user_fd(), dcc_msg.c_str(), dcc_msg.size(), 0);
-			}
-			else
-			{
-				std::string error_msg = ":IRCSERV 401 " + user->get_user_nick() + " " + us_or_ch[i] + " :No such nickname\r\n";
-				send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-			}
-		}
-	}
+	if (dcc_info[1] != user->get_user_host() && (user->get_user_host() != "localhost" || dcc_info[1] != "127.0.0.1"))
+    {
+        std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid IP address\r\n";
+        send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+        return;
+    }
+    if (port <= 0 || port > 65535)
+    {
+        std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid port\r\n";
+        send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+        return;
+    }
+    if (size < 1)
+    {
+        std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid file size\r\n";
+        send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+        return;
+    }
+    std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " NOTICE " + user->get_user_nick() + " :DCC SEND " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + " " + dcc_info[3] + "\r\n";
+    send(user->get_user_fd(), dcc_msg.c_str(), dcc_msg.size(), 0);
 }
 
 void Server::quit(User *user)
