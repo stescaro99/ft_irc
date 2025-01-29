@@ -159,9 +159,9 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 			bool plus = (flags[i][0] == '+');
 			short limit = 0;
 			std::string password;
-			std::vector<std::string> users;
-			set_mode_utility(v, users, limit, password, n, flags[i]);
-			if (parameters_check(flags, users, limit, password, user, ch))
+			std::vector<std::string> new_admins;
+			set_mode_utility(v, new_admins, limit, password, n, flags[i]);
+			if (parameters_check(flags, new_admins, limit, password, user, ch))
 				return;
 			for (size_t j = 1; j < flags[i].size(); j++)
 			{
@@ -212,24 +212,24 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 				}
 				else if (m == 'o' && plus)
 				{
-					for (size_t k = 0; k < users.size(); k++)
+					for (size_t k = 0; k < new_admins.size(); k++)
 					{
-						if (ch->is_user_inside(users[k]))
+						if (ch->is_user_inside(new_admins[k]))
 						{
-							ch->add_admin(users[k]);
-							std::string mode_msg = ":IRCSERV MODE " + ch->get_name() + " +o " + users[k] + "\r\n";
+							ch->add_admin(new_admins[k]);
+							std::string mode_msg = ":IRCSERV MODE " + ch->get_name() + " +o " + new_admins[k] + "\r\n";
 							ch->c_send_message(user->get_user_name(), mode_msg, false);
 						}
 					}
 				}
 				else if (m == 'o')
 				{
-					for (size_t k = 0; k < users.size(); k++)
+					for (size_t k = 0; k < new_admins.size(); k++)
 					{
-						if (ch->is_user_inside(users[k]))
+						if (ch->is_user_inside(new_admins[k]))
 						{
-							ch->rem_admin(users[k]);
-							std::string mode_msg = ":IRCSERV MODE " + ch->get_name() + " -o " + users[k] + "\r\n";
+							ch->rem_admin(new_admins[k]);
+							std::string mode_msg = ":IRCSERV MODE " + ch->get_name() + " -o " + new_admins[k] + "\r\n";
 							ch->c_send_message(user->get_user_name(), mode_msg, false);
 						}
 					}

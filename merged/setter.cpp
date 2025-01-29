@@ -82,7 +82,10 @@ void Server::set_mode_utility(std::vector<std::string> const &v, std::vector<std
 				users.clear();
 				return ;
 			}
-			split(v[n], ",", users);
+			std::vector<std::string> tmp;
+			split(v[n], ",", tmp);
+			for (size_t j = 0; j < tmp.size(); j++)
+				users.push_back(convert_to_username(tmp[j]));
 			n++;
 		}
 	}
