@@ -247,6 +247,8 @@ void Server::split(std::string s, const std::string &delim, std::vector<std::str
 		tmp = s.substr(0, start);
 		if (tmp.size() > 0)
 			v.push_back(tmp);
+		else //boh
+			v.push_back("");
 		s.erase(0, start + delim.length());
 	}
 	if (!s.empty())
@@ -310,7 +312,7 @@ short Server::is_command(const std::string &s) const
 	return (0);
 }
 
-bool Server::parameters_check(std::vector<std::string> const &flags, std::vector<std::string> const &admin, short limit, std::string password, User *user)
+bool Server::parameters_check(std::vector<std::string> const &flags, std::vector<std::string> const &admin, short limit, std::string password, User *user, Channel *ch)
 {
 	if (flags.size() == 0)
 		return (false);
@@ -339,7 +341,7 @@ bool Server::parameters_check(std::vector<std::string> const &flags, std::vector
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		exit = true;
 	}
-	if (limit_flag && (size_t)limit < users.size())
+	if (limit_flag && (size_t)limit < ch->get_users_count())
 	{
 		std::string error_msg = ":IRCSERV 472 " + user->get_user_nick() + " MODE :Channel limit exceeded\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
