@@ -72,7 +72,9 @@ void User::leave_channel(const std::string &channel)
 				if ((it->second)->is_user_admin(user_name))
 				{
 					(it->second)->rem_admin(user_name);
-					std::string admin_msg = ":" + user_nickname + "!" + user_name + "@" + user_host + " MODE " + it->first + " -o " + user_nickname + "\r\n";
+					std::string new_admin = (it->second)->get_new_admin();
+					User *new_ad = server.find_user(new_admin);
+					std::string admin_msg = ":" + new_ad->get_user_nick() + "!" + new_admin + "@" + new_ad->get_user_host() + " MODE " + it->first + " -o " + user_nickname + "\r\n";
 					(it->second)->c_send_message(user_name, admin_msg, false);
 				}
 				(it->second)->rem_user_from_channel(user_name, false);

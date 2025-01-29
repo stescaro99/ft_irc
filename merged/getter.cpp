@@ -101,3 +101,8 @@ short Channel::get_limit() const
 {
 	return (ch_limit);
 }
+
+std::string Channel::get_new_admin() const
+{
+	return (ch_admin[ch_admin.size() - 1]);
+}

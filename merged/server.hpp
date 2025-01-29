@@ -20,9 +20,6 @@ class Server
 
 		void take_str(std::string *dest, char *src);
 		void print_all(int ufd, const std::string &mess, const std::string &nick);
-		User *find_user(int fd) const;
-		User *find_user(const std::string &user) const;
-		Channel *find_channel(const std::string &channel) const;
 		void konversations(short i, std::string &s);
 		void split(std::string s, const std::string &delim, std::vector<std::string> &v);
 		short is_command(const std::string &s) const;
@@ -69,6 +66,9 @@ class Server
 		bool is_channel(const std::string &channel) const;
 		std::string convert_to_username(std::string const &nick) const;
 		
+		User *find_user(int fd) const;
+		User *find_user(const std::string &user) const;
+		Channel *find_channel(const std::string &channel) const;
 };
 
 #endif

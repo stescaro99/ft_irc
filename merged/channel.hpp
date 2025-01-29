@@ -44,6 +44,7 @@ class Channel
 		bool get_topic_only_admin() const;
 		std::string get_password() const;
 		short get_limit() const;
+		std::string get_new_admin() const;
 
 		bool is_user_admin(const std::string &user) const;
 		bool is_user_invited(const std::string &user) const;
