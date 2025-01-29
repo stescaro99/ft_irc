@@ -403,6 +403,11 @@ void Server::privmsg(User *user, std::vector<std::string> const &v)
 		dcc(user, v);
 		return ;
 	}
+	if (v[2].substr(0, 13) == ":DCC ACCEPT ")
+	{
+		dcc_accept(user, v);
+		return ;
+	}
 	std::vector<std::string> us_or_ch;
 	split(v[1], ",", us_or_ch);
 	std::string message = v[2].substr(1);
@@ -518,6 +523,41 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 			}
 		}
 	}
+}
+
+void Server::dcc_accept(User *user, std::vector<std::string> const &v)
+{
+	std::string tmp = v[2].substr(13);
+	std::vector<std::string> dcc_info;
+	split(tmp, " ", dcc_info);
+	if (dcc_info.size() != 3)
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " PRIVMSG :Not enough parameters\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		return;
+	}
+	unsigned short m_port;
+	std::stringstream ss;
+	ss << dcc_info[1];
+	ss >> m_port;
+	ss.clear();
+	long position;
+	ss << dcc_info[2];
+	ss >> position;
+	if (m_port != port)
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid port\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		return;
+	}
+	if (position < 0)
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid position\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		return;
+	}
+	std::string acc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " NOTICE " + user->get_user_nick() + " :DCC ACCEPT " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + "\r\n";
+	send(user->get_user_fd(), acc_msg.c_str(), acc_msg.size(), 0);
 }
 
 void Server::quit(User *user)

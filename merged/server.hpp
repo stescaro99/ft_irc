@@ -40,6 +40,7 @@ class Server
 		void invite(User *user, std::vector<std::string> const &v);
 		void privmsg(User *user, std::vector<std::string> const &v);
 		void dcc(User *user, std::vector<std::string> const &v);
+		void dcc_accept(User *user, std::vector<std::string> const &v);
 		void quit(User *user);
 
 		// messages
