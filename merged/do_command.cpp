@@ -527,7 +527,7 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 
 void Server::dcc_accept(User *user, std::vector<std::string> const &v)
 {
-	std::string tmp = v[2].substr(13);
+	std::string tmp = v[2].substr(12);
 	std::vector<std::string> dcc_info;
 	split(tmp, " ", dcc_info);
 	if (dcc_info.size() != 3)
