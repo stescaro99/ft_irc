@@ -11,7 +11,10 @@ void Channel::add_user_to_channel(User *user, const std::string &password)
 			for (size_t i = 0; i < ch_invited.size(); i++)
 			{
 				if (ch_invited[i] == (*user).get_user_name())
+				{
+					ch_invited.erase(ch_invited.begin() + i);
 					break ;
+				}
 				if (i == ch_invited.size() - 1)
 					return ;
 			}

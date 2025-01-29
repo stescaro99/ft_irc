@@ -29,6 +29,8 @@ void User::create_channel(const std::string &channel, const std::string &passwor
 	nc->c_send_message(user_name, invite_msg, false);
 	std::string topic_msg = ":IRCSERV MODE " + channel + " -t\r\n";
 	nc->c_send_message(user_name, topic_msg, false);
+	std::string ban_msg = ":IRCSERV MODE " + channel + " -b\r\n";
+	nc->c_send_message(user_name, ban_msg, false);
 }
 
 void User::join_channel(Channel *channel, const std::string &password)
