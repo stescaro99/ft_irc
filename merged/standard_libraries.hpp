@@ -5,6 +5,15 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <algorithm>
+#include <iterator>
+#include <csignal>
+#include <cstring>
+#include <fstream>
+#include <cstdio>
+#include <sstream>
+#include <climits>
+
 #include <poll.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -12,18 +21,23 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <csignal>
-#include <cstring>
-#include "server.hpp"
-#include <fstream>
-#include <cstdio>
+#include <netdb.h>
 
+#include <readline/history.h>
+
+#include "user.hpp"
+#include "channel.hpp"
+#include "server.hpp"
+#include "bot.hpp"
+
+# define BOT_NAME "Bot"
+# define CH user_channels[channel]
 # define Red "\033[31m"
-# define Reset "\033[0m"
 # define Green "\033[32m"
 # define Yellow "\033[33m"
 # define Blue "\033[34m"
 # define Magenta "\033[35m"
 # define Cyan "\033[36m"
+# define Reset "\033[0m"
 
 #endif
