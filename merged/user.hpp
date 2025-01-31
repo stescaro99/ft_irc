@@ -23,7 +23,6 @@ class User
 		User(Server &server, int fd);
 		virtual ~User();
 
-		void change_my_nickname(const std::string &nickname);
 		void create_channel(const std::string &channel, const std::string &password);
 		void join_channel(Channel *channel, const std::string &password);
 		void leave_channel(const std::string &channel);

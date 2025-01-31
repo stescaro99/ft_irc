@@ -61,14 +61,15 @@ class Channel
 
 		void bot_join(User *user, Bot *bot, std::string b_name);
 		void bot_kick(User *user);
-		void game_bot(User *user, std::string const &jcmd);
-		void time_bot(std::string const &jcmd);
-		void quote_bot(std::string const &jcmd);
-		void six_bus_bot(std::string const &cmd);
-		void help_bot(User *user, std::string const &cmd);
+		void game_bot(User *user);
+		void time_bot();
+		void quote_bot();
+		void six_bus_bot();
+		void help_bot(User *user);
 		void panna_bot();
 		void wrong_bot(User *user, short code);
-		void bot_info(User *user, std::string const &jcmd);
+		void sorry_bot();
+		void increment_bot_mood(short max);
 };
 
 #endif

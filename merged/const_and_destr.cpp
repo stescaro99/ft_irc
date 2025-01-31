@@ -53,7 +53,7 @@ User::~User()
 	user_channels.clear();
 }
 
-Bot::Bot(Server &server, int fd, Channel *channel) : User(server, fd), mood(0)
+Bot::Bot(Server &server, int fd, Channel *channel) : User(server, fd), mood(50)
 {
 	bot_channel = channel;
 	increment_state();

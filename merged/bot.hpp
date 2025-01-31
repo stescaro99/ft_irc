@@ -2,10 +2,11 @@
 # define BOT_HPP
 
 #include "standard_libraries.hpp"
-
+//#include "user.hpp"
 
 class Channel;
 class Server;
+class User;
 
 class Bot : public User
 {
@@ -20,6 +21,8 @@ class Bot : public User
         void increment_mood(short max);
         void destroy_bot();
         void set_channel(Channel *channel);
+        short get_mood() const;
+        std::string get_insults() const;
 };
 
 #endif

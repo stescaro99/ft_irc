@@ -49,6 +49,11 @@
     bot_channel->c_send_message(bot_nickname, response, true);
 } */
 
+void Bot::destroy_bot()
+{
+    server.rem_user(user_name);
+}
+
 static bool valid_nick(const std::vector<std::string> &v, const std::string &s)
 {
     if (s.find(":") != std::string::npos)
@@ -104,31 +109,37 @@ static short is_bot_command(const std::string &command)
     else if (cmd == "!kickbot")
         return 8;
     else if (cmd == "!info")
+        return 9;
+    else if (cmd == "!sorry")
+        return 10;
     return 0;
 }
 
 void Server::command_bot(Channel *ch, User *user, std::string const &command)
 {
+    //stampare messaggio?
     short cmd = is_bot_command(command);
+    if (command.size() > 6 && cmd > 1 && cmd < 8)
+        ch->increment_bot_mood(1);
     switch (cmd)
     {
         case 1:
             create_bot(ch, user, command);
             break;
         case 2:
-            ch->game_bot(user, command);
+            ch->game_bot(user);
             break;
         case 3:
-            ch->time_bot(command);
+            ch->time_bot();
             break;
         case 4:
-            ch->quote_bot(command);
+            ch->quote_bot();
             break;
         case 5:
-            ch->six_bus_bot(command);
+            ch->six_bus_bot();
             break;
         case 6:
-            ch->help_bot(user, command);
+            ch->help_bot(user);
             break;
         case 7:
             ch->panna_bot();
@@ -137,11 +148,12 @@ void Server::command_bot(Channel *ch, User *user, std::string const &command)
             ch->bot_kick(user); //si incazza con chi ha spento il bot a seconda del mood
             break;
         case 9:
-            ch->bot_info(user, command);
+            bot_info(ch, user, command);
+            break;
+        case 10:
+            ch->sorry_bot();
             break;
         case 0:
             ch->wrong_bot(user, cmd); //aumenta il mood e risponde in base al mood
     }
 }
-        
-

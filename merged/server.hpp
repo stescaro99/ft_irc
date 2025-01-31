@@ -45,15 +45,12 @@ class Server
 		void dcc_accept(User *user, std::vector<std::string> const &v);
 		void quit(User *user);
 
-		// messages
-
 	public:
 		Server(std::string const &password, unsigned short port);
 		~Server();
 
 		void server_init();
 		void ser_socket();
-		void accept_new_client();
 		void receive_new_data(int fd);
 		void close_fds();
 
@@ -65,10 +62,10 @@ class Server
 		void rem_user(const std::string &user);
 		void add_channel(Channel *ch);
 		void rem_channel(const std::string &channel);
-		void send_message(const std::string &user, const std::string &message);
 		bool is_user(const std::string &user) const;
 		bool is_nick(const std::string &nick) const;
 		bool is_bot(const std::string &nick) const;
+		void bot_info(Channel *ch, User *user, std::string const &jcmd);
 		bool is_channel(const std::string &channel) const;
 		std::string convert_to_username(std::string const &nick) const;
 		
@@ -76,6 +73,9 @@ class Server
 		User *find_user(const std::string &user) const;
 		Channel *find_channel(const std::string &channel) const;
 		Bot *find_bot(const std::string &nick) const;
+
+		std::string get_channels_list() const;
+		std::string get_users_list() const;
 };
 
 #endif

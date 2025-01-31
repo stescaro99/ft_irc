@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <sstream>
 #include <climits>
+#include <ctime>
 
 #include <poll.h>
 #include <sys/socket.h>

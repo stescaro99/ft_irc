@@ -1,11 +1,4 @@
-#include "user.hpp"
-
-void User::change_my_nickname(const std::string &nickname)
-{
-	if (server.is_nick(nickname))
-		return ;
-	user_nickname = nickname;
-}
+#include "standard_libraries.hpp"
 
 void User::create_channel(const std::string &channel, const std::string &password)
 {

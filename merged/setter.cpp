@@ -105,3 +105,18 @@ void Bot::set_channel(Channel *channel)
 {
 	bot_channel = channel;
 }
+
+void Bot::increment_mood(short max)
+{
+	if (SHRT_MAX - mood < max)
+		mood = SHRT_MAX;
+	else if (mood + max < 0)
+		mood = 0;
+	mood += max;
+}
+
+void Channel::increment_bot_mood(short max)
+{
+	if (ch_bot)
+		ch_bot->increment_mood(max);
+}

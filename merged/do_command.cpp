@@ -410,7 +410,20 @@ void Server::privmsg(User *user, std::vector<std::string> const &v)
 	}
 	if (v[2].substr(0, 2) == ":!")
 	{
-		command_bot(find_channel(user->get_user_nick()), user, v[2].substr(1));
+		Channel *ch = find_channel(v[1]);
+		if (!ch)
+		{
+			std::string error_msg = ":IRCSERV 403 " + user->get_user_nick() + " " + v[1] + " :No such channel\r\n";
+			send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+			return;
+		}
+		if (!ch->is_user_inside(user->get_user_name()))
+		{
+			std::string error_msg = ":IRCSERV 404 " + user->get_user_nick() + " " + ch->get_name() + " :Cannot send to channel\r\n";
+			send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+			return;
+		}
+		command_bot(ch, user, v[2].substr(1));
 		return ;
 	}
 	std::vector<std::string> us_or_ch;
@@ -481,7 +494,7 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
         send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
         return;
     }
-    if (port <= 0 || port > 65535)
+    if (port < 1024)
     {
         std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid port\r\n";
         send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);

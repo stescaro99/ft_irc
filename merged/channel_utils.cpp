@@ -42,6 +42,8 @@ std::string Channel::get_users_list() const
 		else
 			ret += user_nick + " ";
 	}
+	if (ch_bot)
+		ret += ch_bot->get_user_nick() + " ";
 	ret = ret.substr(0, ret.size() - 1);
 	return (ret);
 }

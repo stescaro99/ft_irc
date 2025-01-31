@@ -127,3 +127,14 @@ std::string Channel::get_bot_name() const
 {
 	return (bot_name);
 }
+
+std::string Bot::get_insults() const
+{
+	std::string adj[] = {"user", "mean", "ass hole", "pratface", "stupid", "son of a bitch", "dumb", "world's worst", "shitface", "idiot", "dirty old bastard", "moron", "fucking stupid ass hole", "one that not even his mother wants at home"};
+	return (adj[mood/50]);
+}
+
+short Bot::get_mood() const
+{
+	return (mood);
+}
