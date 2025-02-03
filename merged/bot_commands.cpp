@@ -215,7 +215,7 @@ void Channel::help_bot(User *user)
 		return;
 	}
 	ch_bot->increment_mood(-1);
-	std::string mess = bot_name + " my commands are:\n!game - to play Heads or Tails\n!time - to know the time\n!quote - to get a random quote\n!bus - to know when the next 6 bus will pass\n!panna - to know the panna cotta recipe\n!help - to see this message again\r!info - to know more about the channel or commands\r\n";
+	std::string mess = bot_name + " my commands are:\n!game - to play Heads or Tails\n!time - to know the time\n!quote - to get a random quote\n!bus - to know when the next 6 bus will pass\n!panna - to know the panna cotta recipe\n!help - to see this message again\n!info - to know more about the channel or commands\r\n";
 	send(user->get_user_fd(), mess.c_str(), mess.length(), 0);
 }
 
