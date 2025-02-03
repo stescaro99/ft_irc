@@ -86,7 +86,7 @@ void Server::command_bot(Channel *ch, User *user, std::string const &command)
 			ch->time_bot();
 			break;
 		case 4:
-			ch->quote_bot();
+			ch->quote_bot(); //probabile crash
 			break;
 		case 5:
 			ch->six_bus_bot();
