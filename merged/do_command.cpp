@@ -144,6 +144,8 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 		ch->channel_info(user);
 		return ;
 	}
+	else if (v[2] == "+b")
+		return;
 	else if (!ch->is_user_admin(user->get_user_name()))
 	{
 		std::string error_msg = ":IRCSERV 482 " + user->get_user_nick() + " " + ch->get_name() + " :You're not channel operator\r\n";
@@ -489,24 +491,24 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 	ss << dcc_info[3];
 	ss >> size;
 	if (dcc_info[1] != user->get_user_host() && (user->get_user_host() != "localhost" || dcc_info[1] != "127.0.0.1"))
-    {
-        std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid IP address\r\n";
-        send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-        return;
-    }
-    if (port < 1024)
-    {
-        std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid port\r\n";
-        send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-        return;
-    }
-    if (size < 1)
-    {
-        std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid file size\r\n";
-        send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-        return;
-    }
-    std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " NOTICE " + user->get_user_nick() + " :DCC SEND " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + " " + dcc_info[3] + "\r\n";
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid IP address\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		return;
+	}
+	if (port < 1024)
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid port\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		return;
+	}
+	if (size < 1)
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid file size\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		return;
+	}
+	std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " NOTICE " + user->get_user_nick() + " :DCC SEND " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + " " + dcc_info[3] + "\r\n";
 	for (size_t i = 0; i < us_or_ch.size(); i++)
 	{
 		if (is_channel(us_or_ch[i]))

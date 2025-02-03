@@ -11,9 +11,15 @@ void Server::signal_handler(int signum)
 void Server::close_fds()
 {
 	for (size_t i = 0; i < users.size(); i++)
-		close(users[i]->get_user_fd());
+	{
+		if (users[i])
+			close(users[i]->get_user_fd());
+	}
 	for (size_t i = 0; i < bots.size(); i++)
-		close(bots[i]->get_user_fd());
+	{
+		if (bots[i])
+			close(bots[i]->get_user_fd());
+	}
 	if (socket_fd != 1)
 		close(socket_fd);
 }

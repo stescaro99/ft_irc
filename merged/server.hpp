@@ -73,6 +73,7 @@ class Server
 		User *find_user(const std::string &user) const;
 		Channel *find_channel(const std::string &channel) const;
 		Bot *find_bot(const std::string &nick) const;
+		int get_socket_fd() const;
 
 		std::string get_channels_list() const;
 		std::string get_users_list() const;

@@ -98,6 +98,11 @@ Bot *Server::find_bot(const std::string &bot) const
 	return (NULL);
 }
 
+int Server::get_socket_fd() const
+{
+	return (socket_fd);
+}
+
 bool Channel::get_topic_only_admin() const
 {
 	return (topic_only_admin);
@@ -131,10 +136,18 @@ std::string Channel::get_bot_name() const
 std::string Bot::get_insults() const
 {
 	std::string adj[] = {"user", "mean", "ass hole", "pratface", "stupid", "son of a bitch", "dumb", "world's worst", "shitface", "idiot", "dirty old bastard", "moron", "fucking stupid ass hole", "one that not even his mother wants at home"};
-	return (adj[mood/50]);
+	unsigned short index = mood / 50;
+	if (index < 13)
+		return (adj[index]);
+	return (adj[13]);
 }
 
 short Bot::get_mood() const
 {
 	return (mood);
+}
+
+int Bot::get_bot_fd() const
+{
+	return (bot_fd);
 }

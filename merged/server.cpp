@@ -5,9 +5,9 @@ void Server::add_user()
 	struct sockaddr_in	usadd;
 	struct pollfd		new_poll;
 	socklen_t			len = sizeof(usadd);
-	User *user = new User(*this, accept(socket_fd, (sockaddr *)&(usadd), &len));
+	int incofd = accept(socket_fd, (sockaddr *)&(usadd), &len);
+	User *user = new User(*this, incofd);
 
-	int incofd = user->get_user_fd();
 	if (incofd == -1)
 	{
 		std::cout << "accept failed" << std::endl;
@@ -20,13 +20,11 @@ void Server::add_user()
 	new_poll.fd = incofd;
 	new_poll.events = POLLIN;
 	new_poll.revents = 0;
-
 	if (fcntl(incofd, F_SETFL, O_NONBLOCK) == -1)
 	{
 		std::cout << "user fcntl failed" << std::endl;
 		return;
 	}
-
 	users.push_back(user);
 	fds.push_back(new_poll);
 	std::cout  << Cyan << "client <" << incofd << "> is connect" << Reset << std::endl;
@@ -73,6 +71,8 @@ void Server::rem_user(const std::string &user)
 						break ;
 					}
 				}
+				fd = (*it)->get_bot_fd();
+				close(fd);
 				delete *it;
 				bots.erase(it);
 				break ;
@@ -97,11 +97,12 @@ void Server::rem_channel(const std::string &channel)
 		{
 			if ((*it)->get_name() == channel)
 			{
-				Bot *bot = (*it)->get_bot();
-				if (bot)
+				if ((*it)->get_bot_name() != "")
 				{
+					Bot *bot = find_bot((*it)->get_bot_name());
+					if ((*it)->get_bot())
+						(*it)->bot_kick(bot);
 					rem_user(bot->get_user_name());
-					(*it)->bot_kick(NULL);
 				}
 				delete *it;
 				channels.erase(it);

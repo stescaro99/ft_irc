@@ -16,12 +16,12 @@ void User::create_channel(const std::string &channel, const std::string &passwor
 	user_channels[channel] = nc;
 	std::cout << Green << "Channel " << channel << " was create" << Reset << std::endl;
 	//set modes
-	std::string limit_msg = ":IRCSERV MODE " + channel + " -l\r\n";
-	nc->c_send_message(user_name, limit_msg, false);
-	std::string invite_msg = ":IRCSERV MODE " + channel + " -i\r\n";
-	nc->c_send_message(user_name, invite_msg, false);
-	std::string topic_msg = ":IRCSERV MODE " + channel + " -t\r\n";
-	nc->c_send_message(user_name, topic_msg, false);
+	// std::string limit_msg = ":IRCSERV MODE " + channel + " -l\r\n";
+	// nc->c_send_message(user_name, limit_msg, false);
+	// std::string invite_msg = ":IRCSERV MODE " + channel + " -i\r\n";
+	// nc->c_send_message(user_name, invite_msg, false);
+	// std::string topic_msg = ":IRCSERV MODE " + channel + " -t\r\n";
+	// nc->c_send_message(user_name, topic_msg, false);
 }
 
 void User::join_channel(Channel *channel, const std::string &password)
@@ -40,7 +40,7 @@ void User::join_channel(Channel *channel, const std::string &password)
 		send(user_fd, wrong_pass.c_str(), wrong_pass.size(), 0);
 		return ;
 	}
-	if (channel->get_users_count() == (size_t)channel->get_limit())
+	if (channel->get_users_count() + (channel->get_bot() != NULL) == (size_t)channel->get_limit())
 	{
 		std::string error_msg = ":IRCSERV 471 " + user_nickname + " " + channel->get_name() + " :Cannot join channel (+l)\r\n";
 		send(user_fd, error_msg.c_str(), error_msg.size(), 0);

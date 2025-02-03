@@ -14,6 +14,7 @@
 #include <sstream>
 #include <climits>
 #include <ctime>
+#include <cerrno>
 
 #include <poll.h>
 #include <sys/socket.h>

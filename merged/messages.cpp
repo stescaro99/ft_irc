@@ -20,8 +20,24 @@ void Channel::c_send_message(const std::string &user, const std::string &message
 			continue;
 		send(it->second->get_user_fd(), message.c_str(), message.size(), 0);
 	}
-	if (ch_bot)
-		send(ch_bot->get_user_fd(), message.c_str(), message.size(), 0);
+	if (ch_bot && (!not_usr || ch_bot->get_user_name() != user))
+	{
+		try
+		{
+			send(ch_bot->get_user_fd(), message.c_str(), message.size(), 0);
+		}
+		catch(const std::exception& e)
+		{
+			try
+			{
+				send(ch_bot->get_bot_fd(), message.c_str(), message.size(), 0);
+			}
+			catch (const std::exception& e)
+			{
+			}
+		}
+		
+	}
 }
 
 void Server::send_join_message(Channel *ch, User *user)
@@ -60,15 +76,15 @@ void Channel::channel_info(User *user) const
 {
 	std::string mode_msg = ":IRCSERV 324 " + user->get_user_nick() + " " + ch_name + " +";
 
-    if (ch_invite)
-        mode_msg += "i";
-    if (topic_only_admin)
-        mode_msg += "t";
-    if (!ch_password.empty())
-        mode_msg += "k";
-    if (ch_limit != SHRT_MAX)
-        mode_msg += "l";
-    mode_msg += "\r\n";
+	if (ch_invite)
+		mode_msg += "i";
+	if (topic_only_admin)
+		mode_msg += "t";
+	if (!ch_password.empty())
+		mode_msg += "k";
+	if (ch_limit != SHRT_MAX)
+		mode_msg += "l";
+	mode_msg += "\r\n";
 	send(user->get_user_fd(), mode_msg.c_str(), mode_msg.size(), 0);
 
 	std::string msg;

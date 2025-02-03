@@ -8,6 +8,7 @@ Server::Server(std::string const &password, unsigned short port) : server_name("
 
 Server::~Server()
 {
+	close_fds();
 	for (size_t i = 0; i < channels.size(); i++)
 		delete channels[i];
 	channels.clear();
@@ -16,7 +17,6 @@ Server::~Server()
 	users.clear();
 	for (size_t i = 0; i < bots.size(); i++)
 		delete bots[i];
-	close_fds();
 	for (size_t j = 0; j < fds.size(); j++)
 		close(fds[j].fd);
 	if (socket_fd != 1)
@@ -36,7 +36,6 @@ Channel::Channel(const std::string &name, User *creator) : ch_name(name)
 
 Channel::~Channel()
 {
-	ch_bot->destroy_bot();
 	ch_users.clear();
 	ch_admin.clear();
 }
@@ -56,6 +55,20 @@ User::~User()
 Bot::Bot(Server &server, int fd, Channel *channel) : User(server, fd), mood(50)
 {
 	bot_channel = channel;
+	struct sockaddr_in	usadd;
+	socklen_t			len = sizeof(usadd);
+	bot_fd = accept(server.get_socket_fd(), (sockaddr *)&(usadd), &len);
+	if (bot_fd == -1)
+	{
+		std::cerr << "accept failed: " << std::strerror(errno) << std::endl;
+		close(fd);
+		return;
+	}
+	if (fcntl(bot_fd, F_SETFL, O_NONBLOCK) == -1)
+	{
+		std::cout << "user fcntl failed" << std::endl;
+		return;
+	}
 	increment_state();
 	increment_state();
 	increment_state();
@@ -63,6 +76,7 @@ Bot::Bot(Server &server, int fd, Channel *channel) : User(server, fd), mood(50)
 
 Bot::~Bot()
 {
-	close(user_fd);
 	bot_channel = NULL;
+	close(user_fd);
+	close(bot_fd);
 }
