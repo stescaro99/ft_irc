@@ -630,10 +630,9 @@ void Server::handle_dcc_send(User *user, const std::string &message)
     start_dcc_send(user, filename, ip_address, port, size);
 }
 
-void Server::start_dcc_send(User *user, const std::string &filename, const std::string &ip, unsigned short port, unsigned long size)
+void Server::start_dcc_send(User *user, const std::string &filename, const std::string &ip, unsigned short n_port, unsigned long size)
 {
     (void)size;
-    (void)user;
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0)
     {
@@ -643,8 +642,16 @@ void Server::start_dcc_send(User *user, const std::string &filename, const std::
 
     struct sockaddr_in serv_addr;
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(port);
+    serv_addr.sin_port = htons(n_port);
     inet_pton(AF_INET, ip.c_str(), &serv_addr.sin_addr);
+
+	//aggiunto
+	struct timeval timeout;
+    timeout.tv_sec = 10; // 10 seconds timeout
+    timeout.tv_usec = 0;
+    setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
+    setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout));
+	//fine aggiunto
 
     if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
@@ -660,7 +667,10 @@ void Server::start_dcc_send(User *user, const std::string &filename, const std::
         close(sockfd);
         return;
     }
-
+	//aggiunto
+	std::string request = "DCC SEND " + filename + " " + ip + " " + std::to_string(n_port) + " " + std::to_string(size) + "\r\n";
+	send(sockfd, request.c_str(), request.size(), 0);
+	//fine aggiunto
     char buffer[1024];
     while (file.read(buffer, sizeof(buffer)))
     {

@@ -43,7 +43,7 @@ class Server
 		void create_bot(Channel *ch, User *user, std::string const &nick);
 		//void dcc(User *user, std::vector<std::string> const &v);
 		void handle_dcc_send(User *user, const std::string &message);//
-		void start_dcc_send(User *user, const std::string &filename, const std::string &ip, unsigned short port, unsigned long size);
+		void start_dcc_send(User *user, const std::string &filename, const std::string &ip, unsigned short n_port, unsigned long size);
 		//void dcc_accept(User *user, std::vector<std::string> const &v);
 		void quit(User *user);
 
