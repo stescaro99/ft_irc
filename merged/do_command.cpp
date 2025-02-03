@@ -402,7 +402,7 @@ void Server::privmsg(User *user, std::vector<std::string> const &v)
 	}
 	if (v[2].substr(0, 10) == ":DCC SEND ")
 	{
-		handle_dcc_send(user, v[2].substr(1));
+		handle_dcc_send(user, v[2].substr(10));
 		//dcc(user, v);
 		return ;
 	}
@@ -597,24 +597,31 @@ void Server::quit(User *user)
 
 void Server::handle_dcc_send(User *user, const std::string &message)
 {
-    std::istringstream iss(message);
-    std::string command, filename, ip_str, port_str, size_str;
-    iss >> command >> filename >> ip_str >> port_str >> size_str;
+    std::vector<std::string> v;
+	split(message, " ", v);
 
-	std::stringstream ss;
-	ss << ip_str;
-    unsigned long ip;
-	ss >> ip;
-	ss.clear();
-	ss << port_str;
+	if (v.size() != 4)
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " PRIVMSG :Not enough parameters\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		return;
+	}
+
+	std::string filename = v[0];
 	unsigned short port;
+	std::stringstream ss;
+	ss << v[2];
 	ss >> port;
 	ss.clear();
-	ss << size_str;
-    unsigned long size;
+	unsigned long size;
+	ss << v[3];
 	ss >> size;
-
-    // Converti l'IP da formato numerico a stringa
+	ss.clear();
+	unsigned long ip;
+	ss << v[1];
+	ss >> ip;
+	ss.clear();
+	// Converti l'IP da stringa a formato numerico
     struct in_addr addr;
     addr.s_addr = htonl(ip);
     std::string ip_address = inet_ntoa(addr);
