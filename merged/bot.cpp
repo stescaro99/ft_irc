@@ -1,54 +1,5 @@
 #include "bot.hpp"
 
-/* void Bot::process_commands(const std::string &command)
-{
-	std::string response;
-
-	std::cout << "Raw message: " << command << std::endl;
-
-	size_t colon_pos = command.find(" :");
-	if (colon_pos == std::string::npos)
-		return;
-
-	std::string actual_command = command.substr(colon_pos + 2); // +2 per saltare ": "
-
-	std::cout << "command: " << command << std::endl;
-	if (command == "!hello")
-		response = "Ciao! Sono " + bot_nickname + "! Come posso aiutarti?\r\n";
-	else if (command == "!ping")
-		response = "Pong!\r\n";
-	else if (command == "!time")
-	{
-		time_t now = time(0);
-		response = "Sono le " + std::string(ctime(&now)) + "\r\n";
-	}
-	else if (command == "!toc") //testa o croce
-	{
-		srand(time(0));
-		int res = rand() % 2;
-		if (res == 0)
-			response = "Testa!\r\n";
-		else
-			response = "Croce!\r\n";
-	}
-	else if (command == "!panna")
-		response = "La panna cotta è uno dei dolci al cucchiaio più conosciuti e apprezzati non solo in Italia, ma anche all'estero Per la semplicità della sua preparazione, il gusto particolarmente delicato e il modo elegante in cui può essere impiattata e condita, è diventato un classico dolce di fine pasto perfetto per ogni occasione. Le origini precise di questo dolce sono sconosciute, si sa solo che è nato nella zona delle Langhe piemontesi all'inizio del Novecento.\r\n";
-	else if (command == "!help")
-	{
-		response = "Ecco i comandi che puoi usare:\r\n";
-		response += "!hello - saluta il bot\r\n";
-		response += "!ping - giochi a ping pong\r\n";
-		response += "!time - ottieni l'ora attuale\r\n";
-		response += "!toc - testa o croce\r\n";
-		response += "!panna - informazioni sulla panna cotta\r\n";
-		response += "!help - mostra questo messaggio\r\n";
-	}
-	else if (command[0] == '!')
-		response = "Scusami, non conosco il comando. Usa !help per vedere i comandi disponibili.\r\n";
-	response = ":" + bot_nickname + "!" + bot_nickname + "@" + bot_host + " PRIVMSG " + bot_channel->get_name() + " :" + response + "\r\n"; 
-	bot_channel->c_send_message(bot_nickname, response, true);
-} */
-
 static bool valid_nick(const std::vector<std::string> &v, const std::string &s)
 {
 	if (s.find(":") != std::string::npos)

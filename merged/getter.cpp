@@ -135,11 +135,11 @@ std::string Channel::get_bot_name() const
 
 std::string Bot::get_insults() const
 {
-	std::string adj[] = {"user", "mean", "ass hole", "pratface", "stupid", "son of a bitch", "dumb", "world's worst", "shitface", "idiot", "dirty old bastard", "moron", "fucking stupid ass hole", "one that not even his mother wants at home"};
+	std::string adj[] = {"user", "mean", "ass hole", "pratface", "stupid", "son of a bitch", "dumb", "world's worst", "shitface", "idiot", "dirty old bastard", "moron", "fucking stupid ass hole", "one that not even his mother wants at home", "pisano", "pisano di merda"};
 	unsigned short index = mood / 50;
-	if (index < 13)
+	if (index < 15)
 		return (adj[index]);
-	return (adj[13]);
+	return (adj[15]);
 }
 
 short Bot::get_mood() const
