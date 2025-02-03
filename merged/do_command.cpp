@@ -402,12 +402,13 @@ void Server::privmsg(User *user, std::vector<std::string> const &v)
 	}
 	if (v[2].substr(0, 10) == ":DCC SEND ")
 	{
-		dcc(user, v);
+		handle_dcc_send(user, v[2].substr(1));
+		//dcc(user, v);
 		return ;
 	}
 	if (v[2].substr(0, 12) == ":DCC ACCEPT ")
 	{
-		dcc_accept(user, v);
+		//dcc_accept(user, v);
 		return ;
 	}
 	if (v[2].substr(0, 2) == ":!")
@@ -468,7 +469,7 @@ void Server::privmsg(User *user, std::vector<std::string> const &v)
 		}
 	}
 }
-
+/* 
 void Server::dcc(User *user, std::vector<std::string> const &v)
 {
 	std::string tmp = v[2].substr(10);
@@ -578,7 +579,7 @@ void Server::dcc_accept(User *user, std::vector<std::string> const &v)
 	}
 	std::string acc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " NOTICE " + user->get_user_nick() + " :DCC ACCEPT " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + "\r\n";
 	send(user->get_user_fd(), acc_msg.c_str(), acc_msg.size(), 0);
-}
+} */
 
 void Server::quit(User *user)
 {
@@ -592,4 +593,78 @@ void Server::quit(User *user)
 	//std::cout << users.size() << std::endl;
 	if (users.size() == 0)
 		throw std::runtime_error("No users left, server closed");
+}
+
+void Server::handle_dcc_send(User *user, const std::string &message)
+{
+    std::istringstream iss(message);
+    std::string command, filename, ip_str, port_str, size_str;
+    iss >> command >> filename >> ip_str >> port_str >> size_str;
+
+	std::stringstream ss;
+	ss << ip_str;
+    unsigned long ip;
+	ss >> ip;
+	ss.clear();
+	ss << port_str;
+	unsigned short port;
+	ss >> port;
+	ss.clear();
+	ss << size_str;
+    unsigned long size;
+	ss >> size;
+
+    // Converti l'IP da formato numerico a stringa
+    struct in_addr addr;
+    addr.s_addr = htonl(ip);
+    std::string ip_address = inet_ntoa(addr);
+
+    // Avvia il trasferimento del file
+    start_dcc_send(user, filename, ip_address, port, size);
+}
+
+void Server::start_dcc_send(User *user, const std::string &filename, const std::string &ip, unsigned short port, unsigned long size)
+{
+    (void)size;
+    (void)user;
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0)
+    {
+        std::cerr << "Errore nella creazione del socket" << std::endl;
+        return;
+    }
+
+    struct sockaddr_in serv_addr;
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(port);
+    inet_pton(AF_INET, ip.c_str(), &serv_addr.sin_addr);
+
+    if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    {
+        std::cerr << "Errore nella connessione al client" << std::endl;
+        close(sockfd);
+        return;
+    }
+
+    std::ifstream file(filename.c_str(), std::ios::binary);
+    if (!file.is_open())
+    {
+        std::cerr << "Errore nell'apertura del file" << std::endl;
+        close(sockfd);
+        return;
+    }
+
+    char buffer[1024];
+    while (file.read(buffer, sizeof(buffer)))
+    {
+        send(sockfd, buffer, file.gcount(), 0);
+    }
+    if (file.gcount() > 0)
+    {
+        send(sockfd, buffer, file.gcount(), 0);
+    }
+
+    file.close();
+    close(sockfd);
+    std::cout << "File trasferito con successo" << std::endl;
 }

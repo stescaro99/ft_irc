@@ -112,7 +112,7 @@ void Bot::increment_mood(short max)
 	int mod = max;
 	if (max > 1)
 		mod = std::rand() % mod;
-	else if (max < 0)
+	else if (max < -1)
 		mod = -(std::rand() % (-mod));
 
 	if (mod > 0 && SHRT_MAX - mood < mod)
