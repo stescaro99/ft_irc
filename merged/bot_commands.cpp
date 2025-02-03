@@ -228,7 +228,7 @@ void Channel::panna_bot()
 		return;
 	}
 	ch_bot->increment_mood(-100);
-	std::string mess = bot_name + " Nice choice! Panna cotta recipe:\n1. Boil the cream with the sugar and the vanilla bean\n2. Soak the gelatin in cold water\n3. Squeeze the gelatin and add it to the cream\n4. Pour the mixture into the molds and let it cool\n5. Put the panna cotta in the fridge for at least 4 hours\n6. Serve with the caramel sauce\nGently offered by sfabi, Yummy!!!\r\n";
+	std::string mess = bot_name + " Nice choice! Panna cotta recipe:\n1. Boil the cream with the sugar and the vanilla bean\n2. Soak the gelatin in cold water\n3. Squeeze the gelatin and add it to the cream\n4. Pour the mixture into the molds and let it cool\n5. Put the panna cotta in the fridge for at least 4 hours\n6. Serve with the caramel sauce\nPanna_cotta Gently offered by sfabi, Yummy!!!\r\n";
 	c_send_message(bot_name, mess, true);
 }
 
