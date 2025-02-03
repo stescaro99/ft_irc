@@ -597,7 +597,7 @@ void Server::quit(User *user)
 
 void Server::handle_dcc_send(User *user, const std::string &message)
 {
-    std::vector<std::string> v;
+	std::vector<std::string> v;
 	split(message, " ", v);
 
 	if (v.size() != 4)
@@ -622,66 +622,71 @@ void Server::handle_dcc_send(User *user, const std::string &message)
 	ss >> ip;
 	ss.clear();
 	// Converti l'IP da stringa a formato numerico
-    struct in_addr addr;
-    addr.s_addr = htonl(ip);
-    std::string ip_address = inet_ntoa(addr);
+	struct in_addr addr;
+	addr.s_addr = htonl(ip);
+	std::string ip_address = inet_ntoa(addr);
 
-    // Avvia il trasferimento del file
-    start_dcc_send(user, filename, ip_address, port, size);
+
+	User *target_user = find_user("stescaro");
+	std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + target_nick + " :\001DCC SEND " + file_name + " " + user->get_user_ip() + " " + std::to_string(user->get_dcc_port()) + " " + file_size + "\001\r\n";
+    send(target_user->get_user_fd(), dcc_msg.c_str(), dcc_msg.size(), 0);
+
+	// Avvia il trasferimento del file
+	start_dcc_send(user, filename, ip_address, port, size);
 }
 
 void Server::start_dcc_send(User *user, const std::string &filename, const std::string &ip, unsigned short n_port, unsigned long size)
 {
-    (void)size;
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
-    {
-        std::cerr << "Errore nella creazione del socket" << std::endl;
-        return;
-    }
+	(void)size;
+	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sockfd < 0)
+	{
+		std::cerr << "Errore nella creazione del socket" << std::endl;
+		return;
+	}
 
-    struct sockaddr_in serv_addr;
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(n_port);
-    inet_pton(AF_INET, ip.c_str(), &serv_addr.sin_addr);
+	struct sockaddr_in serv_addr;
+	serv_addr.sin_family = AF_INET;
+	serv_addr.sin_port = htons(n_port);
+	inet_pton(AF_INET, ip.c_str(), &serv_addr.sin_addr);
 
 	//aggiunto
 	struct timeval timeout;
-    timeout.tv_sec = 10; // 10 seconds timeout
-    timeout.tv_usec = 0;
-    setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
-    setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout));
+	timeout.tv_sec = 10; // 10 seconds timeout
+	timeout.tv_usec = 0;
+	setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
+	setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof(timeout));
 	//fine aggiunto
 
-    if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
-        std::cerr << "Errore nella connessione al client" << std::endl;
-        close(sockfd);
-        return;
-    }
+	if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+	{
+		std::cerr << "Errore nella connessione al client" << std::endl;
+		close(sockfd);
+		return;
+	}
 
-    std::ifstream file(filename.c_str(), std::ios::binary);
-    if (!file.is_open())
-    {
-        std::cerr << "Errore nell'apertura del file" << std::endl;
-        close(sockfd);
-        return;
-    }
+	std::ifstream file(filename.c_str(), std::ios::binary);
+	if (!file.is_open())
+	{
+		std::cerr << "Errore nell'apertura del file" << std::endl;
+		close(sockfd);
+		return;
+	}
 	//aggiunto
 	std::string request = "DCC SEND " + filename + " " + ip + " " + std::to_string(n_port) + " " + std::to_string(size) + "\r\n";
 	send(sockfd, request.c_str(), request.size(), 0);
 	//fine aggiunto
-    char buffer[1024];
-    while (file.read(buffer, sizeof(buffer)))
-    {
-        send(sockfd, buffer, file.gcount(), 0);
-    }
-    if (file.gcount() > 0)
-    {
-        send(sockfd, buffer, file.gcount(), 0);
-    }
+	char buffer[1024];
+	while (file.read(buffer, sizeof(buffer)))
+	{
+		send(sockfd, buffer, file.gcount(), 0);
+	}
+	if (file.gcount() > 0)
+	{
+		send(sockfd, buffer, file.gcount(), 0);
+	}
 
-    file.close();
-    close(sockfd);
-    std::cout << "File trasferito con successo" << std::endl;
+	file.close();
+	close(sockfd);
+	std::cout << "File trasferito con successo" << std::endl;
 }
