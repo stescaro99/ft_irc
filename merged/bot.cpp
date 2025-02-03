@@ -59,6 +59,8 @@ static short is_bot_command(const std::string &command)
 		return 9;
 	else if (cmd == "!sorry")
 		return 10;
+	else if (cmd == "!pisano")
+		return 11;
 	return 0;
 }
 
@@ -103,6 +105,9 @@ void Server::command_bot(Channel *ch, User *user, std::string const &command)
 			break;
 		case 10:
 			ch->sorry_bot();
+			break;
+		case 11:
+			ch->pisano_bot();
 			break;
 		case 0:
 			ch->wrong_bot(user, 0); //aumenta il mood e risponde in base al mood

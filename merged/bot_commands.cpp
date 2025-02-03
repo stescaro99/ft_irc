@@ -130,7 +130,7 @@ void Channel::game_bot(User *user)
 	ch_bot->increment_mood(-50);
 	if (ch_bot->get_mood() > 699)
 	{
-		std::string mess = bot_name + " " + user->get_user_nick() + "You really expected me to play with you after all you've done? I'm a bot, not a toy. I'm out of here!\r\n";
+		std::string mess = bot_name + " " + user->get_user_nick() + ", You really expected me to play with you after all you've done? I'm a bot, not a toy. I'm out of here!\r\n";
 		c_send_message(bot_name, mess, true);
 		return;
 	}
@@ -215,7 +215,7 @@ void Channel::help_bot(User *user)
 		return;
 	}
 	ch_bot->increment_mood(-1);
-	std::string mess = bot_name + " my commands are:\n!game - to play Heads or Tails\n!time - to know the time\n!quote - to get a random quote\n!bus - to know when the next 6 bus will pass\n!panna - to know the panna cotta recipe\n!help - to see this message again\r!info - to know more about the channel or commands\r\n";
+	std::string mess = bot_name + " my commands are:\n!game - to play Heads or Tails\n!time - to know the time\n!quote - to get a random quote\n!bus - to know when the next 6 bus will pass\n!panna - to know the panna cotta recipe\n!help - to see this message again\n!info - to know more about the channel or commands\r\n";
 	send(user->get_user_fd(), mess.c_str(), mess.length(), 0);
 }
 
@@ -295,7 +295,9 @@ void Server::bot_info(Channel *ch, User *user, std::string const &jcmd)
 	std::string bot_name = ch_bot->get_user_nick();
 	if (jcmd.size() < 6)
 	{
-		std::string mess = bot_name + " 1"; //metti le info dei comandi del server
+		std::stringstream ss;
+		ss << ch_bot->get_mood();
+		std::string mess = bot_name + " anger points =" + ss.str() + "\r\n";
 		send(user->get_user_fd(), mess.c_str(), mess.length(), 0);
 		return;
 	}
@@ -312,4 +314,17 @@ void Server::bot_info(Channel *ch, User *user, std::string const &jcmd)
 	}
 	std::string mess = bot_name + " the channels in this server are:\n" + get_channels_list() + "\nThe users are:\n" + get_users_list() + "\r\n";
 	send(user->get_user_fd(), mess.c_str(), mess.length(), 0);
+}
+
+void Channel::pisano_bot()
+{
+	if (!ch_bot)
+	{
+		std::string mess = "ERROR: No bot in the channel\r\n";
+		c_send_message(ch_name, mess, false);
+		return;
+	}
+	ch_bot->increment_mood(10000);
+	std::string mess = bot_name + " PISANO A ME?!?!?!?! TE NE PENTIRAI PER TUTTA LA VITA, " + ch_bot->get_insults() + "!\r\n";
+	c_send_message(bot_name, mess, true);
 }

@@ -70,6 +70,7 @@ class Channel
 		void wrong_bot(User *user, short code);
 		void sorry_bot();
 		void increment_bot_mood(short max);
+		void pisano_bot();
 };
 
 #endif

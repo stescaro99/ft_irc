@@ -121,6 +121,7 @@ void Bot::increment_mood(short max)
 		mood = 0;
 	else
 		mood += mod;
+	std::cout << "mod: " << mod << std::endl;
 }
 
 void Channel::increment_bot_mood(short max)
