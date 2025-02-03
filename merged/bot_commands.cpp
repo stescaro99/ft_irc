@@ -134,7 +134,7 @@ void Channel::game_bot(User *user)
 		c_send_message(bot_name, mess, true);
 		return;
 	}
-	std::string m = bot_name + " ok, " + user->get_user_nick() + " ,lets play Heads or Tails!\r\n" + bot_name + " flipping a coin...\r\n";
+	std::string m = bot_name + " ok, " + user->get_user_nick() + ", lets play Heads or Tails!\r\n" + bot_name + " flipping a coin...\r\n";
 	c_send_message(bot_name, m, true);
 	sleep(2);
 	std::srand(std::time(0));
@@ -267,10 +267,10 @@ void Channel::wrong_bot(User *user, short code)
 	int mood = ch_bot->get_mood();
 	switch (code)
 	{
-		case -1: //join con nick sbagliato
+		case -1:
 			mess += user->get_user_nick() + ", the " + ch_bot->get_insults() + ", did you really try to add another bot? I rule this channel! Now that I'm back, stronger than ever, I'll take my revenge on you!\r\n";
 			break;
-		case 0: //generico comando inesistente
+		case 0:
 			if (mood > 699)
 				mess += "Someone kick out this loser, " + user->get_user_nick() + "'s so stupid that he can't even read the commands!\r\n";
 			else if (mood > 399)
@@ -279,15 +279,6 @@ void Channel::wrong_bot(User *user, short code)
 				mess += user->get_user_nick() + " are you stupid? This is not a valid command!\r\n";
 			else
 				mess += user->get_user_nick() + " you might have typed something wrong, this command doesn't exist!\r\n";
-			break;
-		case 1: 
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		case 4:
-			break;
 	}
 	c_send_message(bot_name, mess, true);
 }

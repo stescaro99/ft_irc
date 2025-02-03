@@ -117,7 +117,10 @@ void Server::command_bot(Channel *ch, User *user, std::string const &command)
 	if (command.length() > 6 && cmd > 1 && cmd < 8 && !ch->get_bot())
 		ch->increment_bot_mood(1);
 	if (cmd != 9 && cmd != 6)
-		ch->c_send_message(user->get_user_name(), command, true);
+    {
+        std::string mess = user->get_user_nick() + " " + command + "\r\n";
+		ch->c_send_message(user->get_user_name(), mess, true);
+    }
 	switch (cmd)
 	{
 		case 1:
