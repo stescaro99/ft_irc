@@ -108,11 +108,19 @@ void Bot::set_channel(Channel *channel)
 
 void Bot::increment_mood(short max)
 {
-	if (SHRT_MAX - mood < max)
+	std::srand(std::time(0));
+	int mod = max;
+	if (max > 1)
+		mod = std::rand() % mod;
+	else if (max < 0)
+		mod = -(std::rand() % (-mod));
+
+	if (mod > 0 && SHRT_MAX - mood < mod)
 		mood = SHRT_MAX;
-	else if (mood + max < 0)
+	else if (mood + mod < 0)
 		mood = 0;
-	mood += max;
+	else
+		mood += mod;
 }
 
 void Channel::increment_bot_mood(short max)
