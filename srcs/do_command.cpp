@@ -491,25 +491,7 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 	size_t size;
 	ss << dcc_info[3];
 	ss >> size;
-	/* if (dcc_info[1] != user->get_user_host() && (user->get_user_host() != "localhost" || dcc_info[1] != "127.0.0.1"))
-	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid IP address\r\n";
-		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-		return;
-	}
-	if (port < 1024)
-	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid port\r\n";
-		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-		return;
-	}
-	if (size < 1)
-	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid file size\r\n";
-		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-		return;
-	} */
-	// std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + target_user->get_user_nick() + " :\001DCC SEND " + filename + " " + user->get_ip() + " " + v[2] + " " + size + "\001\r\n";
+
 	for (size_t i = 0; i < us_or_ch.size(); i++)
 	{
 		if (is_channel(us_or_ch[i]))
@@ -552,6 +534,7 @@ void Server::dcc_accept(User *user, std::vector<std::string> const &v)
 {
 	std::string tmp = v[2].substr(12);
 	std::vector<std::string> dcc_info;
+	std::cout << "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" << std::endl;
 	split(tmp, " ", dcc_info);
 	if (dcc_info.size() != 3)
 	{
