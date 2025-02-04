@@ -20,6 +20,18 @@ void User::increment_tries()
 	pass_tries++;
 }
 
+void User::remove_client()
+{
+	if (is_client)
+		is_client = false;
+}
+
+void User::add_client()
+{
+	if (!is_client)
+		is_client = true;
+}
+
 void User::increment_state()
 {
 	state++;

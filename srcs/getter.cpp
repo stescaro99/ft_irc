@@ -151,3 +151,8 @@ int Bot::get_bot_fd() const
 {
 	return (bot_fd);
 }
+
+bool  User::get_state_of_client()
+{
+	return (is_client);
+}

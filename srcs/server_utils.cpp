@@ -75,9 +75,9 @@ void Server::server_init()
 void Server::take_str(std::string *dest, char *src)
 {
 	*dest = src;
-	//size_t i = dest->find("\n");
-	//if (i != std::string::npos)
-	//	*dest = dest->substr(0, i);
+	size_t i = dest->find("\n");
+	if (i != std::string::npos)
+		*dest = dest->substr(0, i);
 	std::fill(src, src + strlen(src), '\0');
 }
 
@@ -112,6 +112,64 @@ void Server::konversations(short i, std::string &s)
 	}
 }
 
+void Server::byTerminal(User *i, std::string key)
+{
+	std::cout << key << std::endl;
+	switch (i->get_state())
+	{
+		case 0:
+			if (key != password)
+			{
+				i->increment_tries();
+				send(i->get_user_fd(), "Incorrect password\r\n", 21, 0);
+				if (i->get_tries() == 3)
+				{
+					send(i->get_user_fd(), "too many tries\r\n", 16, 0);
+					close(i->get_user_fd());
+					rem_user(i->get_user_name());
+					return;
+				}
+				send(i->get_user_fd(), "Insert password\r\n", 18, 0);
+				break;
+			}
+			else
+			{
+				send(i->get_user_fd(), "select a nickname\r\n", 20, 0);
+				i->increment_state();
+			}
+			break;
+		case 1:
+			if (is_nick(key))
+			{
+				send(i->get_user_fd(), "name already taken\nselect a nickname\r\n", 35, 0);
+				break;
+			}
+			if (key[0] == '#' || key[0] == '&' || key.find(" ") != std::string::npos)
+			{
+				send(i->get_user_fd(), "invalid nickname\nselect a nickname\r\n", 35, 0);
+				break;
+			}
+			i->set_user_nick(key);
+			i->increment_state();
+			send(i->get_user_fd(), "select a name\r\n", 16, 0);
+			break;
+		case 2:
+			if (is_user(key) || key.find(" ") != std::string::npos)
+			{
+				send(i->get_user_fd(), "name already taken\nselect a name\r\n", 35, 0);
+				break;
+			}
+			i->set_user_name(key);
+			i->increment_state();
+			key.clear();
+			key = "INFO: " + i->get_user_nick() + "!" + i->get_user_name() + "@" + i->set_user_host(i->get_user_fd()) + " Welcome in the server\r\n";
+			std::cout << Green << "user " << i->get_user_nick() << " connected" << Reset << std::endl;
+			send(i->get_user_fd(), key.c_str(), key.size(), 0);
+			i->add_client();
+			break;
+	}
+}
+
 void Server::receive_new_data(int fd)
 {
 	User *i = find_user(fd);
@@ -119,95 +177,104 @@ void Server::receive_new_data(int fd)
 		return ;
 	i->memset_buff();
 	ssize_t bytes = recv(fd, i->get_buff(), 1024, 0);
-	std::cout << i->get_buff() << "-----" << std::endl;
+	std::string buffer(i->get_buff(), bytes);
+	std::string temp = buffer.substr(0, 6);
+	static std::string save;
+	std::vector<std::string> key;
 	if (bytes <= 0)
 	{
 		std::cout << Red << "user " << i->get_user_nick() << " disconnected"  << Reset << std::endl;
 		quit(i);
 		return ;
 	}
-	std::string buffer(i->get_buff(), bytes);
-    std::string delimiter = "\r\n";
+	if ((i->get_state() == 0 && temp != "CAP LS") || !i->get_state_of_client())
+	{
+		buffer.erase(buffer.find_last_not_of(" \t\n\r\f\v") + 1);
+		i->remove_client();
+		byTerminal(i, buffer);
+	}
+	save = save + buffer;
+	if (temp == "CAP LS" && std::count(save.begin(), save.end(), '\n') < 4)
+	{
+		return ;
+	}
+	split(save, "\n", key);
+	save = "";
 
-	size_t pos = 0;
-    while ((pos = buffer.find(delimiter)) != std::string::npos)
-    {
-        std::string s = buffer.substr(0, pos);
-        buffer.erase(0, pos + delimiter.length());
+	for (size_t j = 0; j < key.size(); ++j) {
+    key[j].erase(key[j].find_last_not_of(" \t\n\r\f\v") + 1);
+	}
+	size_t pos;
+	switch (i->get_state())
+	{
+		case 0:
+		case 1:
+		case 2:
 
-        switch (i->get_state())
-        {
-            case 0:
-                take_str(&s, i->get_buff());
-                konversations(i->get_state(), s);
-                if (s != password && s != "\127")
-                {
-                    i->increment_tries();
-                    send(i->get_user_fd(), "Incorrect password\r\n", 21, 0);
-                    if (i->get_tries() == 3)
-                    {
-                        send(i->get_user_fd(), "too many tries\r\n", 16, 0);
-                        close(i->get_user_fd());
-                        rem_user(i->get_user_name());
-                        return;
-                    }
-                    send(i->get_user_fd(), "Insert password\r\n", 18, 0);
-                    break;
-                }
-                else if (s == "\127")
-                    break;
-                else
-                {
-                    send(i->get_user_fd(), "select a nickname\r\n", 20, 0);
-                    i->increment_state();
-                }
-                break;
-            case 1:
-                take_str(&s, i->get_buff());
-                konversations(i->get_state(), s);
-                if (is_nick(s))
-                {
-                    send(i->get_user_fd(), "name already taken\nselect a nickname\r\n", 35, 0);
-                    break;
-                }
-                if (s[0] == '#' || s[0] == '&' || s.find(" ") != std::string::npos)
-                {
-                    send(i->get_user_fd(), "invalid nickname\nselect a nickname\r\n", 35, 0);
-                    break;
-                }
-                i->set_user_nick(s);
-                i->increment_state();
-                send(i->get_user_fd(), "select a name\r\n", 16, 0);
-                break;
-            case 2:
-                take_str(&s, i->get_buff());
-                konversations(i->get_state(), s);
-                if (is_user(s) || s.find(" ") != std::string::npos)
-                {
-                    send(i->get_user_fd(), "name already taken\nselect a name\r\n", 35, 0);
-                    break;
-                }
-                i->set_user_name(s);
-                i->increment_state();
-                s.clear();
-                s = "INFO: " + i->get_user_nick() + "!" + i->get_user_name() + "@" + i->set_user_host(i->get_user_fd()) + " Welcome in the server\r\n";
-                std::cout << Green << "user " << i->get_user_nick() << " connected" << Reset << std::endl;
-                send(i->get_user_fd(), s.c_str(), s.size(), 0);
-                break;
-            case 3:
-                take_str(&s, i->get_buff());
-                std::vector<std::string> v;
-                split(s, " ", v);
-                short cmd = is_command(v[0]);
-                if (cmd)
-                {
-                    std::cout << Yellow << "<" << i->get_user_nick() << "> " << Reset << s << std::endl;
-                    do_command(cmd, i, v);
-                    break;
-                }
-                print_all(fd, s, i->get_user_nick());
-        }
-    }
+			key[1] = key[1].substr(5);
+			if (key[1] != password)
+			{
+				i->increment_tries();
+				send(i->get_user_fd(), "Incorrect password\r\n", 21, 0);
+				if (i->get_tries() == 3)
+				{
+					send(i->get_user_fd(), "too many tries\r\n", 16, 0);
+					close(i->get_user_fd());
+					rem_user(i->get_user_name());
+					return;
+				}
+				send(i->get_user_fd(), "Insert password\r\n", 18, 0);
+				break;
+			}
+			else
+			{
+				send(i->get_user_fd(), "select a nickname\r\n", 20, 0);
+				i->increment_state();
+			}
+			//break;
+			std::cout << std::endl << "-" << key[2] << "-" << std::endl;
+			key[2] = key[2].substr(5);
+			if (is_nick(key[2]))
+			{
+				send(i->get_user_fd(), "name already taken\nselect a nickname\r\n", 35, 0);
+				break;
+			}
+			if (key[2][0] == '#' || key[2][0] == '&' || key[2].find(" ") != std::string::npos)
+			{
+				send(i->get_user_fd(), "invalid nickname\nselect a nickname\r\n", 35, 0);
+				break;
+			}
+			i->set_user_nick(key[2]);
+			i->increment_state();
+			send(i->get_user_fd(), "select a name\r\n", 16, 0);
+			//break;
+			pos = key[3].find(':');
+			key[3] = key[3].substr(pos);
+			if (is_user(key[3]) || key[3].find(" ") != std::string::npos)
+			{
+				send(i->get_user_fd(), "name already taken\nselect a name\r\n", 35, 0);
+				break;
+			}
+			i->set_user_name(key[3]);
+			i->increment_state();
+			key[3].clear();
+			key[3] = "INFO: " + i->get_user_nick() + "!" + i->get_user_name() + "@" + i->set_user_host(i->get_user_fd()) + " Welcome in the server\r\n";
+			std::cout << Green << "user " << i->get_user_nick() << " connected" << Reset << std::endl;
+			send(i->get_user_fd(), key[3].c_str(), key[3].size(), 0);
+			break;
+		case 3:
+			take_str(&buffer, i->get_buff());
+			std::vector<std::string> v;
+			split(buffer, " ", v);
+			short cmd = is_command(v[0]);
+			if (cmd)
+			{
+				std::cout << Yellow << "<" << i->get_user_nick() << "> " << Reset << buffer << std::endl;
+				do_command(cmd, i, v);
+				break;
+			}
+			print_all(fd, buffer, i->get_user_nick());
+	}
 }
 
 bool Server::is_user(const std::string &user) const

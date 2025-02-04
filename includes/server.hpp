@@ -52,6 +52,7 @@ class Server
 		void server_init();
 		void ser_socket();
 		void receive_new_data(int fd);
+		void byTerminal(User *i, std::string key);
 		void close_fds();
 
 		static void signal_handler(int signum);

@@ -42,6 +42,7 @@ Channel::~Channel()
 
 User::User(Server &server, int fd) : user_fd(fd), user_name(""), user_nickname(""), server(server), state(0), pass_tries(0), user_host(set_user_host(fd))
 {
+	is_client = true;
 	if (user_fd == -1)
 		throw(std::runtime_error("failed to create user"));
 }

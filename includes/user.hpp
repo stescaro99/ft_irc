@@ -18,6 +18,7 @@ class User
 		short 							pass_tries;
 		char							buff[1024];
 		const std::string				user_host;
+		bool							is_client;
 	
 	public:
 		User(Server &server, int fd);
@@ -32,6 +33,7 @@ class User
 		int get_user_fd() const;
 		short get_state() const;
 		short get_tries() const;
+		bool  get_state_of_client();
 		char *get_buff();
 		std::string get_user_host() const;
 
@@ -39,6 +41,8 @@ class User
 		void set_user_name(const std::string &name);
 		void set_user_nick(const std::string &nick);
 		void set_user_state(short st);
+		void remove_client();
+		void add_client();
 		void increment_tries();
 		void increment_state();
 
