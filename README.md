@@ -1,5 +1,13 @@
 # ft_irc
 
-◦ send and receive private messages using your reference client.
-◦ All the messages sent from one client to a channel have to be forwarded to
-every other client that joined the channel.
+## ✅ FATTO
+- Nuova disposizione dei file, divisi in `srcs` e `includes` (sfabi)
+- Nuovo README temporaneo (sfabi)
+
+## ❌ DA FARE
+- Fixare la condivisione dei file
+- Controllare tutti i casi del bot
+- Finire bot quotes
+
+
+
