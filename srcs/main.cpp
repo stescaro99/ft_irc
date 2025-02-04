@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	Server server(password, port);
-	std::cout <<"----SERVER----" << port <<std::endl;
+	std::cout <<"----SERVER----" <<std::endl;
 
 	try
 	{
