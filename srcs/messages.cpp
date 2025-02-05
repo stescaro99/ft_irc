@@ -36,7 +36,6 @@ void Channel::c_send_message(const std::string &user, const std::string &message
 			{
 			}
 		}
-		
 	}
 }
 

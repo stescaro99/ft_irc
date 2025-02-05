@@ -46,7 +46,7 @@ void Server::create_bot(Channel *ch, User *user, const std::string &nick)
 	bot->set_user_nick(bot_nick);
 	bot->set_user_name(bot_nick);
 	std::string welcome = "INFO: " + bot_nick + "!" + bot_nick + "@" + bot->get_user_host() + " Welcome in the server\r\n";
-	send(bot_fd, welcome.c_str(), welcome.length(), 0);
+	send(bot_fd, welcome.c_str(), welcome.size(), 0);
 	
 	struct pollfd new_poll;
 	new_poll.fd = bot_fd;

@@ -192,12 +192,11 @@ void Server::receive_new_data(int fd)
 		buffer.erase(buffer.find_last_not_of(" \t\n\r\f\v") + 1);
 		i->remove_client();
 		byTerminal(i, buffer);
+		return ; //???
 	}
 	save = save + buffer;
 	if (temp == "CAP LS" && std::count(save.begin(), save.end(), '\n') < 4)
-	{
 		return ;
-	}
 	split(save, "\n", key);
 	save = "";
 
@@ -263,7 +262,10 @@ void Server::receive_new_data(int fd)
 			send(i->get_user_fd(), key[3].c_str(), key[3].size(), 0);
 			break;
 		case 3:
-			take_str(&buffer, i->get_buff());
+			// take_str(&buffer, i->get_buff());
+			buffer = i->get_buff();
+			buffer.erase(buffer.find_last_not_of(" \t\n\r\f\v") + 1);
+			i->memset_buff();
 			std::vector<std::string> v;
 			split(buffer, " ", v);
 			short cmd = is_command(v[0]);
@@ -309,10 +311,14 @@ bool Server::is_bot(const std::string &nick) const
 
 bool Server::is_channel(const std::string &channel) const
 {
+	std::cout << "|" << channel << "|" << std::endl;
 	for (std::vector<Channel*>::const_iterator it = channels.begin(); it != channels.end(); it++)
 	{
+		std::cout << "|" << (*it)->get_name() << "|" <<std::endl;
 		if ((*it)->get_name() == channel)
+		{
 			return (true);
+		}
 	}
 	return (false);
 }

@@ -156,3 +156,8 @@ bool  User::get_state_of_client()
 {
 	return (is_client);
 }
+
+Server &User::get_server() const
+{
+	return (server);
+}
