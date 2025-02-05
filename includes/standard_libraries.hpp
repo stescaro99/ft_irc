@@ -15,6 +15,7 @@
 #include <climits>
 #include <ctime>
 #include <cerrno>
+#include <cstdlib>
 
 #include <poll.h>
 #include <sys/socket.h>

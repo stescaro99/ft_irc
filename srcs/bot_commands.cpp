@@ -168,7 +168,45 @@ void Channel::time_bot()
 
 void Channel::quote_bot()
 {
-	std::string quotes[] = {"", ""};
+	std::string quotes[] = {
+		"\"Che la forza sia con te.\" - \"Star Wars\"",
+		"\"E.T. telefono casa.\" - \"E.T. l'extra-terrestre\"",
+		"\"Houston, abbiamo un problema.\" - \"Apollo 13\"",
+		"\"Mi chiamo Bond, James Bond.\" - \"007\"",
+		"\"Viva il Duce, il lavoro e la libertà. Rithorneremo, prima o dopo!\" - \"Mario Vanni\"",
+		"\"Se ni' mondo esistesse un po' di bene...\" - \"Pietro Pacciani\"",
+		"\"Io sono tuo padre.\" - \"Star Wars: Episodio V - L'Impero colpisce ancora\"",
+		"\"La vita è come una scatola di cioccolatini, non sai mai quello che ti capita.\" - \"Forrest Gump\"",
+		"\"Al mio segnale, scatenate l'inferno.\" - \"Il gladiatore\"",
+		"\"Non puoi passare!\" - \"Il Signore degli Anelli: La Compagnia dell'Anello\"",
+		"\"La vendetta è un piatto che va servito freddo.\" - \"Kill Bill: Volume 1\"",
+		"\"Non è la destinazione, ma il viaggio che conta.\" - \"La ricerca della felicità\"",
+		"\"Sono il re del mondo!\" - \"Titanic\"",
+		"\"La follia, come sai, è come la gravità... basta solo una piccola spinta.\" - \"Il cavaliere oscuro\"",
+		"\"Finisco di mangiare la peperonata e scendo.\" - \"Tre uomini e una gamba\"",
+		"\"Non esiste bene e male, esiste solo il potere... e quelli troppo deboli per averlo.\" - \"Harry Potter e la Pietra Filosofale\"",
+		"\"Sventura a te, Perry l'ornitorinco!\" - \"Phineas e Ferb\"",
+		"\"Non è un errore, è un'opportunità!\" - \"Up\"",
+		"\"Buongiorno! Ah e casomai non vi rivedessi, buon pomeriggio, buonasera e buonanotte!\" Truman Burbank - The Truman Show",
+		"\"Mi piace l'odore del napalm di mattina.\" - \"Apocalypse Now\"",
+		"\"Questo non è volare, questo è cadere con stile.\" - \"Toy Story\"",
+		"\"Io sono fuoco, io sono... Morte!\" - \"Lo Hobbit: La desolazione di Smaug\"",
+		"\"Il pericolo è il mio mestiere! Io rido in faccia al pericolo...Ah,Ah,ah,ah\" - \"Il re leone\"",
+		"\"La vita a volte è ingiusta, non è vero? Guarda me, io non diventerò mai re e tu domani, amico mio, non vedrai sorgere il sole.\" - \"Il re leone\"",
+		"\"Per quanto il vento ululi forte una montagna non può inclinarsi ad esso.\" - \"Mulan\"",
+		"\"Il fiore che sboccia nelle avversità è il più raro e il più bello di tutti\" - \"Mulan\"",
+		"\"Qualcosa ti ha fatto arrivare qui, Flynn Rider. Chiamalo come preferisci: fato, destino...\nFlynn ...un cavallo\" - \"Rapunzel - L'intreccio della torre\"",
+		"\"Il mondo è oscuro, il mondo è egoista e crudele. Se arriva a scoprire anche il più sottile raggio di sole, lo distrugge!\" - \"Rapunzel - L'intreccio della torre\"",
+		"\"Gli zingari vivono al di fuori dell'ordine morale. I loro modi barbari infiammano gli istinti più bassi della gente. Vanno subito fermati\" - \"Il gobbo di Notre Dame\"",
+		"\"Un vero eroe non si misura dalla forza che possiede, ma dalla forza del suo cuore.\" - \"Hercules\"",
+		"\"Solo un atto di vero amore può scogliere un cuore di ghiaccio.\" - \"Frozen\"",
+		"\"Io posso toccarti adesso\" - \"Harry Potter e il calice di fuoco\"",
+		"\"Strade? Dove stiamo andando non c'è bisogno di strade.\" - \"Ritorno al futuro\"",
+		"\"Se restare qui a lavorare significa trovarmi a dieci metri da te, francamente preferirei andare a pulire il culo a Saddam Hussein\" - \"Il diario di Bridget Jones\"",
+		"\"Perché fate così? Perché voi donne fate così? Perché vi fate tutte queste pippe mentali? Prendete ogni cosa che un uomo fa e la trasformate in un'altra cosa\" - \"La verità è che non gli piaci abbastanza\"",
+		"\"Un milione di dollari non è fico. Sai cos’è fico? Un miliardo di dollari\" - \"The Social Network\""
+	};
+	
 	std::srand(std::time(0));
 	short n = std::rand() % 10; //change 10 with the number of quotes
 	ch_bot->increment_mood(-20);
