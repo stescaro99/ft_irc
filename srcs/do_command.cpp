@@ -515,7 +515,7 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
     dccsoket.sin_family = AF_INET;
     dccsoket.sin_addr.s_addr = INADDR_ANY;
     dccsoket.sin_port = htons(m_port);
-
+    
 	int en = 1;
 	if(setsockopt(dcc_port, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
 		throw(std::runtime_error("failed to set on socket"));
