@@ -165,5 +165,20 @@ std::vector<std::string> Channel::get_users() const
 
 std::string User::get_priv_ip() const
 {
-	return (user_priv_ip);
+	std::vector<std::string> v;
+	Server::split(user_priv_ip, ".", v);
+	unsigned short nbrs[4];
+	size_t tot;
+	for (short i = 0; i < 4; i++)
+	{
+		std::stringstream ss;
+		ss << v[i];
+		ss >> nbrs[i];
+		ss.str("");
+		ss.clear();
+	}
+	tot = nbrs[3] + 256 * nbrs[2] + 65536 * nbrs[1] + 16777216 * nbrs[0];
+	std::stringstream s;
+	s << tot;
+	return (s.str());
 }

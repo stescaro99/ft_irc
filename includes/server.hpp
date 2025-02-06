@@ -26,7 +26,6 @@ class Server
 		void print_all(int ufd, const std::string &mess, const std::string &nick);
 		void konversations(short i, std::string &s);
 		std::string get_bot_nick(const std::string &nick);
-		void split(std::string s, const std::string &delim, std::vector<std::string> &v);
 		short is_command(const std::string &s) const;
 		void set_mode_utility(std::vector<std::string> const &v, std::vector<std::string> &users, short &limit, std::string &password, size_t &n, const std::string &flags);
 		std::vector<std::string> split_mode(const std::string &s);
@@ -59,6 +58,7 @@ class Server
 		static void signal_handler(int signum);
 		static void send_join_message(Channel *ch, User *user);
 		static void send_part_message(Channel *ch, User *user);
+		static void split(std::string s, const std::string &delim, std::vector<std::string> &v);
 
 		void add_user();
 		void rem_user(const std::string &user);
