@@ -538,11 +538,6 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
         return ;
     }
 
-<<<<<<< HEAD
-
-=======
-	// std::vector<std::string> rec;
->>>>>>> bdaeb565da004815b1ecb82bf1afb256b3fc67f3
 	for (size_t i = 0; i < us_or_ch.size(); i++)
 	{
 		if (is_channel(us_or_ch[i]))
@@ -582,31 +577,7 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 			}
 		}
 
-		struct sockaddr_in client;
-		socklen_t len = sizeof(client);
-		int newsockfd;
-
-		while (true)
-		{
-			newsockfd = accept(dcc_port, (struct sockaddr *)&client, &len);
-			if (newsockfd == -1)
-			{
-				if (errno == EWOULDBLOCK || errno == EAGAIN)
-					continue;
-				else
-				{
-					std::cerr << "Errore nell'accettazione della connessione" << std::endl;
-					close(dcc_port);
-					return ;
-				}
-			}
-			else
-				std::cout << "Accepted connection" << std::endl;
-		}
 	}
-<<<<<<< HEAD
-	
-=======
 
 
 	// if (rec.size() > 0)
@@ -619,7 +590,6 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 	// 	req->ip = dcc_info[1];
 	// 	requests[m_port] = req;
 	// }
->>>>>>> bdaeb565da004815b1ecb82bf1afb256b3fc67f3
 } 
 /*
 void Server::dcc_accept(User *user, std::vector<std::string> const &v)
