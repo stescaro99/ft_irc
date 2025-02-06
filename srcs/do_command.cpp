@@ -510,7 +510,7 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 			Channel *ch = find_channel(us_or_ch[i]);
 			if (ch && ch->is_user_inside(user->get_user_name()))
 			{
-				std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + ch->get_name() + " :\001DCC SEND " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + " " + dcc_info[3] + "\001\r\n";
+				std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + ch->get_name() + " :\001DCC SEND " + dcc_info[0] + " " + user->get_priv_ip() + " " + dcc_info[2] + " " + dcc_info[3] + "\001\r\n";
 				ch->c_send_message(user->get_user_name(), dcc_msg, true);
 				// std::vector<std::string> users = ch->get_users();
 				// for (size_t j = 0; j < users.size(); j++)

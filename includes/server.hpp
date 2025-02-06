@@ -43,7 +43,7 @@ class Server
 		void command_bot(Channel *ch, User *user, std::string const &command);
 		void create_bot(Channel *ch, User *user, std::string const &nick);
 		void dcc(User *user, std::vector<std::string> const &v);
-		void dcc_accept(User *user, std::vector<std::string> const &v);
+		// void dcc_accept(User *user, std::vector<std::string> const &v);
 		void quit(User *user);
 
 	public:
