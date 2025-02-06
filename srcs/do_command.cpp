@@ -405,11 +405,11 @@ void Server::privmsg(User *user, std::vector<std::string> const &v)
 		dcc(user, v);
 		return ;
 	}
-	if (v[2].substr(0, 12) == ":DCC ACCEPT ")
+	/* if (v[2].substr(0, 12) == ":DCC ACCEPT ")
 	{
 		dcc_accept(user, v);
 		return ;
-	}
+	} */
 	if (v[2].substr(0, 2) == ":!")
 	{
 		Channel *ch = find_channel(v[1]);
@@ -512,13 +512,13 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 			{
 				std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + ch->get_name() + " :\001DCC SEND " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + " " + dcc_info[3] + "\001\r\n";
 				ch->c_send_message(user->get_user_name(), dcc_msg, true);
-				std::vector<std::string> users = ch->get_users();
-				for (size_t j = 0; j < users.size(); j++)
-				{
-					std::vector<std::string>::iterator it = std::find(rec.begin(), rec.end(), users[j]);
-					if (it == rec.end())
-						rec.push_back(users[j]);
-				}
+				// std::vector<std::string> users = ch->get_users();
+				// for (size_t j = 0; j < users.size(); j++)
+				// {
+				// 	std::vector<std::string>::iterator it = std::find(rec.begin(), rec.end(), users[j]);
+				// 	if (it == rec.end())
+				// 		rec.push_back(users[j]);
+				// }
 			}
 			else if (!ch)
 			{
@@ -538,9 +538,9 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 			if (u)
 			{
 				send(u->get_user_fd(), dcc_msg.c_str(), dcc_msg.size(), 0);
-				std::vector<std::string>::iterator it = std::find(rec.begin(), rec.end(), u->get_user_nick());
-				if (it == rec.end())
-					rec.push_back(u->get_user_nick());
+				// std::vector<std::string>::iterator it = std::find(rec.begin(), rec.end(), u->get_user_nick());
+				// if (it == rec.end())
+				// 	rec.push_back(u->get_user_nick());
 			}
 			else
 			{
@@ -549,18 +549,18 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 			}
 		}
 	}
-	if (rec.size() > 0)
-	{
-		t_request *req = new t_request;
-		req->nick_sender = user->get_user_nick();
-		req->nick_receivers = rec;
-		req->filename = dcc_info[0];
-		req->size = size;
-		req->ip = dcc_info[1];
-		requests[m_port] = req;
-	}
-}
-
+	// if (rec.size() > 0)
+	// {
+	// 	t_request *req = new t_request;
+	// 	req->nick_sender = user->get_user_nick();
+	// 	req->nick_receivers = rec;
+	// 	req->filename = dcc_info[0];
+	// 	req->size = size;
+	// 	req->ip = dcc_info[1];
+	// 	requests[m_port] = req;
+	// }
+} 
+/*
 void Server::dcc_accept(User *user, std::vector<std::string> const &v)
 {
 	std::string tmp = v[2].substr(12);
@@ -607,16 +607,21 @@ void Server::dcc_accept(User *user, std::vector<std::string> const &v)
 		return;
 	}
 	std::string acc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + req->nick_sender + " :\001DCC ACCEPT " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + "\001\r\n";
-	send(find_user(req->nick_sender)->get_user_fd(), acc_msg.c_str(), acc_msg.size(), 0);
+	send(user->get_user_fd(), acc_msg.c_str(), acc_msg.size(), 0);
 
-	// User *u = find_user(convert_to_username(req->nick_sender));
-	// std::fstream ofs((u->get_priv_ip() + "/" + req->filename).c_str(), std::ios::out);
-	// //ofs.seekp(position);
-	// std::fstream ifs((user->get_priv_ip() + "/" + "~/Downloads/" + req->filename.substr(req->filename.find_last_of("/") + 1)).c_str(), std::ios::in);
-	// if (ofs.is_open())
-	// 	ofs << ifs.rdbuf();
-	// req->nick_receivers.erase(it);
-}
+	User *u = find_user(convert_to_username(req->nick_sender));
+	std::fstream ofs((u->get_priv_ip() + "/" + req->filename).c_str(), std::ios::out);
+	//ofs.seekp(position);
+	std::fstream ifs((user->get_priv_ip() + "/" + "~/Downloads/" + req->filename.substr(req->filename.find_last_of("/") + 1)).c_str(), std::ios::in);
+	if (ofs.is_open())
+		ofs << ifs.rdbuf();
+	req->nick_receivers.erase(it);
+	if (req->nick_receivers.size() == 0)
+	{
+		delete req;
+		requests.erase(m_port);
+	}
+} */
 
 void Server::quit(User *user)
 {
