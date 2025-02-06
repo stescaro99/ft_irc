@@ -476,7 +476,6 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 	split(v[1], ",", us_or_ch);
 	std::vector<std::string> dcc_info;
 	split(tmp, " ", dcc_info);
-	std::cout << dcc_info.size() << std::endl;
 	if (dcc_info.size() != 4)
 	{
 		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " PRIVMSG :Not enough parameters\r\n";
@@ -488,28 +487,22 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 	ss << dcc_info[2];
 	ss >> m_port;
 	ss.clear();
-	size_t size;
+	unsigned short size;
 	ss << dcc_info[3];
 	ss >> size;
-	/* if (dcc_info[1] != user->get_user_host() && (user->get_user_host() != "localhost" || dcc_info[1] != "127.0.0.1"))
-	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid IP address\r\n";
-		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-		return;
-	}
-	if (port < 1024)
+	if (port < 1026 || port > 7000)
 	{
 		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid port\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
-	if (size < 1)
+	if (size < 1 || size > 16384)
 	{
 		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid file size\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
-	} */
-	// std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + target_user->get_user_nick() + " :\001DCC SEND " + filename + " " + user->get_ip() + " " + v[2] + " " + size + "\001\r\n";
+	}
+	std::vector<std::string> rec;
 	for (size_t i = 0; i < us_or_ch.size(); i++)
 	{
 		if (is_channel(us_or_ch[i]))
@@ -519,6 +512,13 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 			{
 				std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + ch->get_name() + " :\001DCC SEND " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + " " + dcc_info[3] + "\001\r\n";
 				ch->c_send_message(user->get_user_name(), dcc_msg, true);
+				std::vector<std::string> users = ch->get_users();
+				for (size_t j = 0; j < users.size(); j++)
+				{
+					std::vector<std::string>::iterator it = std::find(rec.begin(), rec.end(), users[j]);
+					if (it == rec.end())
+						rec.push_back(users[j]);
+				}
 			}
 			else if (!ch)
 			{
@@ -534,10 +534,13 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 		else
 		{
 			User *u = find_user(convert_to_username(us_or_ch[i]));
-			std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + u->get_user_nick() + " :\001DCC SEND " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + " " + dcc_info[3] + "\001\r\n";
+			std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + u->get_user_nick() + " :\001DCC SEND " + dcc_info[0] + " " + user->get_priv_ip() + " " + dcc_info[2] + " " + dcc_info[3] + "\001\r\n";
 			if (u)
 			{
 				send(u->get_user_fd(), dcc_msg.c_str(), dcc_msg.size(), 0);
+				std::vector<std::string>::iterator it = std::find(rec.begin(), rec.end(), u->get_user_nick());
+				if (it == rec.end())
+					rec.push_back(u->get_user_nick());
 			}
 			else
 			{
@@ -545,6 +548,16 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 				send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 			}
 		}
+	}
+	if (rec.size() > 0)
+	{
+		t_request *req = new t_request;
+		req->nick_sender = user->get_user_nick();
+		req->nick_receivers = rec;
+		req->filename = dcc_info[0];
+		req->size = size;
+		req->ip = dcc_info[1];
+		requests[m_port] = req;
 	}
 }
 
@@ -567,21 +580,35 @@ void Server::dcc_accept(User *user, std::vector<std::string> const &v)
 	long position;
 	ss << dcc_info[2];
 	ss >> position;
-	if (m_port != port)
+	if (requests.find(m_port) == requests.end())
 	{
 		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid port\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
-	if (position < 0)
+	t_request *req = requests[m_port];
+	if (position < 0 || position > req->size)
 	{
 		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid position\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
-	std::string acc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " NOTICE " + user->get_user_nick() + " :DCC ACCEPT " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + "\r\n";
-	send(user->get_user_fd(), acc_msg.c_str(), acc_msg.size(), 0);
-} 
+	std::vector<std::string>::iterator it = std::find(req->nick_receivers.begin(), req->nick_receivers.end(), user->get_user_nick());
+	if (it == req->nick_receivers.end())
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid receiver\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		return;
+	}
+	if (dcc_info[0] != req->filename.substr(req->filename.find("/") + 1))
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid filename\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		return;
+	}
+	std::string acc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + req->nick_sender + " :\001DCC ACCEPT " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + "\001\r\n";
+	send(find_user(req->nick_sender)->get_user_fd(), acc_msg.c_str(), acc_msg.size(), 0);	
+}
 
 void Server::quit(User *user)
 {
@@ -596,4 +623,3 @@ void Server::quit(User *user)
 	if (users.size() == 0)
 		throw std::runtime_error("No users left, server closed");
 }
-

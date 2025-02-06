@@ -50,6 +50,7 @@ class Channel
 		std::string get_new_admin() const;
 		Bot *get_bot() const;
 		std::string get_bot_name() const;
+		std::vector<std::string> get_users() const;
 
 		bool is_user_admin(const std::string &user) const;
 		bool is_user_invited(const std::string &user) const;

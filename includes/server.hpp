@@ -6,6 +6,7 @@
 class channel;
 class User;
 class Bot;
+typedef struct	s_request t_request;
 
 class Server
 {
@@ -19,6 +20,7 @@ class Server
 		static bool					Signal;
 		std::vector<struct pollfd>	fds;
 		std::vector<Bot*>			bots;
+		std::map<unsigned short, t_request*> requests;
 
 		void take_str(std::string *dest, char *src);
 		void print_all(int ufd, const std::string &mess, const std::string &nick);

@@ -151,3 +151,19 @@ int Bot::get_bot_fd() const
 {
 	return (bot_fd);
 }
+
+std::vector<std::string> Channel::get_users() const
+{
+	std::vector<std::string> v;
+	for (std::map<std::string, User*>::const_iterator it = ch_users.begin(); it != ch_users.end(); it++)
+	{
+		if (!it->first.empty())
+			v.push_back(it->second->get_user_nick());
+	}
+	return v;
+}
+
+std::string User::get_priv_ip() const
+{
+	return (user_priv_ip);
+}

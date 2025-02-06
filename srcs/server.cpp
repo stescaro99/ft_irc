@@ -6,7 +6,7 @@ void Server::add_user()
 	struct pollfd		new_poll;
 	socklen_t			len = sizeof(usadd);
 	int incofd = accept(socket_fd, (sockaddr *)&(usadd), &len);
-	User *user = new User(*this, incofd);
+	User *user = new User(*this, incofd, inet_ntoa(usadd.sin_addr));
 
 	if (incofd == -1)
 	{
@@ -27,7 +27,7 @@ void Server::add_user()
 	}
 	users.push_back(user);
 	fds.push_back(new_poll);
-	std::cout  << Cyan << "client <" << incofd << "> is connect" << Reset << std::endl;
+	std::cout  << Cyan << "client <" << incofd << "> connected to ip: " << user->get_priv_ip() << Reset << std::endl;
 }
 
 void Server::rem_user(const std::string &user)

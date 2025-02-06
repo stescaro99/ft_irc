@@ -14,13 +14,14 @@ class User
 		std::string		 				user_nickname;
 		std::map<std::string, Channel*>	user_channels;
 		Server							&server;
-		short 							state;			// 0 = passw, 1 = nick, 2 = user, 3 = scrittura
+		short 							state;
 		short 							pass_tries;
 		char							buff[1024];
 		const std::string				user_host;
+		const std::string				user_priv_ip;
 	
 	public:
-		User(Server &server, int fd);
+		User(Server &server, int fd, std::string const &priv_ip);
 		virtual ~User();
 
 		void create_channel(const std::string &channel, const std::string &password);
@@ -34,6 +35,7 @@ class User
 		short get_tries() const;
 		char *get_buff();
 		std::string get_user_host() const;
+		std::string get_priv_ip() const;
 
 		std::string set_user_host(int fd) const;
 		void set_user_name(const std::string &name);

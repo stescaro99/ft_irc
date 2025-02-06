@@ -40,7 +40,7 @@ Channel::~Channel()
 	ch_admin.clear();
 }
 
-User::User(Server &server, int fd) : user_fd(fd), user_name(""), user_nickname(""), server(server), state(0), pass_tries(0), user_host(set_user_host(fd))
+User::User(Server &server, int fd, std::string const &priv_ip) : user_fd(fd), user_name(""), user_nickname(""), server(server), state(0), pass_tries(0), user_host(set_user_host(fd)), user_priv_ip(priv_ip)
 {
 	if (user_fd == -1)
 		throw(std::runtime_error("failed to create user"));
@@ -52,7 +52,7 @@ User::~User()
 	user_channels.clear();
 }
 
-Bot::Bot(Server &server, int fd, Channel *channel) : User(server, fd), mood(50)
+Bot::Bot(Server &server, int fd, Channel *channel) : User(server, fd, ""), mood(50)
 {
 	bot_channel = channel;
 	struct sockaddr_in	usadd;
