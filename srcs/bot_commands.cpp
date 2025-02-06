@@ -14,7 +14,7 @@ void Server::create_bot(Channel *ch, User *user, const std::string &nick)
 		ch->c_send_message(user->get_user_nick(), mess, false);
 		return;
 	}
-	std::string bot_nick = get_bot_nick(nick);
+	std::string bot_nick = get_bot_nick(nick, ch->get_bot_name());
 	if (ch->get_bot_name() != "")
 	{
 		Bot *b = find_bot(ch->get_bot_name());

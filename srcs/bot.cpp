@@ -15,13 +15,15 @@ static bool valid_nick(const std::vector<std::string> &v, const std::string &s)
 	return true;
 }
 
-std::string Server::get_bot_nick(const std::string &nick)
+std::string Server::get_bot_nick(const std::string &nick, const std::string &bot_name)
 {
 	static int n = 1;
 	std::string bot_nick = BOT_NAME;
 	std::vector<std::string> v;
     split(nick, " ", v);
-	if (v.size() == 1)
+	if (v.size() == 1 && bot_name != "")
+		return bot_name;
+	else if (v.size() == 1)
 	{
 		std::stringstream ss;
 		ss << n;

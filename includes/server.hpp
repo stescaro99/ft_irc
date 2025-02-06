@@ -25,7 +25,7 @@ class Server
 		void take_str(std::string *dest, char *src);
 		void print_all(int ufd, const std::string &mess, const std::string &nick);
 		void konversations(short i, std::string &s);
-		std::string get_bot_nick(const std::string &nick);
+		std::string get_bot_nick(const std::string &nick, const std::string &bot_name);
 		short is_command(const std::string &s) const;
 		void set_mode_utility(std::vector<std::string> const &v, std::vector<std::string> &users, short &limit, std::string &password, size_t &n, const std::string &flags);
 		std::vector<std::string> split_mode(const std::string &s);
