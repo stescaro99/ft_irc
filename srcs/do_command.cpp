@@ -533,7 +533,7 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
         return ;
     }
 
-	//std::vector<std::string> rec;
+
 	for (size_t i = 0; i < us_or_ch.size(); i++)
 	{
 		if (is_channel(us_or_ch[i]))
@@ -543,13 +543,6 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 			{
 				std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + ch->get_name() + " :\001DCC SEND " + dcc_info[0] + " " + user->get_priv_ip() + " " + dcc_info[2] + " " + dcc_info[3] + "\001\r\n";
 				ch->c_send_message(user->get_user_name(), dcc_msg, true);
-				// std::vector<std::string> users = ch->get_users();
-				// for (size_t j = 0; j < users.size(); j++)
-				// {
-				// 	std::vector<std::string>::iterator it = std::find(rec.begin(), rec.end(), users[j]);
-				// 	if (it == rec.end())
-				// 		rec.push_back(users[j]);
-				// }
 			}
 			else if (!ch)
 			{
@@ -580,40 +573,7 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 			}
 		}
 	}
-
-	struct sockaddr_in cliaddr;
-    socklen_t clilen = sizeof(cliaddr);
-    int newsockfd;
-
-    while (true) {
-        newsockfd = accept(dcc_port, (struct sockaddr*)&cliaddr, &clilen);
-        if (newsockfd == -1) {
-            if (errno == EWOULDBLOCK || errno == EAGAIN) {
-                // Nessuna connessione in attesa, continua a fare altre operazioni
-                continue;
-            } else {
-                std::cerr << "Errore nell'accettare la connessione: " << strerror(errno) << std::endl;
-                break;
-            }
-        } else {
-            std::cout << "Connessione accettata!" << std::endl;
-            // Gestisci la connessione in un modo non bloccante, ad esempio con select() o poll()
-            // Per ora chiudiamo la connessione
-            //close(newsockfd);
-			
-        }
-	}
-
-	// if (rec.size() > 0)
-	// {
-	// 	t_request *req = new t_request;
-	// 	req->nick_sender = user->get_user_nick();
-	// 	req->nick_receivers = rec;
-	// 	req->filename = dcc_info[0];
-	// 	req->size = size;
-	// 	req->ip = dcc_info[1];
-	// 	requests[m_port] = req;
-	// }
+	
 } 
 /*
 void Server::dcc_accept(User *user, std::vector<std::string> const &v)
