@@ -502,6 +502,31 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
+
+	int dcc_port;
+    struct sockaddr_in dccsoket;
+    dcc_port = socket(AF_INET, SOCK_STREAM, 0);
+    if (dcc_port == -1)
+    {
+        std::cerr << "Errore nella creazione del socket" << std::endl;
+        return ;
+    }
+    std::memset(&dccsoket, 0, sizeof(dccsoket));
+    dccsoket.sin_family = AF_INET;
+    dccsoket.sin_addr.s_addr = INADDR_ANY;
+    dccsoket.sin_port = htons(m_port);
+    if (bind(dcc_port, (struct sockaddr *)&dccsoket, sizeof(dccsoket)) == -1)
+    {
+        std::cerr << "Errore nell'associazione del socket" << std::endl;
+        close(dcc_port);
+        return ;
+    }
+    if (listen(dcc_port, SOMAXCONN) == -1) {
+        std::cerr << "Errore nell'ascolto sul socket" << std::endl;
+        close(dcc_port);
+        return ;
+    }
+
 	std::vector<std::string> rec;
 	for (size_t i = 0; i < us_or_ch.size(); i++)
 	{
