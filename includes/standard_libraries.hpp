@@ -25,7 +25,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
-#include <readline/history.h>
+//#include <readline/history.h>
 
 #include "user.hpp"
 #include "channel.hpp"

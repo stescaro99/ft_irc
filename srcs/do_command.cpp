@@ -515,6 +515,12 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
     dccsoket.sin_family = AF_INET;
     dccsoket.sin_addr.s_addr = INADDR_ANY;
     dccsoket.sin_port = htons(m_port);
+
+	int en = 1;
+	if(setsockopt(dcc_port, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
+		throw(std::runtime_error("failed to set on socket"));
+	if(fcntl(dcc_port, F_SETFL, O_NONBLOCK) == -1)
+		throw(std::runtime_error("failed to set NONBLOCK on socket"));
     if (bind(dcc_port, (struct sockaddr *)&dccsoket, sizeof(dccsoket)) == -1)
     {
         std::cerr << "Errore nell'associazione del socket" << std::endl;
@@ -527,7 +533,7 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
         return ;
     }
 
-	std::vector<std::string> rec;
+	//std::vector<std::string> rec;
 	for (size_t i = 0; i < us_or_ch.size(); i++)
 	{
 		if (is_channel(us_or_ch[i]))
@@ -574,6 +580,30 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 			}
 		}
 	}
+
+	struct sockaddr_in cliaddr;
+    socklen_t clilen = sizeof(cliaddr);
+    int newsockfd;
+
+    while (true) {
+        newsockfd = accept(dcc_port, (struct sockaddr*)&cliaddr, &clilen);
+        if (newsockfd == -1) {
+            if (errno == EWOULDBLOCK || errno == EAGAIN) {
+                // Nessuna connessione in attesa, continua a fare altre operazioni
+                continue;
+            } else {
+                std::cerr << "Errore nell'accettare la connessione: " << strerror(errno) << std::endl;
+                break;
+            }
+        } else {
+            std::cout << "Connessione accettata!" << std::endl;
+            // Gestisci la connessione in un modo non bloccante, ad esempio con select() o poll()
+            // Per ora chiudiamo la connessione
+            //close(newsockfd);
+			
+        }
+	}
+
 	// if (rec.size() > 0)
 	// {
 	// 	t_request *req = new t_request;
