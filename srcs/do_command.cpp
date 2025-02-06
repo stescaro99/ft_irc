@@ -578,28 +578,6 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 				send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 			}
 		}
-
-		struct sockaddr_in client;
-		socklen_t len = sizeof(client);
-		int newsockfd;
-
-		while (true)
-		{
-			newsockfd = accept(dcc_port, (struct sockaddr *)&client, &len);
-			if (newsockfd == -1)
-			{
-				if (errno == EWOULDBLOCK || errno == EAGAIN)
-					continue;
-				else
-				{
-					std::cerr << "Errore nell'accettazione della connessione" << std::endl;
-					close(dcc_port);
-					return ;
-				}
-			}
-			else
-				std::cout << "Accepted connection" << std::endl;
-		}
 	}
 
 
