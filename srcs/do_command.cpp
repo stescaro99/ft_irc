@@ -511,6 +511,11 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
         std::cerr << "Errore nella creazione del socket" << std::endl;
         return ;
     }
+	int yes = 1;
+	if (setsockopt(dcc_port, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+		throw std::runtime_error("setsockopt");
+	if (fcntl(dcc_port, F_SETFL, O_NONBLOCK) == -1)
+		throw std::runtime_error("fcntl");
     std::memset(&dccsoket, 0, sizeof(dccsoket));
     dccsoket.sin_family = AF_INET;
     dccsoket.sin_addr.s_addr = INADDR_ANY;
@@ -533,7 +538,11 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
         return ;
     }
 
+<<<<<<< HEAD
 
+=======
+	// std::vector<std::string> rec;
+>>>>>>> bdaeb565da004815b1ecb82bf1afb256b3fc67f3
 	for (size_t i = 0; i < us_or_ch.size(); i++)
 	{
 		if (is_channel(us_or_ch[i]))
@@ -572,8 +581,45 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 				send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 			}
 		}
+
+		struct sockaddr_in client;
+		socklen_t len = sizeof(client);
+		int newsockfd;
+
+		while (true)
+		{
+			newsockfd = accept(dcc_port, (struct sockaddr *)&client, &len);
+			if (newsockfd == -1)
+			{
+				if (errno == EWOULDBLOCK || errno == EAGAIN)
+					continue;
+				else
+				{
+					std::cerr << "Errore nell'accettazione della connessione" << std::endl;
+					close(dcc_port);
+					return ;
+				}
+			}
+			else
+				std::cout << "Accepted connection" << std::endl;
+		}
 	}
+<<<<<<< HEAD
 	
+=======
+
+
+	// if (rec.size() > 0)
+	// {
+	// 	t_request *req = new t_request;
+	// 	req->nick_sender = user->get_user_nick();
+	// 	req->nick_receivers = rec;
+	// 	req->filename = dcc_info[0];
+	// 	req->size = size;
+	// 	req->ip = dcc_info[1];
+	// 	requests[m_port] = req;
+	// }
+>>>>>>> bdaeb565da004815b1ecb82bf1afb256b3fc67f3
 } 
 /*
 void Server::dcc_accept(User *user, std::vector<std::string> const &v)
@@ -636,6 +682,7 @@ void Server::dcc_accept(User *user, std::vector<std::string> const &v)
 		delete req;
 		requests.erase(m_port);
 	}
+
 } */
 
 void Server::quit(User *user)
