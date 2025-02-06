@@ -607,7 +607,15 @@ void Server::dcc_accept(User *user, std::vector<std::string> const &v)
 		return;
 	}
 	std::string acc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + req->nick_sender + " :\001DCC ACCEPT " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + "\001\r\n";
-	send(find_user(req->nick_sender)->get_user_fd(), acc_msg.c_str(), acc_msg.size(), 0);	
+	send(find_user(req->nick_sender)->get_user_fd(), acc_msg.c_str(), acc_msg.size(), 0);
+
+	User *u = find_user(convert_to_username(req->nick_sender));
+	std::fstream ofs((u->get_priv_ip() + "/" + req->filename).c_str(), std::ios::out);
+	//ofs.seekp(position);
+	std::fstream ifs((user->get_priv_ip() + "/" + "~/Downloads/" + req->filename.substr(req->filename.find_last_of("/") + 1)).c_str(), std::ios::in);
+	if (ofs.is_open())
+		ofs << ifs.rdbuf();
+	req->nick_receivers.erase(it);
 }
 
 void Server::quit(User *user)
