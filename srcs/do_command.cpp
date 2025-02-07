@@ -405,11 +405,6 @@ void Server::privmsg(User *user, std::vector<std::string> const &v)
 		dcc(user, v);
 		return ;
 	}
-	/* if (v[2].substr(0, 12) == ":DCC ACCEPT ")
-	{
-		dcc_accept(user, v);
-		return ;
-	} */
 	if (v[2].substr(0, 2) == ":!")
 	{
 		Channel *ch = find_channel(v[1]);
@@ -476,68 +471,68 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 	split(v[1], ",", us_or_ch);
 	std::vector<std::string> dcc_info;
 	split(tmp, " ", dcc_info);
-	if (dcc_info.size() != 4)
+	if (dcc_info.size() != 3)
 	{
 		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " PRIVMSG :Not enough parameters\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
-	unsigned short m_port;
 	std::stringstream ss;
+	size_t size;
 	ss << dcc_info[2];
-	ss >> m_port;
-	ss.clear();
-	unsigned short size;
-	ss << dcc_info[3];
 	ss >> size;
-	if (port < 1026 || port > 7000)
-	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid port\r\n";
-		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-		return;
-	}
-	if (size < 1 || size > 16384)
+	if (ss.fail() || size < 1)
 	{
 		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid file size\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
-
+	std::stringstream ss1;
+	unsigned short m_port;
+	ss1 << dcc_info[1];
+	ss1 >> m_port;
+	if (ss1.fail() || m_port < 1026 || m_port > 7000 || m_port == port)
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid port\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		return;
+	}
+//
 	int dcc_port;
-    struct sockaddr_in dccsoket;
-    dcc_port = socket(AF_INET, SOCK_STREAM, 0);
-    if (dcc_port == -1)
-    {
-        std::cerr << "Errore nella creazione del socket" << std::endl;
-        return ;
-    }
+	struct sockaddr_in dccsoket;
+	dcc_port = socket(AF_INET, SOCK_STREAM, 0);
+	if (dcc_port == -1)
+	{
+		std::cerr << "Errore nella creazione del socket" << std::endl;
+		return;
+	}
+
 	int yes = 1;
 	if (setsockopt(dcc_port, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
 		throw std::runtime_error("setsockopt");
+
+	// Imposta il socket in modalità non bloccante
 	if (fcntl(dcc_port, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("fcntl");
-    std::memset(&dccsoket, 0, sizeof(dccsoket));
-    dccsoket.sin_family = AF_INET;
-    dccsoket.sin_addr.s_addr = INADDR_ANY;
-    dccsoket.sin_port = htons(m_port);
-    
-	int en = 1;
-	if(setsockopt(dcc_port, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
-		throw(std::runtime_error("failed to set on socket"));
-	if(fcntl(dcc_port, F_SETFL, O_NONBLOCK) == -1)
-		throw(std::runtime_error("failed to set NONBLOCK on socket"));
-    if (bind(dcc_port, (struct sockaddr *)&dccsoket, sizeof(dccsoket)) == -1)
-    {
-        std::cerr << "Errore nell'associazione del socket" << std::endl;
-        close(dcc_port);
-        return ;
-    }
-    if (listen(dcc_port, SOMAXCONN) == -1) {
-        std::cerr << "Errore nell'ascolto sul socket" << std::endl;
-        close(dcc_port);
-        return ;
-    }
 
+	std::memset(&dccsoket, 0, sizeof(dccsoket));
+	dccsoket.sin_family = AF_INET;
+	dccsoket.sin_addr.s_addr = INADDR_ANY;
+	dccsoket.sin_port = htons(m_port); // Assicurati che m_port sia la porta corretta
+	if (bind(dcc_port, (struct sockaddr *)&dccsoket, sizeof(dccsoket)) == -1)
+	{
+		std::cerr << "Errore nell'associazione del socket" << std::endl;
+		close(dcc_port);
+		return;
+	}
+	if (listen(dcc_port, SOMAXCONN) == -1)
+	{
+		std::cerr << "Errore nell'ascolto sul socket" << std::endl;
+		close(dcc_port);
+		return;
+	}
+
+//
 	for (size_t i = 0; i < us_or_ch.size(); i++)
 	{
 		if (is_channel(us_or_ch[i]))
@@ -545,7 +540,7 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 			Channel *ch = find_channel(us_or_ch[i]);
 			if (ch && ch->is_user_inside(user->get_user_name()))
 			{
-				std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + ch->get_name() + " :\001DCC SEND " + dcc_info[0] + " " + user->get_priv_ip() + " " + dcc_info[2] + " " + dcc_info[3] + "\001\r\n";
+				std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + ch->get_name() + " :\001DCC SEND " + dcc_info[0] + " " + user->get_priv_ip() + " " + dcc_info[1] + " " + dcc_info[2] + "\001\r\n";
 				ch->c_send_message(user->get_user_name(), dcc_msg, true);
 			}
 			else if (!ch)
@@ -562,13 +557,11 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 		else
 		{
 			User *u = find_user(convert_to_username(us_or_ch[i]));
-			std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + u->get_user_nick() + " :\001DCC SEND " + dcc_info[0] + " " + user->get_priv_ip() + " " + dcc_info[2] + " " + dcc_info[3] + "\001\r\n";
+			std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + u->get_user_nick() + " :\001DCC SEND " + dcc_info[0] + " " + user->get_priv_ip() + " " + dcc_info[1] + " " + dcc_info[2] + "\001\r\n";
 			if (u)
 			{
 				send(u->get_user_fd(), dcc_msg.c_str(), dcc_msg.size(), 0);
-				// std::vector<std::string>::iterator it = std::find(rec.begin(), rec.end(), u->get_user_nick());
-				// if (it == rec.end())
-				// 	rec.push_back(u->get_user_nick());
+				u->accept_client(dcc_port, dcc_info, user, size, m_port);
 			}
 			else
 			{
@@ -576,84 +569,61 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 				send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 			}
 		}
-
 	}
+	
+	close(dcc_port);
+}
 
-
-	// if (rec.size() > 0)
-	// {
-	// 	t_request *req = new t_request;
-	// 	req->nick_sender = user->get_user_nick();
-	// 	req->nick_receivers = rec;
-	// 	req->filename = dcc_info[0];
-	// 	req->size = size;
-	// 	req->ip = dcc_info[1];
-	// 	requests[m_port] = req;
-	// }
-} 
-/*
-void Server::dcc_accept(User *user, std::vector<std::string> const &v)
+std::string get_download_path()
 {
-	std::string tmp = v[2].substr(12);
-	std::vector<std::string> dcc_info;
-	split(tmp, " ", dcc_info);
-	if (dcc_info.size() != 3)
-	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " PRIVMSG :Not enough parameters\r\n";
-		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-		return;
-	}
-	unsigned short m_port;
-	std::stringstream ss;
-	ss << dcc_info[1];
-	ss >> m_port;
-	ss.clear();
-	long position;
-	ss << dcc_info[2];
-	ss >> position;
-	if (requests.find(m_port) == requests.end())
-	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid port\r\n";
-		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-		return;
-	}
-	t_request *req = requests[m_port];
-	if (position < 0 || position > req->size)
-	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid position\r\n";
-		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-		return;
-	}
-	std::vector<std::string>::iterator it = std::find(req->nick_receivers.begin(), req->nick_receivers.end(), user->get_user_nick());
-	if (it == req->nick_receivers.end())
-	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid receiver\r\n";
-		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-		return;
-	}
-	if (dcc_info[0] != req->filename.substr(req->filename.find("/") + 1))
-	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid filename\r\n";
-		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
-		return;
-	}
-	std::string acc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + req->nick_sender + " :\001DCC ACCEPT " + dcc_info[0] + " " + dcc_info[1] + " " + dcc_info[2] + "\001\r\n";
-	send(user->get_user_fd(), acc_msg.c_str(), acc_msg.size(), 0);
+	char *path = getenv("HOME");
+	std::string download_path = path;
+	download_path += "/Downloads/";
+	return (download_path);
+}
 
-	User *u = find_user(convert_to_username(req->nick_sender));
-	std::fstream ofs((u->get_priv_ip() + "/" + req->filename).c_str(), std::ios::out);
-	//ofs.seekp(position);
-	std::fstream ifs((user->get_priv_ip() + "/" + "~/Downloads/" + req->filename.substr(req->filename.find_last_of("/") + 1)).c_str(), std::ios::in);
-	if (ofs.is_open())
-		ofs << ifs.rdbuf();
-	req->nick_receivers.erase(it);
-	if (req->nick_receivers.size() == 0)
-	{
-		delete req;
-		requests.erase(m_port);
-	}
+void User::accept_client(int socket_fd, std::vector<std::string> file_info , User *sender, size_t size, unsigned short port)
+{
+	struct sockaddr_in client_addr;
+	socklen_t len = sizeof(client_addr);
+	int client_fd = -1;
 
-} */
+	while (true)
+	{
+		client_fd = accept(socket_fd, (struct sockaddr *)&client_addr, &len);
+		if (client_fd == -1)
+		{
+			if (errno == EAGAIN || errno == EWOULDBLOCK)
+			{
+				continue;
+			}
+			else
+			{
+				std::cerr << "accept failed: " << std::strerror(errno) << std::endl;
+				break;
+			}
+		}
+		std::cout << size << std::endl;
+		int file_fd = open(file_info[0].c_str(), O_RDONLY);
+		char buff[size];
+		ssize_t n = read(file_fd, buff, size);
+		if (n == -1)
+		{
+			std::cerr << "read failed: " << std::strerror(errno) << std::endl;
+			break;
+		}
+		std::string new_file_path = get_download_path() + file_info[0].substr(file_info[0].find_last_of('/') + 1);
+		int new_file = open(new_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		std::cout << n << std::endl;
+		send(client_fd, buff, n, 0);
+		write(new_file, buff, n);
+		break;
+		
+	}
+	(void)sender;
+	(void)port;
+    close(client_fd);
+}
 
 void Server::quit(User *user)
 {

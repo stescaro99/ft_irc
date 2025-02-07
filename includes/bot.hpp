@@ -2,7 +2,6 @@
 # define BOT_HPP
 
 #include "standard_libraries.hpp"
-//#include "user.hpp"
 
 class Channel;
 class Server;

@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <sys/sendfile.h>
 
 <<<<<<< HEAD
 //#include <readline/history.h>
@@ -35,15 +36,6 @@
 #include "server.hpp"
 #include "bot.hpp"
 
-/* typedef struct	s_request
-{
-	std::string					nick_sender;
-	std::vector<std::string>	nick_receivers;
-	std::string					filename;
-	unsigned short				size;
-	std::string					ip;	
-}				t_request;
- */
 # define BOT_NAME "Bot"
 # define CH user_channels[channel]
 # define Red "\033[31m"
