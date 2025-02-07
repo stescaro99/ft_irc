@@ -3,11 +3,12 @@
 ## ✅ FATTO
 - Nuova disposizione dei file, divisi in `srcs` e `includes` (sfabi)
 - Nuovo README temporaneo (sfabi)
+- Fixata la condivisione dei file
+- Finita bot quotes
 
 ## ❌ DA FARE
-- Fixare la condivisione dei file
-- Controllare tutti i casi del bot
-- Finire bot quotes
+
+- Controllare tutti i casi pre completamento progetto
 
 
 
