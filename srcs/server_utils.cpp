@@ -78,7 +78,6 @@ void Server::take_str(std::string *dest, char *src)
 	size_t i = dest->find("\n");
 	if (i != std::string::npos)
 		*dest = dest->substr(0, i);
-	//std::cout << "a" <<std::endl;
 	std::fill(src, src + strlen(src), '\0');
 }
 
@@ -157,7 +156,7 @@ void Server::receive_new_data(int fd)
 		case 1:
 			take_str(&s, i->get_buff());
 			konversations(i->get_state(), s);
-			if (is_nick(s))
+			if (is_nick(s) || s.substr(0, 3) == BOT_NAME)
 			{
 				send(i->get_user_fd(), "name already taken\nselect a nickname\r\n", 35, 0);
 				break;
@@ -174,7 +173,7 @@ void Server::receive_new_data(int fd)
 		case 2:
 			take_str(&s, i->get_buff());
 			konversations(i->get_state(), s);
-			if (is_user(s) || s.find(" ") != std::string::npos)
+			if (is_user(s) || s.substr(0, 3) == BOT_NAME || s.find(" ") != std::string::npos)
 			{
 				send(i->get_user_fd(), "name already taken\nselect a name\r\n", 35, 0);
 				break;
@@ -396,4 +395,27 @@ std::string Server::get_users_list() const
 		ret += (*it)->get_user_nick() + " - ";
 	ret = ret.substr(0, ret.size() - 1);
 	return (ret);
+}
+
+bool Server::file_check(const std::string &file, size_t size)
+{
+	std::string path = getenv("PWD");
+	if (file[0] == '/' && path[path.size() - 1] == '/')
+		path += file.substr(1);
+	else if (file[0] == '/' || path[path.size() - 1] == '/')
+		path += file;
+	else
+		path += "/" + file;
+	int fd = open(path.c_str(), O_RDONLY);
+	if (fd == -1)
+		return (false);
+	struct stat st;
+	fstat(fd, &st);
+	if (st.st_size != (off_t)size)
+	{
+		close(fd);
+		return (false);
+	}
+	close(fd);
+	return (true);
 }

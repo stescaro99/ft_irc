@@ -35,6 +35,7 @@ class Channel
 		void change_password(const std::string &password);
 		void change_limit(short limit);
 		void invite_user(const std::string &user);
+		void accept_client(int socket_fd, std::vector<std::string> dcc_info, size_t size, std::string const &user);
 		
 		void c_send_message(const std::string &user, const std::string &message, bool not_usr) const;
 		void channel_info(User *user) const;
