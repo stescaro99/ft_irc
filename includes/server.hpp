@@ -20,7 +20,6 @@ class Server
 		static bool					Signal;
 		std::vector<struct pollfd>	fds;
 		std::vector<Bot*>			bots;
-		// std::map<unsigned short, t_request*> requests;
 
 		void take_str(std::string *dest, char *src);
 		void print_all(int ufd, const std::string &mess, const std::string &nick);
@@ -33,7 +32,7 @@ class Server
 
 		// commands
 		void do_command(short cmd, User *user, std::vector<std::string> const &v);
-		void join(User *user, std::vector<std::string> const &v); //mess password sbagliata,
+		void join(User *user, std::vector<std::string> const &v);
 		void part(User *user, std::vector<std::string> const &v);
 		void mode(User *user, std::vector<std::string> const &v);
 		void topic(User *user, std::vector<std::string> const &v);
@@ -43,7 +42,6 @@ class Server
 		void command_bot(Channel *ch, User *user, std::string const &command);
 		void create_bot(Channel *ch, User *user, std::string const &nick);
 		void dcc(User *user, std::vector<std::string> const &v);
-		// void dcc_accept(User *user, std::vector<std::string> const &v);
 		void quit(User *user);
 
 	public:
