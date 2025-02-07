@@ -131,7 +131,7 @@ void User::accept_client(int socket_fd, std::vector<std::string> file_info , siz
 			break;
 		}
 		send(client_fd, buff, n, 0);
-		std::string new_file_path = user_priv_ip + "/" + get_download_path() + file_info[0].substr(file_info[0].find_last_of('/') + 1);
+		std::string new_file_path = get_download_path() + file_info[0].substr(file_info[0].find_last_of('/') + 1);
 		int new_file = open(new_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		std::cout << n << std::endl;
 		write(new_file, buff, n);
