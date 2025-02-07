@@ -497,7 +497,7 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
-	if (file_check(dcc_info[0], size))
+	if (!file_check(dcc_info[0], size))
 	{
 		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :File not found or wrong size\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
@@ -589,7 +589,6 @@ void Server::quit(User *user)
 			send((*it)->get_user_fd(), quit_msg.c_str(), quit_msg.size(), 0);
 	}
 	rem_user(user->get_user_name());
-	//std::cout << users.size() << std::endl;
 	if (users.size() == 0)
 		throw std::runtime_error("No users left, server closed");
 }

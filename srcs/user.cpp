@@ -125,6 +125,7 @@ void User::accept_client(int socket_fd, std::vector<std::string> file_info , siz
 		int file_fd = open(file_info[0].c_str(), O_RDONLY);
 		char buff[size];
 		ssize_t n = read(file_fd, buff, size);
+		close(file_fd);
 		if (n == -1)
 		{
 			std::cerr << "read failed: " << std::strerror(errno) << std::endl;
@@ -133,9 +134,9 @@ void User::accept_client(int socket_fd, std::vector<std::string> file_info , siz
 		send(client_fd, buff, n, 0);
 		std::string new_file_path = get_download_path() + file_info[0].substr(file_info[0].find_last_of('/') + 1);
 		int new_file = open(new_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		std::cout << n << std::endl;
 		write(new_file, buff, n);
+		close(new_file);
 		break;
 	}
-    close(client_fd);
+    close(client_fd);	
 }

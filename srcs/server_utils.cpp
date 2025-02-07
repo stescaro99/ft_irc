@@ -78,7 +78,6 @@ void Server::take_str(std::string *dest, char *src)
 	size_t i = dest->find("\n");
 	if (i != std::string::npos)
 		*dest = dest->substr(0, i);
-	//std::cout << "a" <<std::endl;
 	std::fill(src, src + strlen(src), '\0');
 }
 
@@ -400,12 +399,13 @@ std::string Server::get_users_list() const
 
 bool Server::file_check(const std::string &file, size_t size)
 {
-	std::string path = getcwd(NULL, 0);
-	if (file[0] == '/')
+	std::string path = getenv("PWD");
+	if (file[0] == '/' && path[path.size() - 1] == '/')
+		path += file.substr(1);
+	else if (file[0] == '/' || path[path.size() - 1] == '/')
 		path += file;
 	else
 		path += "/" + file;
-	
 	int fd = open(path.c_str(), O_RDONLY);
 	if (fd == -1)
 		return (false);
