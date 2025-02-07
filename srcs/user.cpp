@@ -92,3 +92,51 @@ void User::leave_channel(const std::string &channel)
 		std::cout << Cyan << user_nickname << " left " << channel << Reset << std::endl;
 	}
 }
+
+std::string get_download_path()
+{
+	char *path = getenv("HOME");
+	std::string download_path = path;
+	download_path += "/Downloads/";
+	return (download_path);
+}
+
+void User::accept_client(int socket_fd, std::vector<std::string> file_info , size_t size)
+{
+	struct sockaddr_in client_addr;
+	socklen_t len = sizeof(client_addr);
+	int client_fd = -1;
+
+	while (true)
+	{
+		client_fd = accept(socket_fd, (struct sockaddr *)&client_addr, &len);
+		if (client_fd == -1)
+		{
+			if (errno == EAGAIN || errno == EWOULDBLOCK)
+			{
+				continue;
+			}
+			else
+			{
+				std::cerr << "accept failed: " << std::strerror(errno) << std::endl;
+				break;
+			}
+		}
+		std::cout << size << std::endl;
+		int file_fd = open(file_info[0].c_str(), O_RDONLY);
+		char buff[size];
+		ssize_t n = read(file_fd, buff, size);
+		if (n == -1)
+		{
+			std::cerr << "read failed: " << std::strerror(errno) << std::endl;
+			break;
+		}
+		send(client_fd, buff, n, 0);
+		std::string new_file_path = get_download_path() + file_info[0].substr(file_info[0].find_last_of('/') + 1);
+		int new_file = open(new_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		std::cout << n << std::endl;
+		write(new_file, buff, n);
+		break;
+	}
+    close(client_fd);
+}

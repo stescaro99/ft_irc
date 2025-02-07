@@ -115,3 +115,12 @@ void Channel::change_limit(short limit)
 {
 	ch_limit = limit;
 }
+
+void Channel::accept_client(int socket_fd, std::vector<std::string> dcc_info, size_t size, std::string const &user)
+{
+	for (std::map<std::string, User*>::iterator it = ch_users.begin(); it != ch_users.end(); it++)
+	{
+		if ((*it).first != user)
+			(*it).second->accept_client(socket_fd, dcc_info, size);
+	}
+}

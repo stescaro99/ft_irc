@@ -27,7 +27,7 @@ class User
 		void create_channel(const std::string &channel, const std::string &password);
 		void join_channel(Channel *channel, const std::string &password);
 		void leave_channel(const std::string &channel);
-		void accept_client(int socket_fd, std::vector<std::string> dcc_info, User *sender, size_t size, unsigned short port);
+		void accept_client(int socket_fd, std::vector<std::string> dcc_info, size_t size);
 
 		std::string get_user_name() const;
 		std::string get_user_nick() const;
