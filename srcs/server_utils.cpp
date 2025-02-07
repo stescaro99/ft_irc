@@ -157,7 +157,7 @@ void Server::receive_new_data(int fd)
 		case 1:
 			take_str(&s, i->get_buff());
 			konversations(i->get_state(), s);
-			if (is_nick(s))
+			if (is_nick(s) || s.substr(0, 3) == BOT_NAME)
 			{
 				send(i->get_user_fd(), "name already taken\nselect a nickname\r\n", 35, 0);
 				break;
@@ -174,7 +174,7 @@ void Server::receive_new_data(int fd)
 		case 2:
 			take_str(&s, i->get_buff());
 			konversations(i->get_state(), s);
-			if (is_user(s) || s.find(" ") != std::string::npos)
+			if (is_user(s) || s.substr(0, 3) == BOT_NAME || s.find(" ") != std::string::npos)
 			{
 				send(i->get_user_fd(), "name already taken\nselect a name\r\n", 35, 0);
 				break;
