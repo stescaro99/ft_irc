@@ -29,6 +29,7 @@ class Server
 		void set_mode_utility(std::vector<std::string> const &v, std::vector<std::string> &users, short &limit, std::string &password, size_t &n, const std::string &flags);
 		std::vector<std::string> split_mode(const std::string &s);
 		bool parameters_check(std::vector<std::string> const &flags, std::vector<std::string> const &admin, short limit, std::string password, User *user, Channel *ch);
+		bool file_check(const std::string &file, size_t size);
 
 		// commands
 		void do_command(short cmd, User *user, std::vector<std::string> const &v);

@@ -497,6 +497,12 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
+	if (file_check(dcc_info[0], size))
+	{
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :File not found or wrong size\r\n";
+		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
+		return;
+	}
 //
 	int dcc_port;
 	struct sockaddr_in dccsoket;

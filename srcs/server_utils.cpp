@@ -397,3 +397,25 @@ std::string Server::get_users_list() const
 	ret = ret.substr(0, ret.size() - 1);
 	return (ret);
 }
+
+bool Server::file_check(const std::string &file, size_t size)
+{
+	std::string path = getcwd(NULL, 0);
+	if (file[0] == '/')
+		path += file;
+	else
+		path += "/" + file;
+	
+	int fd = open(path.c_str(), O_RDONLY);
+	if (fd == -1)
+		return (false);
+	struct stat st;
+	fstat(fd, &st);
+	if (st.st_size != (off_t)size)
+	{
+		close(fd);
+		return (false);
+	}
+	close(fd);
+	return (true);
+}

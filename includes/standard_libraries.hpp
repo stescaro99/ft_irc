@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <sys/stat.h>
 
 #include "user.hpp"
 #include "channel.hpp"
