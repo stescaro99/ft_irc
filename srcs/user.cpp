@@ -14,7 +14,7 @@ void User::create_channel(const std::string &channel, const std::string &passwor
 	server.add_channel(nc);
 	user_channels[channel] = nc;
 	std::cout << Green << "Channel " << channel << " was create" << Reset << std::endl;
-	//set modes
+	//set modes -l -i -t
 	std::string limit_msg = ":IRCSERV MODE " + channel + " -l\r\n";
 	nc->c_send_message(user_name, limit_msg, false);
 	std::string invite_msg = ":IRCSERV MODE " + channel + " -i\r\n";
@@ -122,7 +122,6 @@ void User::accept_client(int socket_fd, std::vector<std::string> file_info , siz
 				break;
 			}
 		}
-		std::cout << size << std::endl;
 		int file_fd = open(file_info[0].c_str(), O_RDONLY);
 		char buff[size];
 		ssize_t n = read(file_fd, buff, size);
@@ -132,7 +131,7 @@ void User::accept_client(int socket_fd, std::vector<std::string> file_info , siz
 			break;
 		}
 		send(client_fd, buff, n, 0);
-		std::string new_file_path = get_download_path() + file_info[0].substr(file_info[0].find_last_of('/') + 1);
+		std::string new_file_path = user_priv_ip + "/" + get_download_path() + file_info[0].substr(file_info[0].find_last_of('/') + 1);
 		int new_file = open(new_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		std::cout << n << std::endl;
 		write(new_file, buff, n);
