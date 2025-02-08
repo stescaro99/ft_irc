@@ -103,6 +103,11 @@ int Server::get_socket_fd() const
 	return (socket_fd);
 }
 
+std::string Server::get_home() const
+{
+	return (env[0].substr(5));
+}
+
 bool Channel::get_topic_only_admin() const
 {
 	return (topic_only_admin);

@@ -399,13 +399,14 @@ std::string Server::get_users_list() const
 
 bool Server::file_check(const std::string &file, size_t size)
 {
-	std::string path = getenv("PWD");
+	std::string path = env[1].substr(4);
 	if (file[0] == '/' && path[path.size() - 1] == '/')
 		path += file.substr(1);
 	else if (file[0] == '/' || path[path.size() - 1] == '/')
 		path += file;
 	else
 		path += "/" + file;
+	std::cout << path << std::endl;
 	int fd = open(path.c_str(), O_RDONLY);
 	if (fd == -1)
 		return (false);

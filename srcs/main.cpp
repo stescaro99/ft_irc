@@ -1,10 +1,34 @@
 #include "standard_libraries.hpp"
 
-int main(int argc, char **argv)
+static bool is_path_or_home(const std::string &s)
+{
+	if (s.substr(0, 4) == "PWD=" || s.substr(0, 5) == "HOME=")
+		return true;
+	return false;
+}
+
+static std::vector<std::string> env_vec(char **env)
+{
+	std::vector<std::string> envs;
+	for (size_t i = 0; env[i]; i++)
+	{
+		if (is_path_or_home(env[i]))
+			envs.push_back(env[i]);
+	}
+	return envs;
+}
+
+int main(int argc, char **argv, char **env)
 {
 	if (argc != 3)
 	{
 		std::cerr << "Usage: ./ircserv <port> <server_password>" << std::endl;
+		return 1;
+	}
+	std::vector<std::string> envs = env_vec(env);
+	if (envs.size() != 2)
+	{
+		std::cerr << "Please set PWD and HOME in your environment." << std::endl;
 		return 1;
 	}
 	std::stringstream ss;
@@ -22,7 +46,7 @@ int main(int argc, char **argv)
 		std::cerr << "Invalid password" << std::endl;
 		return 1;
 	}
-	Server server(password, port);
+	Server server(password, port, envs);
 	std::cout <<"----SERVER----" <<std::endl;
 
 	try

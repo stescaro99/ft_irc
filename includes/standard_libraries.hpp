@@ -26,11 +26,6 @@
 #include <netdb.h>
 #include <sys/stat.h>
 
-<<<<<<< HEAD
-//#include <readline/history.h>
-
-=======
->>>>>>> bdaeb565da004815b1ecb82bf1afb256b3fc67f3
 #include "user.hpp"
 #include "channel.hpp"
 #include "server.hpp"

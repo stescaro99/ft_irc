@@ -11,15 +11,17 @@ typedef struct	s_request t_request;
 class Server
 {
 	private:
-		const std::string			server_name;
-		const std::string			password;
-		const unsigned short		port;
-		const int					socket_fd;
-		std::vector<User*>	  		users;
-		std::vector<Channel*>		channels;
-		static bool					Signal;
-		std::vector<struct pollfd>	fds;
-		std::vector<Bot*>			bots;
+		const std::string				server_name;
+		const std::string				password;
+		const unsigned short			port;
+		const int						socket_fd;
+		const std::vector<std::string>	env;
+		std::vector<User*>	  			users;
+		std::vector<Channel*>			channels;
+		static bool						Signal;
+		std::vector<struct pollfd>		fds;
+		std::vector<Bot*>				bots;
+		std::vector<unsigned short>		ports;
 
 		void take_str(std::string *dest, char *src);
 		void print_all(int ufd, const std::string &mess, const std::string &nick);
@@ -46,7 +48,7 @@ class Server
 		void quit(User *user);
 
 	public:
-		Server(std::string const &password, unsigned short port);
+		Server(std::string const &password, unsigned short port, std::vector<std::string> const &env);
 		~Server();
 
 		void server_init();
@@ -75,7 +77,7 @@ class Server
 		Channel *find_channel(const std::string &channel) const;
 		Bot *find_bot(const std::string &nick) const;
 		int get_socket_fd() const;
-
+		std::string get_home() const;
 		std::string get_channels_list() const;
 		std::string get_users_list() const;
 };

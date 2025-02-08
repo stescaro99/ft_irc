@@ -93,10 +93,9 @@ void User::leave_channel(const std::string &channel)
 	}
 }
 
-std::string get_download_path()
+static std::string get_download_path(Server &server)
 {
-	char *path = getenv("HOME");
-	std::string download_path = path;
+	std::string download_path = server.get_home();
 	download_path += "/Downloads/";
 	return (download_path);
 }
@@ -122,21 +121,40 @@ void User::accept_client(int socket_fd, std::vector<std::string> file_info , siz
 				break;
 			}
 		}
-		int file_fd = open(file_info[0].c_str(), O_RDONLY);
-		char buff[size];
-		ssize_t n = read(file_fd, buff, size);
-		close(file_fd);
-		if (n == -1)
-		{
-			std::cerr << "read failed: " << std::strerror(errno) << std::endl;
-			break;
-		}
-		send(client_fd, buff, n, 0);
-		std::string new_file_path = get_download_path() + file_info[0].substr(file_info[0].find_last_of('/') + 1);
-		int new_file = open(new_file_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		write(new_file, buff, n);
-		close(new_file);
-		break;
+		std::ifstream file(file_info[0].c_str(), std::ios::binary);
+        if (!file)
+        {
+            std::cerr << "open failed: " << std::strerror(errno) << std::endl;
+            break;
+        }
+
+        std::vector<char> buff(size);
+        file.read(&buff[0], size);
+        ssize_t n = file.gcount();
+        file.close();
+
+        if (n == -1)
+        {
+            std::cerr << "read failed: " << std::strerror(errno) << std::endl;
+            break;
+        }
+
+        send(client_fd, &buff[0], n, 0);
+
+        std::string new_file_path = get_download_path(server) + file_info[0].substr(file_info[0].find_last_of('/') + 1);
+        std::cout << Green << "File saved at: " << new_file_path << Reset << std::endl;
+
+        std::ofstream new_file(new_file_path.c_str(), std::ios::binary | std::ios::trunc);
+        if (!new_file)
+        {
+            std::cerr << "open failed: " << std::strerror(errno) << std::endl;
+            break;
+        }
+
+        new_file.write(&buff[0], n);
+        new_file.close();
+
+        break;
 	}
     close(client_fd);	
 }

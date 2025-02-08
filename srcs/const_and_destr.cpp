@@ -1,6 +1,6 @@
 #include "standard_libraries.hpp"
 
-Server::Server(std::string const &password, unsigned short port) : server_name(":IRCSERV"), password(password), port(port), socket_fd(socket(AF_INET, SOCK_STREAM, 0))
+Server::Server(std::string const &password, unsigned short port, std::vector<std::string> const &envs) : server_name(":IRCSERV"), password(password), port(port), socket_fd(socket(AF_INET, SOCK_STREAM, 0)), env(envs)
 {
 	if (socket_fd == -1)
 		throw(std::runtime_error("failed to create socket"));

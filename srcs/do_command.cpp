@@ -52,7 +52,7 @@ void Server::join(User *user, std::vector<std::string> const &v)
 {
 	if (v.size() < 2 || v.size() > 3)
 	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " JOIN :Not enough parameters\r\n";
+		std::string error_msg = ":IRCSERV " + user->get_user_nick() + " JOIN :Not enough parameters\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
@@ -91,7 +91,7 @@ void Server::part(User *user, std::vector<std::string> const &v)
 {
 	if (v.size() < 2)
 	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " PART :Not enough parameters\r\n";
+		std::string error_msg = ":IRCSERV " + user->get_user_nick() + " PART :Not enough parameters\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
@@ -128,7 +128,7 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 {
 	if (v.size() < 2 || v[1].find(',') != std::string::npos)
 	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " MODE :Not enough parameters\r\n";
+		std::string error_msg = ":IRCSERV 461" + user->get_user_nick() + " MODE :Not enough parameters\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
@@ -491,15 +491,15 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 	unsigned short m_port;
 	ss1 << dcc_info[1];
 	ss1 >> m_port;
-	if (ss1.fail() || m_port < 1026 || m_port > 7000 || m_port == port)
+	if (ss1.fail() || m_port < 1026 || m_port > 7000 || m_port == port || std::find(ports.begin(), ports.end(), m_port) != ports.end())
 	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :Invalid port\r\n";
+		std::string error_msg = ":IRCSERV " + user->get_user_nick() + " DCC :Invalid port\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
 	if (!file_check(dcc_info[0], size))
 	{
-		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " DCC :File not found or wrong size\r\n";
+		std::string error_msg = ":IRCSERV " + user->get_user_nick() + " DCC :File not found or wrong size\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
@@ -547,6 +547,8 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 			if (ch && ch->is_user_inside(user->get_user_name()))
 			{
 				std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + ch->get_name() + " :\001DCC SEND " + dcc_info[0] + " " + user->get_priv_ip() + " " + dcc_info[1] + " " + dcc_info[2] + "\001\r\n";
+				if (std::find(ports.begin(), ports.end(), m_port) == ports.end())
+					ports.push_back(m_port);
 				ch->c_send_message(user->get_user_name(), dcc_msg, true);
 				ch->accept_client(dcc_port, dcc_info, size, user->get_user_name());
 			}
@@ -568,6 +570,8 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 			if (u)
 			{
 				send(u->get_user_fd(), dcc_msg.c_str(), dcc_msg.size(), 0);
+				if (std::find(ports.begin(), ports.end(), m_port) == ports.end())
+					ports.push_back(m_port);
 				u->accept_client(dcc_port, dcc_info, size);
 			}
 			else
@@ -575,6 +579,14 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 				std::string error_msg = ":IRCSERV 401 " + user->get_user_nick() + " " + us_or_ch[i] + " :No such nickname\r\n";
 				send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 			}
+		}
+	}
+	for (std::vector<unsigned short>::iterator it = ports.begin(); it != ports.end(); it++)
+	{
+		if (*it == m_port)
+		{
+			ports.erase(it);
+			break;
 		}
 	}
 	close(dcc_port);
