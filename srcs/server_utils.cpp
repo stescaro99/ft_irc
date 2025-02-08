@@ -264,7 +264,7 @@ void Server::split(std::string s, const std::string &delim, std::vector<std::str
 		tmp = s.substr(0, start);
 		if (tmp.size() > 0)
 			v.push_back(tmp);
-		else //boh
+		else
 			v.push_back("");
 		s.erase(0, start + delim.length());
 	}

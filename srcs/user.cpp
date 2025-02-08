@@ -1,5 +1,10 @@
 #include "standard_libraries.hpp"
 
+void User::memset_buff()
+{
+	memset(buff, 0, 1024);
+}
+
 void User::create_channel(const std::string &channel, const std::string &password)
 {
 	std::cout << Blue << get_user_name() << " create channel: " << channel << Reset << std::endl;
@@ -122,39 +127,33 @@ void User::accept_client(int socket_fd, std::vector<std::string> file_info , siz
 			}
 		}
 		std::ifstream file(file_info[0].c_str(), std::ios::binary);
-        if (!file)
-        {
-            std::cerr << "open failed: " << std::strerror(errno) << std::endl;
-            break;
-        }
+		if (!file)
+		{
+			std::cerr << "open failed: " << std::strerror(errno) << std::endl;
+			break;
+		}
+		std::vector<char> buff(size);
+		file.read(&buff[0], size);
+		ssize_t n = file.gcount();
+		file.close();
+		if (n == -1)
+		{
+			std::cerr << "read failed: " << std::strerror(errno) << std::endl;
+			break;
+		}
+		std::string new_file_path = get_download_path(server) + file_info[0].substr(file_info[0].find_last_of('/') + 1);
+		std::cout << Green << "File saved at: " << new_file_path << Reset << std::endl;
 
-        std::vector<char> buff(size);
-        file.read(&buff[0], size);
-        ssize_t n = file.gcount();
-        file.close();
-
-        if (n == -1)
-        {
-            std::cerr << "read failed: " << std::strerror(errno) << std::endl;
-            break;
-        }
-
-        send(client_fd, &buff[0], n, 0);
-
-        std::string new_file_path = get_download_path(server) + file_info[0].substr(file_info[0].find_last_of('/') + 1);
-        std::cout << Green << "File saved at: " << new_file_path << Reset << std::endl;
-
-        std::ofstream new_file(new_file_path.c_str(), std::ios::binary | std::ios::trunc);
-        if (!new_file)
-        {
-            std::cerr << "open failed: " << std::strerror(errno) << std::endl;
-            break;
-        }
-
-        new_file.write(&buff[0], n);
-        new_file.close();
-
-        break;
+		std::ofstream new_file(new_file_path.c_str(), std::ios::binary | std::ios::trunc);
+		if (!new_file)
+		{
+			std::cerr << "open failed: " << std::strerror(errno) << std::endl;
+			break;
+		}
+		new_file.write(&buff[0], n);
+		send(client_fd, &buff[0], n, 0);
+		new_file.close();
+		break;
 	}
-    close(client_fd);	
+	close(client_fd);	
 }

@@ -20,7 +20,7 @@ std::string Server::get_bot_nick(const std::string &nick, const std::string &bot
 	static int n = 1;
 	std::string bot_nick = BOT_NAME;
 	std::vector<std::string> v;
-    split(nick, " ", v);
+	split(nick, " ", v);
 	if (v.size() == 1 && bot_name != "")
 		return bot_name;
 	else if (v.size() == 1)
@@ -72,10 +72,10 @@ void Server::command_bot(Channel *ch, User *user, std::string const &command)
 	if (command.length() > 6 && cmd > 1 && cmd < 8 && !ch->get_bot())
 		ch->increment_bot_mood(1);
 	if (cmd != 9 && cmd != 6)
-    {
-        std::string mess = user->get_user_nick() + " " + command + "\r\n";
+	{
+		std::string mess = user->get_user_nick() + " " + command + "\r\n";
 		ch->c_send_message(user->get_user_name(), mess, true);
-    }
+	}
 	switch (cmd)
 	{
 		case 1:
@@ -88,7 +88,7 @@ void Server::command_bot(Channel *ch, User *user, std::string const &command)
 			ch->time_bot();
 			break;
 		case 4:
-			ch->quote_bot(); //probabile crash
+			ch->quote_bot();
 			break;
 		case 5:
 			ch->six_bus_bot();
@@ -100,7 +100,7 @@ void Server::command_bot(Channel *ch, User *user, std::string const &command)
 			ch->panna_bot();
 			break;
 		case 8:
-			ch->bot_kick(user); //si incazza con chi ha spento il bot a seconda del mood
+			ch->bot_kick(user);
 			break;
 		case 9:
 			bot_info(ch, user, command);
@@ -112,6 +112,6 @@ void Server::command_bot(Channel *ch, User *user, std::string const &command)
 			ch->pisano_bot();
 			break;
 		case 0:
-			ch->wrong_bot(user, 0); //aumenta il mood e risponde in base al mood
+			ch->wrong_bot(user, 0);
 	}
 }

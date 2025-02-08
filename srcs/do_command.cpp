@@ -242,8 +242,6 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 					send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 				}
 			}
-			//std::string mode_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " MODE " + ch->get_name() + " " + flags[i] + "\r\n";
-			//ch->c_send_message(user->get_user_name(), mode_msg, false);
 		}
 	}
 }
@@ -503,7 +501,6 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
-//
 	int dcc_port;
 	struct sockaddr_in dccsoket;
 	dcc_port = socket(AF_INET, SOCK_STREAM, 0);
@@ -512,19 +509,15 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 		std::cerr << "Errore nella creazione del socket" << std::endl;
 		return;
 	}
-
 	int yes = 1;
 	if (setsockopt(dcc_port, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
 		throw std::runtime_error("setsockopt");
-
-	// Imposta il socket in modalità non bloccante
 	if (fcntl(dcc_port, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("fcntl");
-
 	std::memset(&dccsoket, 0, sizeof(dccsoket));
 	dccsoket.sin_family = AF_INET;
 	dccsoket.sin_addr.s_addr = INADDR_ANY;
-	dccsoket.sin_port = htons(m_port); // Assicurati che m_port sia la porta corretta
+	dccsoket.sin_port = htons(m_port);
 	if (bind(dcc_port, (struct sockaddr *)&dccsoket, sizeof(dccsoket)) == -1)
 	{
 		std::cerr << "Errore nell'associazione del socket" << std::endl;
@@ -537,8 +530,6 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 		close(dcc_port);
 		return;
 	}
-
-//
 	for (size_t i = 0; i < us_or_ch.size(); i++)
 	{
 		if (is_channel(us_or_ch[i]))

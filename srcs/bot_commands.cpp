@@ -23,24 +23,24 @@ void Server::create_bot(Channel *ch, User *user, const std::string &nick)
 	}
 
 	int bot_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (bot_fd == -1)
-    {
-        std::cerr << "socket creation failed: " << std::strerror(errno) << std::endl;
-        return;
-    }
+	if (bot_fd == -1)
+	{
+		std::cerr << "socket creation failed: " << std::strerror(errno) << std::endl;
+		return;
+	}
 
-    // Connect the bot socket to the server's listening socket
-    struct sockaddr_in server_addr;
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(port);
+	// Connect the bot socket to the server's listening socket
+	struct sockaddr_in server_addr;
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_addr.s_addr = INADDR_ANY;
+	server_addr.sin_port = htons(port);
 
-    if (connect(bot_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
-    {
-        std::cerr << "connect failed: " << std::strerror(errno) << std::endl;
-        close(bot_fd);
-        return;
-    }
+	if (connect(bot_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+	{
+		std::cerr << "connect failed: " << std::strerror(errno) << std::endl;
+		close(bot_fd);
+		return;
+	}
 	Bot *bot = new Bot(*this, bot_fd, ch);
 	
 	bot->set_user_nick(bot_nick);
@@ -320,7 +320,6 @@ void Channel::wrong_bot(User *user, short code)
 		c_send_message(ch_name, mess, false);
 		return;
 	}
-	//short mood = ch_bot->get_mood();
 	std::string mess = bot_name + " ";
 	int mood = ch_bot->get_mood();
 	switch (code)
