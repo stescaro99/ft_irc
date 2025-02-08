@@ -7,10 +7,8 @@ void Server::add_user()
 	socklen_t			len = sizeof(usadd);
 	int incofd = accept(socket_fd, (sockaddr *)&(usadd), &len);
 	User *user = new User(*this, incofd, inet_ntoa(usadd.sin_addr));
-
 	if (incofd == -1)
 	{
-		std::cout << "accept failed" << std::endl;
 		delete user;
 		return;
 	}

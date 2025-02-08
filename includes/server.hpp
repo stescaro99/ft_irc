@@ -3,10 +3,9 @@
 
 #include "standard_libraries.hpp"
 
-class channel;
+class Channel;
 class User;
 class Bot;
-typedef struct	s_request t_request;
 
 class Server
 {

@@ -4,7 +4,6 @@
 #include "standard_libraries.hpp"
 
 class User;
-class channel;
 class Bot;
 
 class Channel
