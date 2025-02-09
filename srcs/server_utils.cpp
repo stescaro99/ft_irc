@@ -129,29 +129,29 @@ void Server::receive_new_data(int fd)
 	switch (i->get_state())
 	{
 		case 0:
-				take_str(&s, i->get_buff());
-				konversations(i->get_state(), s);
-				if (s != password && s != "\127")
+			take_str(&s, i->get_buff());
+			konversations(i->get_state(), s);
+			if (s != password && s != "\127")
+			{
+				i->increment_tries();
+				send(i->get_user_fd(), "Incorrect password\r\n", 21, 0);
+				if (i->get_tries() == 3)
 				{
-					i->increment_tries();
-					send(i->get_user_fd(), "Incorrect password\r\n", 21, 0);
-					if (i->get_tries() == 3)
-					{
-						send(i->get_user_fd(), "too many tries\r\n", 16, 0);
-						close(i->get_user_fd());
-						rem_user(i->get_user_name());
-						return ;
-					}
-					send(i->get_user_fd(), "Insert password\r\n", 18, 0);
-					break ;
+					send(i->get_user_fd(), "too many tries\r\n", 16, 0);
+					close(i->get_user_fd());
+					rem_user(i->get_user_name());
+					return ;
 				}
-				else if (s == "\127")
-					break ;
-				else
-				{
-					send(i->get_user_fd(), "select a nickname\r\n", 20, 0);
-					i->increment_state();
-				}
+				send(i->get_user_fd(), "Insert password\r\n", 18, 0);
+				break ;
+			}
+			else if (s == "\127")
+				break ;
+			else
+			{
+				send(i->get_user_fd(), "select a nickname\r\n", 20, 0);
+				i->increment_state();
+			}
 			break;
 		case 1:
 			take_str(&s, i->get_buff());

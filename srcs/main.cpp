@@ -36,7 +36,7 @@ int main(int argc, char **argv, char **env)
 		return 1;
 	}
 	std::vector<std::string> envs = env_vec(env);
-	if (envs.size() != 2)
+	if (envs.size() != 2 || envs[0].size() < 5 || envs[1].size() < 6)
 	{
 		std::cerr << "Please set PWD and HOME in your environment." << std::endl;
 		return 1;
@@ -45,7 +45,7 @@ int main(int argc, char **argv, char **env)
 	ss << argv[1];
 	unsigned short port;
 	ss >> port;
-	if (ss.fail() || port < 1024)
+	if (ss.fail() || port < 1025)
 	{
 		std::cerr << "Invalid port! Please use a number between 1025 and 65535." << std::endl;
 		return 1;
@@ -58,7 +58,6 @@ int main(int argc, char **argv, char **env)
 	}
 	Server server(password, port, envs);
 	std::cout <<"----SERVER----" <<std::endl;
-
 	try
 	{
 		signal(SIGINT, Server::signal_handler);
