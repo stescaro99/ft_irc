@@ -121,7 +121,7 @@ void Server::receive_new_data(int fd)
 	ssize_t bytes = recv(fd, i->get_buff(), 1024, 0);
 	if (bytes <= 0)
 	{
-		std::cout << Red << "user " << i->get_user_nick() << " disconnected"  << Reset << std::endl;
+		std::cout << Red << "user " << i->get_user_nick() << " disconnected" << Reset << std::endl;
 		quit(i);
 		return ;
 	}

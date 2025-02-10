@@ -15,7 +15,7 @@ class Server
 		const unsigned short			port;
 		const int						socket_fd;
 		const std::vector<std::string>	env;
-		std::vector<User*>	  			users;
+		std::vector<User*>				users;
 		std::vector<Channel*>			channels;
 		static bool						Signal;
 		std::vector<struct pollfd>		fds;

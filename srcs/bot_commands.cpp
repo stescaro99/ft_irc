@@ -61,7 +61,7 @@ void Server::create_bot(Channel *ch, User *user, const std::string &nick)
 	}
 	bots.push_back(bot);
 	fds.push_back(new_poll);
-	std::cout  << Cyan << bot_nick << " <" << bot_fd << "> is connect" << Reset << std::endl;
+	std::cout << Cyan << bot_nick << " <" << bot_fd << "> is connect" << Reset << std::endl;
 	ch->bot_join(user, bot, bot_nick);
 }
 
