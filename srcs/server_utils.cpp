@@ -399,7 +399,9 @@ std::string Server::get_users_list() const
 
 bool Server::file_check(const std::string &file, size_t size)
 {
-	std::string path = env[1].substr(4);
+	std::string path = env[0].substr(4);
+	if (env[1].substr(0, 4) == "PWD=")
+		path = env[1].substr(4);
 	if (file[0] == '/' && path[path.size() - 1] == '/')
 		path += file.substr(1);
 	else if (file[0] == '/' || path[path.size() - 1] == '/')

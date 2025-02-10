@@ -142,7 +142,6 @@ void User::accept_client(int socket_fd, std::vector<std::string> file_info , siz
 			break;
 		}
 		std::string new_file_path = get_download_path(server) + file_info[0].substr(file_info[0].find_last_of('/') + 1);
-		std::cout << Green << "File saved at: " << new_file_path << Reset << std::endl;
 
 		std::ofstream new_file(new_file_path.c_str(), std::ios::binary | std::ios::trunc);
 		if (!new_file)
@@ -153,6 +152,7 @@ void User::accept_client(int socket_fd, std::vector<std::string> file_info , siz
 		new_file.write(&buff[0], n);
 		send(client_fd, &buff[0], n, 0);
 		new_file.close();
+		std::cout << Green << "File saved at: " << new_file_path << Reset << std::endl;
 		break;
 	}
 	close(client_fd);	

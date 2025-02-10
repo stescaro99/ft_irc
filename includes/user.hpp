@@ -37,6 +37,7 @@ class User
 		char *get_buff();
 		std::string get_user_host() const;
 		std::string get_priv_ip() const;
+		std::string get_priv_ip_dec() const;
 
 		std::string set_user_host(int fd) const;
 		void set_user_name(const std::string &name);
