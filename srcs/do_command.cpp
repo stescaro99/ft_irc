@@ -128,7 +128,7 @@ void Server::mode(User *user, std::vector<std::string> const &v)
 {
 	if (v.size() < 2 || v[1].find(',') != std::string::npos)
 	{
-		std::string error_msg = ":IRCSERV 461" + user->get_user_nick() + " MODE :Not enough parameters\r\n";
+		std::string error_msg = ":IRCSERV 461 " + user->get_user_nick() + " MODE :Not enough parameters\r\n";
 		send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 		return;
 	}
