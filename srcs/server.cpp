@@ -25,7 +25,7 @@ void Server::add_user()
 	}
 	users.push_back(user);
 	fds.push_back(new_poll);
-	send(user->get_user_fd(), "Insert password\r\n", 18, 0);
+	send(user->get_user_fd(), "IRCSERV Insert password\r\n", 26, 0);
 	std::cout  << Cyan << "client <" << incofd << "> connected to ip: " << user->get_priv_ip() << Reset << std::endl;
 }
 

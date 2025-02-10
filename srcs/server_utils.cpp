@@ -134,22 +134,22 @@ void Server::receive_new_data(int fd)
 			if (s != password && s != "\127")
 			{
 				i->increment_tries();
-				send(i->get_user_fd(), "Incorrect password\r\n", 21, 0);
+				send(i->get_user_fd(), "IRCSERV Incorrect password\r\n", 29, 0);
 				if (i->get_tries() == 3)
 				{
-					send(i->get_user_fd(), "too many tries\r\n", 16, 0);
+					send(i->get_user_fd(), "IRCSERV too many tries\r\n", 25, 0);
 					close(i->get_user_fd());
 					rem_user(i->get_user_name());
 					return ;
 				}
-				send(i->get_user_fd(), "Insert password\r\n", 18, 0);
+				send(i->get_user_fd(), "IRCSERV Insert password\r\n", 26, 0);
 				break ;
 			}
 			else if (s == "\127")
 				break ;
 			else
 			{
-				send(i->get_user_fd(), "select a nickname\r\n", 20, 0);
+				send(i->get_user_fd(), "IRCSERV select a nickname\r\n", 28, 0);
 				i->increment_state();
 			}
 			break;
@@ -158,24 +158,24 @@ void Server::receive_new_data(int fd)
 			konversations(i->get_state(), s);
 			if (is_nick(s) || s.substr(0, 3) == BOT_NAME)
 			{
-				send(i->get_user_fd(), "name already taken\nselect a nickname\r\n", 35, 0);
+				send(i->get_user_fd(), "IRCSERV name already taken\nIRCSERV select a nickname\r\n", 55, 0);
 				break;
 			}
 			if (s[0] == '#' || s[0] == '&' || s.find(" ") != std::string::npos)
 			{
-				send(i->get_user_fd(), "invalid nickname\nselect a nickname\r\n", 35, 0);
+				send(i->get_user_fd(), "IRCSERV invalid nickname\nIRCSERV select a nickname\r\n", 53, 0);
 				break;
 			}
 			i->set_user_nick(s);
 			i->increment_state();
-			send(i->get_user_fd(), "select a name\r\n", 16, 0);
+			send(i->get_user_fd(), "IRCSERV select a name\r\n", 24, 0);
 			break;
 		case 2:
 			take_str(&s, i->get_buff());
 			konversations(i->get_state(), s);
 			if (is_user(s) || s.substr(0, 3) == BOT_NAME || s.find(" ") != std::string::npos)
 			{
-				send(i->get_user_fd(), "name already taken\nselect a name\r\n", 35, 0);
+				send(i->get_user_fd(), "IRCSERV name already taken\nIRCSERV select a name\r\n", 51, 0);
 				break;
 			}
 			i->set_user_name(s);
