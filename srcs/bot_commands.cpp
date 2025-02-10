@@ -235,7 +235,12 @@ void Channel::quote_bot()
 		"\"Davvero? Mi stai chiedendo perché ho fatto uccidere Justin Bieber?\" - \"Zoolander 2\"",
 		"\"Mi hai dato un per sempre nei miei giorni contati.\" - \"Colpa delle stelle\"",
 		"\"È questo il problema del dolore. Esige di essere sentito.\" - \"Colpa delle stelle\"",
-		"\"La guerra; la guerra non cambia mai\" - \"Fallout\""
+		"\"Per diventare grande anche quattro dozzine di uova mangiavo ogni dì. Ed ora ne mangio anche cinque dozzine e guardate che muscoli ho qui!\" - \"La bella e la bestia\"",
+		"\"È meglio essere temuti o rispettati? Io dico: è troppo chiedere entrambe le cose?\" - \"Iron Man\"",
+		"\"La guerra; la guerra non cambia mai\" - \"Fallout\"",
+		"\"Per fortuna l'abbiamo scampata, è questo che conta. Non potevo perdere uno studente durante una gita... Non di nuovo!\" - \"Spiderman: Homecoming\"",
+		"\"Shake it off, shake it off!\" - \"Sing\"",
+		"\"Stasera ruberemo la Luna!\" - \"Cattivissimo me\""
 	};
 	if (shrek)
 	{
