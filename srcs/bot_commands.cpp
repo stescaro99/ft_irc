@@ -216,7 +216,26 @@ void Channel::quote_bot()
 		"\"Oh santo piripillo!\" - \"Shrek\"",
 		"\"Oh accidenti le dita non me le sento più...io le dita non ce le ho! Ho bisogno di coccole...\" - \"Shrek\"",
 		"\"Gli orchi sono come le cipolle\" - \"Shrek\"",
-		"\"Io sono Groot\" - \"Guardiani della Galassia\""
+		"\"Io sono Groot\" - \"Guardiani della Galassia\"",
+		"\"Ho un grande cervello, ma non solo quello...\" - \"Basil l'investigatopo\"",
+		"\"Non posso né scendere né salire\" - \"Tre uomini e una gamba\"",
+		"\"Solo ora capisco che il modo in cui si viene al mondo è irrilevante. È quello che fai del dono della vita che stabilisce chi sei\" - \"Pokemon il film: Mewtwo contro Mew\"",
+		"\"Dopotutto perché no? Perché non dovrei tenerlo?\" - \"Il Signore degli Anelli: La Compagnia dell'Anello\"",
+		"\"Quando non puoi dire una cosa gentile è molto meglio starsene zitti\" - \"Bambi\"",
+		"\"Nulla è reale, tutto è lecito\" - \"Assassin's Creed\"",
+		"\"Il mio vecchio nemico... Le scale!\" - \"Kung Fu Panda 2\"",
+		"\"Io sono disonesto e puoi sempre essere sicuro che un uomo disonesto si comporterà in modo disonesto. In realtà è degli onesti che dovresti diffidare, non si può mai dire se stanno per fare qualcosa di incredibilmente stupido\" - \"Pirati dei Caraibi: La maledizione della prima luna\"",
+		"\"Io mi ascolto sempre quando parlo, è uno dei piaceri della mia vita\" - \"The big bang theory\"",
+		"\"Ho salvato una vita: la mia. Sono un eroe? Non sarei io a doverlo dire ma lo sono\" - \"The office US\"",
+		"\"Tutti credono di essere l'eroe della propria storia\" - \"Borderlands\"",
+		"\"A volte inizio una frase e non so dove andrò a finire. Spero di scoprirlo strada facendo\" - \"The office US\"",
+		"\"Non ho mai pensato a come morirò. Ma morire per qualcuno che amo mi sembra un buon modo per andarmene.\" - \"Twilight\"",
+		"\"Ieri è storia, domani è un mistero, ma oggi è un dono. Per questo si chiama presente.\" - \"Kung Fu Panda\"",
+		"\"Chiunque può cucinare\" - \"Ratatouille\"",
+		"\"Davvero? Mi stai chiedendo perché ho fatto uccidere Justin Bieber?\" - \"Zoolander 2\"",
+		"\"Mi hai dato un per sempre nei miei giorni contati.\" - \"Colpa delle stelle\"",
+		"\"È questo il problema del dolore. Esige di essere sentito.\" - \"Colpa delle stelle\"",
+		"\"La guerra; la guerra non cambia mai\" - \"Fallout\""
 	};
 	if (shrek)
 	{
@@ -226,7 +245,7 @@ void Channel::quote_bot()
 		return;
 	}
 	std::srand(std::time(0));
-	short n = std::rand() % 41;
+	short n = std::rand() % (sizeof(quotes)/sizeof(std::string));
 	if (n == 39)
 		shrek = true;
 	ch_bot->increment_mood(-20);
