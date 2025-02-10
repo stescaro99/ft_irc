@@ -408,7 +408,6 @@ bool Server::file_check(const std::string &file, size_t size)
 		path += file;
 	else
 		path += "/" + file;
-	std::cout << path << std::endl;
 	int fd = open(path.c_str(), O_RDONLY);
 	if (fd == -1)
 		return (false);

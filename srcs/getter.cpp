@@ -105,7 +105,7 @@ int Server::get_socket_fd() const
 
 std::string Server::get_home() const
 {
-	if (env[0].substr(0, 5) != "HOME=")
+	if (env[0].substr(0, 5) == "HOME=")
 		return (env[0].substr(5));
 	return (env[1].substr(5));
 }
@@ -188,9 +188,4 @@ std::string User::get_priv_ip() const
 	std::stringstream s;
 	s << tot;
 	return (s.str());
-}
-
-std::string User::get_priv_ip_dec() const
-{
-	return (user_priv_ip);
 }
