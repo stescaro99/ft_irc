@@ -2,6 +2,8 @@
 
 static bool is_valid_password(const char *s)
 {
+	if (isspace(s[0]))
+		return false;
 	for (size_t i = 0; s[i]; i++)
 	{
 		if (s[i] < 32 || s[i] > 126 || s[i] == '\n' || s[i] == '\r')
@@ -12,6 +14,8 @@ static bool is_valid_password(const char *s)
 
 static bool is_path_or_home(const std::string &s)
 {
+	if (s.size() < 4)
+		return false;
 	if (s.substr(0, 4) == "PWD=" || s.substr(0, 5) == "HOME=")
 		return true;
 	return false;

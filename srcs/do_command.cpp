@@ -445,7 +445,7 @@ void Server::privmsg(User *user, std::vector<std::string> const &v)
 				send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 			}
 		}
-		else
+		else if (user->get_user_nick() != us_or_ch[i])
 		{
 			User *u = find_user(convert_to_username(us_or_ch[i]));
 			if (u)
@@ -554,7 +554,7 @@ void Server::dcc(User *user, std::vector<std::string> const &v)
 				send(user->get_user_fd(), error_msg.c_str(), error_msg.size(), 0);
 			}
 		}
-		else
+		else if (user->get_user_nick() != us_or_ch[i])
 		{
 			User *u = find_user(convert_to_username(us_or_ch[i]));
 			std::string dcc_msg = ":" + user->get_user_nick() + "!" + user->get_user_name() + "@" + user->get_user_host() + " PRIVMSG " + u->get_user_nick() + " :\001DCC SEND " + dcc_info[0] + " " + user->get_priv_ip() + " " + dcc_info[1] + " " + dcc_info[2] + "\001\r\n";

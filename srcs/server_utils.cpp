@@ -83,12 +83,13 @@ void Server::take_str(std::string *dest, char *src)
 
 void Server::konversations(short i, std::string &s)
 {
-	std::string tmp;
+	if (s.size() < 5 + (i == 0))
+		return ;
+	std::string tmp = s.substr(0, 5 + (i == 0));
 	switch (i)
 	{
 		case 0:
 		{
-			tmp = s.substr(0, 6);
 			if (tmp == "PASS :")
 				s = s.substr(6);
 			else if (tmp == "CAP LS" && password.substr(0, 6) != "CAP LS")
@@ -97,14 +98,12 @@ void Server::konversations(short i, std::string &s)
 		}
 		case 1:
 		{
-			tmp = s.substr(0, 5);
 			if (tmp == "NICK ")
 				s = s.substr(5);
 			break ;
 		}
 		case 2:
 		{
-			tmp = s.substr(0, 5);
 			if (tmp == "USER " && s.find(":") != std::string::npos)
 				s = s.substr(s.find(":") + 1);
 			break ;
@@ -131,6 +130,8 @@ void Server::receive_new_data(int fd)
 		case 0:
 			take_str(&s, i->get_buff());
 			konversations(i->get_state(), s);
+			if (s.empty())
+				break;
 			if (s != password && s != "\127")
 			{
 				i->increment_tries();
@@ -187,6 +188,8 @@ void Server::receive_new_data(int fd)
 			break;
 		case 3:
 			take_str(&s, i->get_buff());
+			if (s.empty())
+				break;
 			std::vector<std::string> v;
 			split(s, " ", v);
 			short cmd = is_command(v[0]);
