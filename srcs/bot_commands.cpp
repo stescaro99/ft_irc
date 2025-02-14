@@ -386,14 +386,14 @@ void Server::bot_info(Channel *ch, User *user, std::string const &jcmd)
 	if (is_channel(args))
 	{
 		Channel *ch = find_channel(args);
-		size_t users = ch->get_users_count();
+		size_t users = ch->get_users_count() + (ch->get_bot() != NULL);
 		std::stringstream ss;
 		ss << users;
-		std::string mess = bot_name + " " + ch->get_name() + " has " + ss.str() + " users:\n" + ch->get_users_list() + "\r\n";
+		std::string mess = bot_name + " " + ch->get_name() + " has " + ss.str() + " users:\n" + bot_name + " " + ch->get_users_list() + "\r\n";
 		send(user->get_user_fd(), mess.c_str(), mess.length(), 0);
 		return;
 	}
-	std::string mess = bot_name + " the channels in this server are:\n" + get_channels_list() + "\nThe users are:\n" + get_users_list() + "\r\n";
+	std::string mess = bot_name + " the channels in this server are:\n" + bot_name + " " + get_channels_list() + "\n" + bot_name + " " + "The users are:\n" + bot_name + " " + get_users_list() + "\r\n";
 	send(user->get_user_fd(), mess.c_str(), mess.length(), 0);
 }
 

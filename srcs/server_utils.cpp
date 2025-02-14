@@ -387,7 +387,7 @@ std::string Server::get_channels_list() const
 	std::string ret = "";
 	for (std::vector<Channel*>::const_iterator it = channels.begin(); it != channels.end(); it++)
 		ret += (*it)->get_name() + " - ";
-	ret = ret.substr(0, ret.size() - 1);
+	ret = ret.substr(0, ret.size() - 3);
 	return (ret);
 }
 
@@ -396,7 +396,7 @@ std::string Server::get_users_list() const
 	std::string ret = "";
 	for (std::vector<User*>::const_iterator it = users.begin(); it != users.end(); it++)
 		ret += (*it)->get_user_nick() + " - ";
-	ret = ret.substr(0, ret.size() - 1);
+	ret = ret.substr(0, ret.size() - 3);
 	return (ret);
 }
 
