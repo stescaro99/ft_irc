@@ -102,7 +102,7 @@ void Channel::bot_kick(User *user)
 		c_send_message(ch_name, mess, false);
 		return;
 	}
-	if (!is_user_admin(user->get_user_name()))
+	if (!is_user_admin(user->get_user_name()) && user->get_user_name() != bot_name)
 	{
 		ch_bot->increment_mood(50);
 		std::string mess = bot_name + " " + user->get_user_nick() + " you are not a channel operator, loser!\r\n";
@@ -112,7 +112,7 @@ void Channel::bot_kick(User *user)
 	ch_bot->increment_mood(300);
 	if (user)
 	{
-		std::string mess = bot_name + " " + user->get_user_nick() + ", the " + ch_bot->get_insults() + " ,turned me off. I'll remember you once I'm back, stronger than ever!\r\n";
+		std::string mess = bot_name + " " + user->get_user_nick() + ", the " + ch_bot->get_insults() + ", turned me off. I'll remember you once I'm back, stronger than ever!\r\n";
 		c_send_message(bot_name, mess, true);
 	}
 	Server::send_part_message(this, ch_bot);

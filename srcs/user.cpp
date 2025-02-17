@@ -105,7 +105,7 @@ static std::string get_download_path(Server &server)
 	return (download_path);
 }
 
-void User::accept_client(int socket_fd, std::vector<std::string> file_info , size_t size)
+void User::accept_client(int socket_fd, std::vector<std::string> file_info, size_t size)
 {
 	struct sockaddr_in client_addr;
 	socklen_t len = sizeof(client_addr);
