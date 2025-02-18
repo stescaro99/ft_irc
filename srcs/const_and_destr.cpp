@@ -8,7 +8,6 @@ Server::Server(std::string const &password, unsigned short port, std::vector<std
 
 Server::~Server()
 {
-	close_fds();
 	for (size_t i = 0; i < channels.size(); i++)
 		delete channels[i];
 	channels.clear();
@@ -17,8 +16,6 @@ Server::~Server()
 	users.clear();
 	for (size_t i = 0; i < bots.size(); i++)
 		delete bots[i];
-	for (size_t j = 0; j < fds.size(); j++)
-		close(fds[j].fd);
 	if (socket_fd != 1)
 		close(socket_fd);
 }
@@ -51,7 +48,8 @@ User::User(Server &server, int fd, std::string const &priv_ip) : user_fd(fd), us
 
 User::~User()
 {
-	close(user_fd);
+	if (user_fd > 2)
+		close(user_fd);
 	user_channels.clear();
 }
 
@@ -80,6 +78,6 @@ Bot::Bot(Server &server, int fd, Channel *channel) : User(server, fd, ""), mood(
 Bot::~Bot()
 {
 	bot_channel = NULL;
-	close(user_fd);
-	close(bot_fd);
+	if (bot_fd > 2)
+		close(bot_fd);
 }

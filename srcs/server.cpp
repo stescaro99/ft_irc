@@ -43,7 +43,6 @@ void Server::rem_user(const std::string &user)
 				{
 					if (i->fd == fd)
 					{
-						close(fd);
 						fds.erase(i);
 						break ;
 					}
@@ -65,13 +64,10 @@ void Server::rem_user(const std::string &user)
 				{
 					if (i->fd == fd)
 					{
-						close(fd);
 						fds.erase(i);
 						break ;
 					}
 				}
-				fd = (*it)->get_bot_fd();
-				close(fd);
 				delete *it;
 				bots.erase(it);
 				break ;

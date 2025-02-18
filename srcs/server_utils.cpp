@@ -139,7 +139,6 @@ void Server::receive_new_data(int fd)
 				if (i->get_tries() == 3)
 				{
 					send(i->get_user_fd(), "IRCSERV too many tries\r\n", 24, 0);
-					close(i->get_user_fd());
 					rem_user(i->get_user_name());
 					return ;
 				}

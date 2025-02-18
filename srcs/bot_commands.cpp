@@ -55,7 +55,6 @@ void Server::create_bot(Channel *ch, User *user, const std::string &nick)
 	if (fcntl(bot_fd, F_SETFL, O_NONBLOCK) == -1)
 	{
 		std::cout << "bot fcntl failed" << std::endl;
-		close(bot_fd);
 		delete bot;
 		return;
 	}
