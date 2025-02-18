@@ -58,12 +58,17 @@ void User::leave_channel(const std::string &channel)
 {
 	if (channel == "")
 	{
-		for (std::map<std::string, Channel*>::iterator it = user_channels.begin(); it != user_channels.end();it++)
+		for (std::map<std::string, Channel*>::iterator it = user_channels.begin(); it != user_channels.end();)
 		{
 			std::string part_msg = ":" + user_nickname + "!" + user_name + "@" + user_host + " PART :" + it->first + "\r\n";
 			(it->second)->c_send_message(user_name, part_msg, true);
 			if ((it->second)->get_users_count() == 1)
+			{
 				server.rem_channel(it->first);
+				std::map<std::string, Channel*>::iterator i = it;
+				++it;
+				user_channels.erase(i);
+			}
 			else
 			{
 				if ((it->second)->is_user_admin(user_name))
@@ -75,24 +80,29 @@ void User::leave_channel(const std::string &channel)
 					(it->second)->c_send_message(user_name, admin_msg, false);
 				}
 				(it->second)->rem_user_from_channel(user_name, false);
+				++it;
 			}
 		}
 		user_channels.clear();
-		return ;
+		return;
 	}
 	if (user_channels.find(channel) != user_channels.end())
 	{
-		if (CH->get_users_count() == 1)
+		Channel *ch = user_channels[channel];
+		if (ch->get_users_count() == 1)
+		{
 			server.rem_channel(channel);
+			user_channels.erase(channel);
+		}
 		else
 		{
-			if (CH->is_user_admin(user_name))
+			if (ch->is_user_admin(user_name))
 			{
-				CH->rem_admin(user_name);
+				ch->rem_admin(user_name);
 				std::string admin_msg = ":" + user_nickname + "!" + user_name + "@" + user_host + " MODE " + channel + " -o " + user_nickname + "\r\n";
-				CH->c_send_message(user_name, admin_msg, false);
+				ch->c_send_message(user_name, admin_msg, false);
 			}
-			CH->rem_user_from_channel(user_name, false);
+			ch->rem_user_from_channel(user_name, false);
 		}
 		std::cout << Cyan << user_nickname << " left " << channel << Reset << std::endl;
 	}
