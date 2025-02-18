@@ -50,7 +50,7 @@ int main(int argc, char **argv, char **env)
 	ss << argv[1];
 	unsigned short port;
 	ss >> port;
-	if (ss.fail() || port < 1025)
+	if (ss.fail() || port < 1025 || argv[1][0] == '-')
 	{
 		std::cerr << "Invalid port! Please use a number between 1025 and 65535." << std::endl;
 		return 1;
