@@ -91,8 +91,8 @@ void User::leave_channel(const std::string &channel)
 		Channel *ch = user_channels[channel];
 		if (ch->get_users_count() == 1)
 		{
-			server.rem_channel(channel);
 			user_channels.erase(channel);
+			server.rem_channel(channel);
 		}
 		else
 		{
