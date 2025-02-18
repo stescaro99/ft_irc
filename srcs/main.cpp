@@ -34,6 +34,7 @@ static std::vector<std::string> env_vec(char **env)
 
 int main(int argc, char **argv, char **env)
 {
+	signal(SIGPIPE, SIG_IGN);
 	if (argc != 3)
 	{
 		std::cerr << "Usage: ./ircserv <port> <server_password>" << std::endl;
